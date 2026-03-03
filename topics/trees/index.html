@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trees — DSA Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+/* ── Tree-specific styles ── */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--aqua),var(--blue));transition:width .15s;}
+
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--green);}
+
+.page-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+
+.page-hero{text-align:center;padding:50px 20px 40px;}
+.page-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--green),var(--aqua));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.page-hero .sub{color:var(--fg3);font-size:18px;max-width:600px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(142,192,124,0.1);border:1px solid rgba(142,192,124,0.2);color:var(--aqua);font-size:13px;font-weight:600;}
+
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.section-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;}
+.section-label h2{font-size:28px;font-weight:800;}
+
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:30px;margin-bottom:22px;}
+.card h3{font-size:19px;margin-bottom:14px;color:var(--green);display:flex;align-items:center;gap:10px;}
+.card p,.card li{color:var(--fg3);margin-bottom:10px;}
+.card strong{color:var(--fg);}
+.card ul{padding-left:20px;}
+
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:26px;margin:16px 0;position:relative;overflow:hidden;}
+.viz-tag{position:absolute;top:10px;right:14px;font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.btn{padding:8px 20px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.2s;user-select:none;}
+.btn:hover{background:var(--green);color:var(--bg);border-color:var(--green);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn.active{background:var(--green);color:var(--bg);border-color:var(--green);}
+
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:20px 24px;margin:14px 0;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:'Fira Code','Consolas',monospace;color:var(--fg2);}
+.code-line{transition:background .3s;padding:2px 4px;border-radius:4px;}
+.code-line.lit{background:rgba(142,192,124,0.08);}
+pre code{background:none;padding:0;}
+
+.tip{background:rgba(131,165,152,0.08);border:1px solid rgba(131,165,152,0.2);border-radius:12px;padding:18px 22px;margin:16px 0;font-size:14px;}
+.warn-tip{background:rgba(254,128,25,0.08);border-color:rgba(254,128,25,0.2);}
+.red-tip{background:rgba(251,73,52,0.08);border-color:rgba(251,73,52,0.2);}
+
+.analogy{background:linear-gradient(135deg,rgba(142,192,124,0.06),rgba(131,165,152,0.06));border:1px solid rgba(142,192,124,0.15);border-radius:14px;padding:22px 26px;margin:18px 0;}
+.analogy .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--aqua);font-weight:700;margin-bottom:8px;}
+
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.stat{flex:1;min-width:100px;background:var(--bg2);border-radius:12px;padding:14px 18px;text-align:center;}
+.stat .num{font-size:26px;font-weight:800;color:var(--green);}
+.stat .label{font-size:12px;color:var(--fg4);margin-top:2px;}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-weight:700;color:var(--green);border-bottom:2px solid var(--bg3);}
+td{padding:10px 16px;border-bottom:1px solid var(--bg2);color:var(--fg3);}
+tr:hover td{background:rgba(142,192,124,0.04);}
+
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.b-fast{background:rgba(184,187,38,0.15);color:var(--green);}
+.b-ok{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.b-mid{background:rgba(254,128,25,0.15);color:var(--orange);}
+.b-slow{background:rgba(251,73,52,0.15);color:var(--red);}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pattern-card{background:var(--bg2);border-radius:12px;padding:22px;margin-bottom:14px;border-left:4px solid var(--green);}
+.pattern-card h4{font-weight:700;margin-bottom:6px;font-size:16px;}
+.pattern-card p{color:var(--fg3);font-size:14px;margin-bottom:0;}
+
+/* ── Tree Canvas ── */
+.tree-canvas{position:relative;width:100%;min-height:280px;display:flex;justify-content:center;}
+.tree-canvas svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+.tree-canvas svg line{stroke:var(--bg3);stroke-width:2;}
+.tree-canvas svg line.active-edge{stroke:var(--green);stroke-width:3;}
+.tree-node{position:absolute;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transition:all .35s;cursor:pointer;z-index:2;border:2px solid transparent;}
+.tn-default{background:var(--bg2);color:var(--fg);border-color:var(--bg3);}
+.tn-active{background:var(--green);color:var(--bg);border-color:var(--green);box-shadow:0 0 20px rgba(142,192,124,0.4);transform:scale(1.15);}
+.tn-visited{background:var(--aqua);color:var(--bg);border-color:var(--aqua);}
+.tn-found{background:var(--yellow);color:var(--bg);border-color:var(--yellow);box-shadow:0 0 20px rgba(250,189,47,0.4);}
+.tn-current{background:var(--orange);color:var(--bg);border-color:var(--orange);box-shadow:0 0 16px rgba(254,128,25,0.3);}
+.tn-hot{background:var(--red);color:var(--bg);border-color:var(--red);}
+.tn-purple{background:var(--purple);color:var(--bg);border-color:var(--purple);}
+.tn-blue{background:var(--blue);color:var(--bg);border-color:var(--blue);}
+
+.step-indicator{display:flex;justify-content:center;gap:6px;margin:12px 0;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);transition:.3s;}
+.step-dot.active{background:var(--green);box-shadow:0 0 8px rgba(142,192,124,0.4);}
+.step-dot.done{background:var(--aqua);}
+
+@keyframes bounce-right{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+.arrow-bounce{display:inline-block;animation:bounce-right 1s infinite;}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 0 rgba(142,192,124,0);}50%{box-shadow:0 0 24px rgba(142,192,124,0.3);}}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.scroll-top{position:fixed;bottom:28px;right:28px;width:46px;height:46px;border-radius:50%;background:var(--green);color:var(--bg);border:none;cursor:pointer;font-size:22px;display:none;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(142,192,124,0.25);font-family:inherit;}
+.scroll-top.show{display:flex;}
+
+.order-output{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:36px;align-items:center;margin-top:10px;}
+.order-item{padding:4px 12px;border-radius:8px;font-weight:700;font-size:14px;animation:slideIn .25s;}
+.oi-visited{background:var(--aqua);color:var(--bg);}
+.oi-active{background:var(--green);color:var(--bg);}
+
+.cells{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:8px 0;}
+.cell{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transition:all .35s;position:relative;}
+.cell .sub-label{position:absolute;bottom:-20px;font-size:10px;color:var(--fg4);font-weight:400;white-space:nowrap;}
+.c-default{background:var(--bg2);color:var(--fg);}
+.c-active{background:var(--green);color:var(--bg);transform:scale(1.1);box-shadow:0 0 20px rgba(142,192,124,0.3);}
+.c-done{background:var(--aqua);color:var(--bg);}
+.c-highlight{background:var(--blue);color:var(--bg);}
+
+@media(max-width:700px){
+  .page-hero h1{font-size:32px;}
+  .card{padding:20px;}
+  .stat-row{flex-direction:column;}
+  .two-col{grid-template-columns:1fr;}
+  .topnav{top:60px;}
+  .tree-node{width:36px;height:36px;font-size:13px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Website Navbar -->
+<div class="navbar">
+  <a href="../../index.html" class="logo">DSA Deep Dive</a>
+  <nav>
+    <a href="../../index.html">Home</a>
+    <a href="#" class="active">Trees</a>
+  </nav>
+</div>
+
+<div class="progress"><div class="progress-fill" id="prog"></div></div>
+
+<nav class="topnav" id="topnav">
+  <a href="#what">What</a>
+  <a href="#terminology">Terminology</a>
+  <a href="#types">Types</a>
+  <a href="#bst">BST</a>
+  <a href="#traversals">Traversals</a>
+  <a href="#bfs-tree">BFS</a>
+  <a href="#dfs-patterns">DFS Patterns</a>
+  <a href="#balanced">Balanced Trees</a>
+  <a href="#heap-section">Heaps</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#problems">Top Problems</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<div class="page-container">
+
+<!-- ══════════ HERO ══════════ -->
+<div class="page-hero">
+  <h1>Trees — The Complete Deep Dive</h1>
+  <p class="sub">From roots to leaves. Binary trees, BSTs, traversals, balancing, heaps — everything you need to master trees for coding interviews. Interactive visuals, real code, simple words.</p>
+  <div class="hero-badge">DSA Chapter — The Hierarchical King</div>
+</div>
+
+<!-- ══════════ WHAT IS A TREE ══════════ -->
+<div class="section" id="what">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🌳</div>
+    <h2>What Is a Tree?</h2>
+  </div>
+
+  <div class="card">
+    <h3>The One-Sentence Answer</h3>
+    <p>A tree is a <strong>collection of nodes connected by edges, with one root node at the top and no cycles</strong>. Data flows downward from parent to children.</p>
+    <div class="analogy">
+      <div class="label">Real-World Analogy</div>
+      <p><strong>A family tree.</strong> Your great-grandparent is the root. They have children, who have children, who have children. Everyone has exactly ONE parent (except the root). No one is their own ancestor — no loops!</p>
+      <p>Or think of a <strong>file system</strong>: <code>/</code> is the root, folders are nodes, files are leaves.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Click Any Node</h3>
+    <p>Click a node to see its relationships:</p>
+    <div class="viz-box" style="min-height:300px;">
+      <div class="viz-tag">Click a node!</div>
+      <div class="tree-canvas" id="whatTree" style="height:280px;"></div>
+      <div style="text-align:center;color:var(--fg4);font-size:14px;margin-top:12px;" id="whatTreeMsg">Click any node to explore its relationships</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why Trees Are Everywhere</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="num">~25%</div><div class="label">of interview Qs</div></div>
+      <div class="stat"><div class="num">#2</div><div class="label">most asked DS</div></div>
+      <div class="stat"><div class="num">O(log n)</div><div class="label">search in BST</div></div>
+      <div class="stat"><div class="num">6+</div><div class="label">traversal types</div></div>
+    </div>
+    <p>Trees power <strong>databases</strong> (B-trees), <strong>compilers</strong> (AST), <strong>file systems</strong>, <strong>DOM</strong> (HTML), <strong>routing</strong>, <strong>AI decision making</strong>, and more. Master trees, master interviews.</p>
+  </div>
+
+  <div class="card">
+    <h3>Tree vs Array vs Linked List</h3>
+    <table>
+      <thead><tr><th>Feature</th><th>Array</th><th>Linked List</th><th>Tree (BST)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search</strong></td><td><span class="badge b-ok">O(n)</span></td><td><span class="badge b-ok">O(n)</span></td><td><span class="badge b-fast">O(log n)</span></td></tr>
+        <tr><td><strong>Insert</strong></td><td><span class="badge b-slow">O(n)</span></td><td><span class="badge b-fast">O(1)</span></td><td><span class="badge b-fast">O(log n)</span></td></tr>
+        <tr><td><strong>Delete</strong></td><td><span class="badge b-slow">O(n)</span></td><td><span class="badge b-fast">O(1)</span></td><td><span class="badge b-fast">O(log n)</span></td></tr>
+        <tr><td><strong>Structure</strong></td><td>Linear</td><td>Linear</td><td>Hierarchical</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Key advantage:</strong> Trees give you O(log n) search AND O(log n) insert/delete — the best of both worlds. Arrays give fast search (if sorted) but slow insert. Linked lists give fast insert but slow search.</div>
+  </div>
+</div>
+
+<!-- ══════════ TERMINOLOGY ══════════ -->
+<div class="section" id="terminology">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">📖</div>
+    <h2>Tree Terminology — Know Every Word</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Visual Dictionary</h3>
+    <div class="viz-box" style="min-height:320px;">
+      <div class="viz-tag">Interactive Terminology</div>
+      <div class="tree-canvas" id="termsTree" style="height:300px;"></div>
+      <div style="text-align:center;color:var(--fg4);font-size:14px;margin-top:12px;" id="termsMsg">Click nodes to learn terminology</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Complete Glossary</h3>
+    <table>
+      <thead><tr><th>Term</th><th>Definition</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Root</strong></td><td>The topmost node. No parent.</td><td>Node at the very top</td></tr>
+        <tr><td><strong>Leaf</strong></td><td>A node with NO children</td><td>Bottom-most nodes</td></tr>
+        <tr><td><strong>Edge</strong></td><td>The connection between two nodes</td><td>The line between parent → child</td></tr>
+        <tr><td><strong>Parent</strong></td><td>A node that has children below it</td><td>Node directly above another</td></tr>
+        <tr><td><strong>Child</strong></td><td>A node directly below its parent</td><td>Left child, right child</td></tr>
+        <tr><td><strong>Sibling</strong></td><td>Nodes that share the same parent</td><td>Left and right child of same parent</td></tr>
+        <tr><td><strong>Depth</strong></td><td>Distance from root to that node (edges)</td><td>Root = 0, its children = 1</td></tr>
+        <tr><td><strong>Height</strong></td><td>Longest path from that node down to a leaf</td><td>Leaf = 0, root = max depth</td></tr>
+        <tr><td><strong>Subtree</strong></td><td>A node and ALL its descendants</td><td>Any node is root of its own subtree</td></tr>
+        <tr><td><strong>Level</strong></td><td>All nodes at the same depth</td><td>Level 0 = root, Level 1 = root's children</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Height vs Depth:</strong> Depth goes DOWN from root. Height goes UP from leaves. The <strong>height of the tree</strong> = depth of the deepest leaf.</div>
+  </div>
+</div>
+
+<!-- ══════════ TYPES OF TREES ══════════ -->
+<div class="section" id="types">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">🌲</div>
+    <h2>Types of Trees</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Tree Family</h3>
+    <div class="two-col">
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--green);">
+        <div style="font-weight:800;color:var(--green);font-size:16px;margin-bottom:8px;">Binary Tree</div>
+        <p style="font-size:14px;">Each node has <strong>at most 2 children</strong> (left and right). The most common type in interviews.</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--yellow);">
+        <div style="font-weight:800;color:var(--yellow);font-size:16px;margin-bottom:8px;">Binary Search Tree (BST)</div>
+        <p style="font-size:14px;">Binary tree where <strong>left &lt; parent &lt; right</strong>. Enables O(log n) search.</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--blue);">
+        <div style="font-weight:800;color:var(--blue);font-size:16px;margin-bottom:8px;">Full Binary Tree</div>
+        <p style="font-size:14px;">Every node has <strong>0 or 2 children</strong>. Never just one child.</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--purple);">
+        <div style="font-weight:800;color:var(--purple);font-size:16px;margin-bottom:8px;">Complete Binary Tree</div>
+        <p style="font-size:14px;">All levels full except possibly the last, which fills <strong>left to right</strong>. Used in heaps.</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--aqua);">
+        <div style="font-weight:800;color:var(--aqua);font-size:16px;margin-bottom:8px;">Perfect Binary Tree</div>
+        <p style="font-size:14px;">ALL internal nodes have 2 children AND all leaves are at the same level. <strong>2^(h+1) - 1</strong> nodes.</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--orange);">
+        <div style="font-weight:800;color:var(--orange);font-size:16px;margin-bottom:8px;">Balanced Tree</div>
+        <p style="font-size:14px;">Heights of left and right subtrees differ by <strong>at most 1</strong>. Guarantees O(log n) operations.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The Node — Building Block of Trees</h3>
+    <pre><code><span class="code-line lit">class TreeNode {</span>
+<span class="code-line lit">  constructor(val) {</span>
+<span class="code-line lit">    this.val = val;</span>
+<span class="code-line lit">    this.left = null;   // left child</span>
+<span class="code-line lit">    this.right = null;  // right child</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// Build a simple tree:</span>
+<span class="code-line lit">const root = new TreeNode(10);</span>
+<span class="code-line lit">root.left = new TreeNode(5);</span>
+<span class="code-line lit">root.right = new TreeNode(15);</span>
+<span class="code-line lit">root.left.left = new TreeNode(3);</span>
+<span class="code-line lit">root.left.right = new TreeNode(7);</span></code></pre>
+    <div class="tip"><strong>Memory:</strong> Unlike arrays, tree nodes are scattered in memory (like linked lists). Each node stores its value + pointers to children. No contiguous block needed.</div>
+  </div>
+
+  <div class="card">
+    <h3>Key Math Facts</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="num">2<sup style="font-size:14px;">h+1</sup>-1</div><div class="label">max nodes (height h)</div></div>
+      <div class="stat"><div class="num">log<sub>2</sub>n</div><div class="label">height (balanced, n nodes)</div></div>
+      <div class="stat"><div class="num">n-1</div><div class="label">edges in any tree</div></div>
+      <div class="stat"><div class="num">n/2</div><div class="label">leaves (perfect tree)</div></div>
+    </div>
+    <div class="tip"><strong>Why log n matters:</strong> A balanced tree with 1 million nodes has height ~20. That means you only visit ~20 nodes to find anything. A linked list would need 1 million steps!</div>
+  </div>
+</div>
+
+<!-- ══════════ BST ══════════ -->
+<div class="section" id="bst">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">🔍</div>
+    <h2>Binary Search Tree (BST)</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Golden Rule</h3>
+    <p>For <strong>every</strong> node in a BST:</p>
+    <ul>
+      <li>All values in the <strong>left subtree</strong> are <strong>smaller</strong></li>
+      <li>All values in the <strong>right subtree</strong> are <strong>larger</strong></li>
+    </ul>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>A dictionary.</strong> Open to the middle. Is "mango" before or after "monkey"? Before → go left half. Is it before "map"? After → go right. Each step cuts the remaining pages in half!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Search in a BST</h3>
+    <p>Watch how BST search finds a value by going left or right:</p>
+    <div class="viz-box" style="min-height:340px;">
+      <div class="viz-tag">BST Search — O(log n)</div>
+      <div class="tree-canvas" id="bstSearchTree" style="height:300px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <div style="color:var(--fg4);font-size:14px;" id="bstSearchMsg">Click a value to search for it</div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="bstSteps">0</div><div class="label">Steps taken</div></div>
+        <div class="stat"><div class="num" id="bstHeight">4</div><div class="label">Tree height</div></div>
+        <div class="stat"><div class="num" id="bstCompare">-</div><div class="label">Comparing</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="bstSearch(3)">Find 3</button>
+      <button class="btn" onclick="bstSearch(7)">Find 7</button>
+      <button class="btn" onclick="bstSearch(13)">Find 13</button>
+      <button class="btn" onclick="bstSearch(14)">Find 14</button>
+      <button class="btn" onclick="bstSearch(6)">Find 6 (not in tree)</button>
+      <button class="btn" onclick="bstSearchReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>BST Operations — Code</h3>
+    <pre><code><span class="code-line">// ═══ SEARCH ═══</span>
+<span class="code-line lit">function search(node, target) {</span>
+<span class="code-line lit">  if (!node) return null;             // not found</span>
+<span class="code-line lit">  if (target === node.val) return node; // found!</span>
+<span class="code-line lit">  if (target < node.val)</span>
+<span class="code-line lit">    return search(node.left, target);   // go left</span>
+<span class="code-line lit">  else</span>
+<span class="code-line lit">    return search(node.right, target);  // go right</span>
+<span class="code-line lit">}</span></code></pre>
+    <pre><code><span class="code-line">// ═══ INSERT ═══</span>
+<span class="code-line lit">function insert(node, val) {</span>
+<span class="code-line lit">  if (!node) return new TreeNode(val); // found the spot!</span>
+<span class="code-line lit">  if (val < node.val)</span>
+<span class="code-line lit">    node.left = insert(node.left, val);</span>
+<span class="code-line lit">  else</span>
+<span class="code-line lit">    node.right = insert(node.right, val);</span>
+<span class="code-line lit">  return node;</span>
+<span class="code-line lit">}</span></code></pre>
+    <pre><code><span class="code-line">// ═══ DELETE (the tricky one!) ═══</span>
+<span class="code-line lit">function deleteNode(node, val) {</span>
+<span class="code-line lit">  if (!node) return null;</span>
+<span class="code-line lit">  if (val < node.val) node.left = deleteNode(node.left, val);</span>
+<span class="code-line lit">  else if (val > node.val) node.right = deleteNode(node.right, val);</span>
+<span class="code-line lit">  else {</span>
+<span class="code-line lit">    // Case 1: Leaf → just remove</span>
+<span class="code-line lit">    if (!node.left && !node.right) return null;</span>
+<span class="code-line lit">    // Case 2: One child → replace with child</span>
+<span class="code-line lit">    if (!node.left) return node.right;</span>
+<span class="code-line lit">    if (!node.right) return node.left;</span>
+<span class="code-line lit">    // Case 3: Two children → replace with inorder successor</span>
+<span class="code-line lit">    let successor = node.right;</span>
+<span class="code-line lit">    while (successor.left) successor = successor.left;</span>
+<span class="code-line lit">    node.val = successor.val;</span>
+<span class="code-line lit">    node.right = deleteNode(node.right, successor.val);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return node;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip warn-tip"><strong>Delete has 3 cases:</strong> (1) Leaf: just remove. (2) One child: connect parent to grandchild. (3) Two children: replace with the inorder successor (smallest value in right subtree), then delete the successor.</div>
+  </div>
+
+  <div class="card">
+    <h3>BST Big O</h3>
+    <table>
+      <thead><tr><th>Operation</th><th>Average</th><th>Worst (unbalanced)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search</strong></td><td><span class="badge b-fast">O(log n)</span></td><td><span class="badge b-slow">O(n)</span></td></tr>
+        <tr><td><strong>Insert</strong></td><td><span class="badge b-fast">O(log n)</span></td><td><span class="badge b-slow">O(n)</span></td></tr>
+        <tr><td><strong>Delete</strong></td><td><span class="badge b-fast">O(log n)</span></td><td><span class="badge b-slow">O(n)</span></td></tr>
+        <tr><td><strong>Find Min/Max</strong></td><td><span class="badge b-fast">O(log n)</span></td><td><span class="badge b-slow">O(n)</span></td></tr>
+      </tbody>
+    </table>
+    <div class="red-tip tip"><strong>The worst case trap:</strong> If you insert sorted data [1, 2, 3, 4, 5] into a BST, it becomes a linked list! Height = n instead of log n. That's why we need <strong>balanced trees</strong> (AVL, Red-Black).</div>
+  </div>
+</div>
+
+<!-- ══════════ TRAVERSALS ══════════ -->
+<div class="section" id="traversals">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🚶</div>
+    <h2>Tree Traversals — DFS (Depth-First)</h2>
+  </div>
+
+  <div class="card">
+    <h3>The 3 DFS Orders</h3>
+    <p>There are 3 ways to visit every node in depth-first order. The difference is <strong>when you process the current node</strong>:</p>
+    <div class="two-col" style="grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div style="background:var(--bg2);border-radius:12px;padding:16px;border-top:3px solid var(--green);text-align:center;">
+        <div style="font-weight:800;color:var(--green);font-size:15px;margin-bottom:6px;">Inorder</div>
+        <div style="font-size:13px;color:var(--fg3);">Left → <strong style="color:var(--green);">Root</strong> → Right</div>
+        <div style="font-size:12px;color:var(--fg4);margin-top:6px;">Gives sorted order for BST!</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:16px;border-top:3px solid var(--yellow);text-align:center;">
+        <div style="font-weight:800;color:var(--yellow);font-size:15px;margin-bottom:6px;">Preorder</div>
+        <div style="font-size:13px;color:var(--fg3);"><strong style="color:var(--yellow);">Root</strong> → Left → Right</div>
+        <div style="font-size:12px;color:var(--fg4);margin-top:6px;">Good for copying/serializing tree</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:16px;border-top:3px solid var(--purple);text-align:center;">
+        <div style="font-weight:800;color:var(--purple);font-size:15px;margin-bottom:6px;">Postorder</div>
+        <div style="font-size:13px;color:var(--fg3);">Left → Right → <strong style="color:var(--purple);">Root</strong></div>
+        <div style="font-size:12px;color:var(--fg4);margin-top:6px;">Good for deleting tree</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Watch All 3 Traversals</h3>
+    <p>See the order each node gets visited:</p>
+    <div class="viz-box" style="min-height:340px;">
+      <div class="viz-tag" id="travLabel">DFS Traversals</div>
+      <div class="tree-canvas" id="travTree" style="height:280px;"></div>
+      <div class="order-output" id="travOrder"></div>
+      <div style="text-align:center;margin-top:10px;color:var(--fg4);font-size:14px;" id="travMsg">Choose a traversal order</div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="travRun('inorder')">Inorder (L→Root→R)</button>
+      <button class="btn" onclick="travRun('preorder')">Preorder (Root→L→R)</button>
+      <button class="btn" onclick="travRun('postorder')">Postorder (L→R→Root)</button>
+      <button class="btn" onclick="travReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code: All 3 Traversals</h3>
+    <pre><code><span class="code-line">// ═══ INORDER: Left → Root → Right ═══</span>
+<span class="code-line lit">function inorder(node) {</span>
+<span class="code-line lit">  if (!node) return;</span>
+<span class="code-line lit">  inorder(node.left);      // 1. go left</span>
+<span class="code-line lit">  console.log(node.val);   // 2. process root</span>
+<span class="code-line lit">  inorder(node.right);     // 3. go right</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// ═══ PREORDER: Root → Left → Right ═══</span>
+<span class="code-line lit">function preorder(node) {</span>
+<span class="code-line lit">  if (!node) return;</span>
+<span class="code-line lit">  console.log(node.val);   // 1. process root FIRST</span>
+<span class="code-line lit">  preorder(node.left);     // 2. go left</span>
+<span class="code-line lit">  preorder(node.right);    // 3. go right</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// ═══ POSTORDER: Left → Right → Root ═══</span>
+<span class="code-line lit">function postorder(node) {</span>
+<span class="code-line lit">  if (!node) return;</span>
+<span class="code-line lit">  postorder(node.left);    // 1. go left</span>
+<span class="code-line lit">  postorder(node.right);   // 2. go right</span>
+<span class="code-line lit">  console.log(node.val);   // 3. process root LAST</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="analogy">
+      <div class="label">Memory trick</div>
+      <p><strong>"Pre" = before, "In" = in the middle, "Post" = after.</strong> The name tells you WHEN you process the root relative to the left/right subtrees. That's it!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Iterative Inorder (Using Stack)</h3>
+    <p>Interviewers sometimes ask for iterative traversals. Here's the pattern with a stack:</p>
+    <pre><code><span class="code-line lit">function inorderIterative(root) {</span>
+<span class="code-line lit">  const result = [];</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line lit">  let current = root;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (current || stack.length) {</span>
+<span class="code-line lit">    // Go as far left as possible</span>
+<span class="code-line lit">    while (current) {</span>
+<span class="code-line lit">      stack.push(current);</span>
+<span class="code-line lit">      current = current.left;</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    // Process the node</span>
+<span class="code-line lit">    current = stack.pop();</span>
+<span class="code-line lit">    result.push(current.val);</span>
+<span class="code-line lit">    // Move to right subtree</span>
+<span class="code-line lit">    current = current.right;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Why iterative matters:</strong> Recursive DFS uses the call stack. For very deep trees, this can cause stack overflow. Iterative version uses explicit stack — you control the memory.</div>
+  </div>
+</div>
+
+<!-- ══════════ BFS ══════════ -->
+<div class="section" id="bfs-tree">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🌊</div>
+    <h2>BFS — Level-Order Traversal</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is BFS on Trees?</h3>
+    <p><strong>Visit nodes level by level</strong>, from top to bottom, left to right. Uses a <strong>queue</strong>.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Pouring water on a tree.</strong> Water flows down level by level. First the root gets wet, then its children, then grandchildren. Every node at depth d gets wet before any node at depth d+1.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Watch BFS Level by Level</h3>
+    <div class="viz-box" style="min-height:340px;">
+      <div class="viz-tag">BFS — Level Order — O(n)</div>
+      <div class="tree-canvas" id="bfsTree" style="height:280px;"></div>
+      <div class="order-output" id="bfsOrder"></div>
+      <div style="text-align:center;margin-top:10px;">
+        <div style="color:var(--fg4);font-size:14px;" id="bfsMsg">Click "Run BFS" to watch level-order traversal</div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="bfsLevel">-</div><div class="label">Current Level</div></div>
+        <div class="stat"><div class="num" id="bfsVisited">0</div><div class="label">Visited</div></div>
+        <div class="stat"><div class="num" id="bfsQueue">-</div><div class="label">Queue Size</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="bfsStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="bfsAuto()">Auto Play</button>
+      <button class="btn" onclick="bfsReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code: Level-Order Traversal</h3>
+    <pre><code><span class="code-line lit">function levelOrder(root) {</span>
+<span class="code-line lit">  if (!root) return [];</span>
+<span class="code-line lit">  const result = [];</span>
+<span class="code-line lit">  const queue = [root];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (queue.length) {</span>
+<span class="code-line lit">    const levelSize = queue.length; // nodes at this level</span>
+<span class="code-line lit">    const level = [];</span>
+<span class="code-line"></span>
+<span class="code-line lit">    for (let i = 0; i < levelSize; i++) {</span>
+<span class="code-line lit">      const node = queue.shift();</span>
+<span class="code-line lit">      level.push(node.val);</span>
+<span class="code-line lit">      if (node.left)  queue.push(node.left);</span>
+<span class="code-line lit">      if (node.right) queue.push(node.right);</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    result.push(level);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>The trick:</strong> At the start of each level, <code>queue.length</code> tells you exactly how many nodes are on this level. Loop that many times, then you've moved to the next level.</div>
+  </div>
+
+  <div class="card">
+    <h3>When to Use BFS vs DFS?</h3>
+    <div class="two-col">
+      <div class="pattern-card" style="border-left-color:var(--blue);">
+        <h4 style="color:var(--blue);">Use BFS When:</h4>
+        <p>Finding shortest path, level-by-level processing, minimum depth, "closest" node, right-side view, zigzag traversal</p>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--green);">
+        <h4 style="color:var(--green);">Use DFS When:</h4>
+        <p>Path problems, subtree problems, validate BST, tree height, LCA, serialize/deserialize, any "bottom-up" computation</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DFS PATTERNS ══════════ -->
+<div class="section" id="dfs-patterns">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">🔥</div>
+    <h2>DFS Patterns — Master These!</h2>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 1: Max Depth (Height)</h3>
+    <p>The most classic tree recursion. Base case + combine results from left and right.</p>
+    <pre><code><span class="code-line lit">function maxDepth(node) {</span>
+<span class="code-line lit">  if (!node) return 0;  // base case: empty tree has depth 0</span>
+<span class="code-line"></span>
+<span class="code-line lit">  const leftDepth  = maxDepth(node.left);</span>
+<span class="code-line lit">  const rightDepth = maxDepth(node.right);</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return 1 + Math.max(leftDepth, rightDepth);</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>The recursion pattern:</strong> (1) Base case for null, (2) Recurse left, (3) Recurse right, (4) Combine and return. Almost EVERY tree problem follows this shape!</div>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 2: Same Tree / Symmetric</h3>
+    <pre><code><span class="code-line">// Are two trees identical?</span>
+<span class="code-line lit">function isSameTree(p, q) {</span>
+<span class="code-line lit">  if (!p && !q) return true;   // both null → same</span>
+<span class="code-line lit">  if (!p || !q) return false;  // one null → different</span>
+<span class="code-line lit">  return p.val === q.val</span>
+<span class="code-line lit">    && isSameTree(p.left, q.left)</span>
+<span class="code-line lit">    && isSameTree(p.right, q.right);</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// Is a tree a mirror of itself?</span>
+<span class="code-line lit">function isSymmetric(root) {</span>
+<span class="code-line lit">  function mirror(a, b) {</span>
+<span class="code-line lit">    if (!a && !b) return true;</span>
+<span class="code-line lit">    if (!a || !b) return false;</span>
+<span class="code-line lit">    return a.val === b.val</span>
+<span class="code-line lit">      && mirror(a.left, b.right)   // flip!</span>
+<span class="code-line lit">      && mirror(a.right, b.left);  // flip!</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return mirror(root.left, root.right);</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 3: Path Sum</h3>
+    <pre><code><span class="code-line">// Does any root-to-leaf path sum to target?</span>
+<span class="code-line lit">function hasPathSum(node, target) {</span>
+<span class="code-line lit">  if (!node) return false;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  // Leaf node? Check if remaining equals this value</span>
+<span class="code-line lit">  if (!node.left && !node.right)</span>
+<span class="code-line lit">    return node.val === target;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  // Subtract current value and check children</span>
+<span class="code-line lit">  return hasPathSum(node.left, target - node.val)</span>
+<span class="code-line lit">      || hasPathSum(node.right, target - node.val);</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 4: Lowest Common Ancestor (LCA)</h3>
+    <pre><code><span class="code-line">// Find the lowest common ancestor of nodes p and q</span>
+<span class="code-line lit">function lowestCommonAncestor(root, p, q) {</span>
+<span class="code-line lit">  if (!root || root === p || root === q) return root;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  const left  = lowestCommonAncestor(root.left, p, q);</span>
+<span class="code-line lit">  const right = lowestCommonAncestor(root.right, p, q);</span>
+<span class="code-line"></span>
+<span class="code-line lit">  if (left && right) return root;  // p and q are on different sides</span>
+<span class="code-line lit">  return left || right;            // both on same side</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="analogy">
+      <div class="label">Intuition</div>
+      <p><strong>Two people climbing from different leaves toward the root.</strong> The first node where their paths cross is the LCA. The algorithm checks: are p and q on different sides? If yes, current node IS the LCA.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 5: Validate BST</h3>
+    <pre><code><span class="code-line lit">function isValidBST(node, min = -Infinity, max = Infinity) {</span>
+<span class="code-line lit">  if (!node) return true;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  if (node.val <= min || node.val >= max) return false;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return isValidBST(node.left, min, node.val)   // left must be < node</span>
+<span class="code-line lit">      && isValidBST(node.right, node.val, max);  // right must be > node</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip warn-tip"><strong>Common mistake:</strong> Only checking <code>left.val < node.val</code> is NOT enough! You must check that ALL values in the left subtree are smaller, not just the direct child. Pass the range (min, max) down.</div>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 6: Invert a Binary Tree</h3>
+    <pre><code><span class="code-line lit">function invertTree(node) {</span>
+<span class="code-line lit">  if (!node) return null;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  // Swap left and right</span>
+<span class="code-line lit">  [node.left, node.right] = [node.right, node.left];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  invertTree(node.left);</span>
+<span class="code-line lit">  invertTree(node.right);</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return node;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Fun fact:</strong> This is the problem that became a meme. It's 4 lines of code, but it teaches you how tree recursion works. Swap at each node, recurse on both children.</div>
+  </div>
+
+  <div class="card">
+    <h3>Pattern 7: Diameter of Binary Tree</h3>
+    <pre><code><span class="code-line lit">function diameterOfBinaryTree(root) {</span>
+<span class="code-line lit">  let diameter = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  function height(node) {</span>
+<span class="code-line lit">    if (!node) return 0;</span>
+<span class="code-line lit">    const left = height(node.left);</span>
+<span class="code-line lit">    const right = height(node.right);</span>
+<span class="code-line"></span>
+<span class="code-line lit">    // Diameter through this node = left + right</span>
+<span class="code-line lit">    diameter = Math.max(diameter, left + right);</span>
+<span class="code-line"></span>
+<span class="code-line lit">    return 1 + Math.max(left, right);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  height(root);</span>
+<span class="code-line lit">  return diameter;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Key insight:</strong> The diameter (longest path between any two nodes) doesn't have to pass through the root! At each node, the path through it = left height + right height. Track the global max.</div>
+  </div>
+</div>
+
+<!-- ══════════ BALANCED TREES ══════════ -->
+<div class="section" id="balanced">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">⚖️</div>
+    <h2>Balanced Trees — Why They Matter</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Problem with Unbalanced BSTs</h3>
+    <div class="viz-box" style="min-height:200px;">
+      <div class="viz-tag">Balanced vs Unbalanced</div>
+      <div style="display:flex;justify-content:center;gap:60px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="color:var(--green);font-weight:800;margin-bottom:8px;">Balanced: O(log n)</div>
+          <div class="tree-canvas" id="balancedDemo" style="height:180px;width:260px;position:relative;"></div>
+        </div>
+        <div style="text-align:center;">
+          <div style="color:var(--red);font-weight:800;margin-bottom:8px;">Unbalanced: O(n)</div>
+          <div class="tree-canvas" id="unbalancedDemo" style="height:180px;width:160px;position:relative;"></div>
+        </div>
+      </div>
+    </div>
+    <p>Inserting [1, 2, 3, 4, 5] into a BST gives you a <strong>straight line</strong> (linked list). Every operation becomes O(n). Balanced trees fix this.</p>
+  </div>
+
+  <div class="card">
+    <h3>Check if a Tree is Balanced</h3>
+    <pre><code><span class="code-line lit">function isBalanced(node) {</span>
+<span class="code-line lit">  function check(node) {</span>
+<span class="code-line lit">    if (!node) return 0;</span>
+<span class="code-line lit">    const left = check(node.left);</span>
+<span class="code-line lit">    if (left === -1) return -1;</span>
+<span class="code-line lit">    const right = check(node.right);</span>
+<span class="code-line lit">    if (right === -1) return -1;</span>
+<span class="code-line"></span>
+<span class="code-line lit">    if (Math.abs(left - right) > 1) return -1; // unbalanced!</span>
+<span class="code-line lit">    return 1 + Math.max(left, right);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return check(node) !== -1;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Trick:</strong> Return -1 as a "flag" when unbalanced. This avoids computing the full height when we already know the answer. Early termination!</div>
+  </div>
+
+  <div class="card">
+    <h3>Self-Balancing Trees (Know These Exist)</h3>
+    <div class="two-col">
+      <div class="pattern-card" style="border-left-color:var(--green);">
+        <h4 style="color:var(--green);">AVL Tree</h4>
+        <p>Strictly balanced — heights differ by at most 1. Uses rotations after insert/delete. Faster lookup than Red-Black.</p>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--red);">
+        <h4 style="color:var(--red);">Red-Black Tree</h4>
+        <p>Loosely balanced — guaranteed O(log n) but less rotations than AVL. Used in Java TreeMap, C++ std::map.</p>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--blue);">
+        <h4 style="color:var(--blue);">B-Tree / B+ Tree</h4>
+        <p>Multi-way tree (more than 2 children). Used in databases and file systems. Optimized for disk I/O.</p>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--yellow);">
+        <h4 style="color:var(--yellow);">Trie (Prefix Tree)</h4>
+        <p>Each node represents a character. Used for autocomplete, spell check, IP routing. Separate deep dive!</p>
+      </div>
+    </div>
+    <div class="tip"><strong>Interview reality:</strong> You won't be asked to implement AVL or Red-Black from scratch. But you MUST know they exist, why they're needed, and their O(log n) guarantees.</div>
+  </div>
+</div>
+
+<!-- ══════════ HEAPS ══════════ -->
+<div class="section" id="heap-section">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">⛰️</div>
+    <h2>Heaps — Priority Queues</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is a Heap?</h3>
+    <p>A heap is a <strong>complete binary tree</strong> where every parent is smaller (min-heap) or larger (max-heap) than its children.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>An emergency room queue.</strong> The most critical patient gets treated first, regardless of arrival order. A heap always gives you the min (or max) in O(1).</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Heap as an Array</h3>
+    <p>The brilliant trick: a complete binary tree can be stored in an <strong>array</strong> (no pointers needed!):</p>
+    <div class="viz-box">
+      <div class="viz-tag">Heap → Array mapping</div>
+      <div class="tree-canvas" id="heapTree" style="height:200px;"></div>
+      <div style="margin-top:10px;">
+        <div class="cells" id="heapArray" style="padding-bottom:28px;"></div>
+      </div>
+    </div>
+    <pre><code><span class="code-line">// For node at index i:</span>
+<span class="code-line lit">parent(i)     = Math.floor((i - 1) / 2)</span>
+<span class="code-line lit">leftChild(i)  = 2 * i + 1</span>
+<span class="code-line lit">rightChild(i) = 2 * i + 2</span></code></pre>
+    <div class="tip"><strong>No pointers!</strong> Because heaps are complete binary trees, the array never has gaps. Parent-child relationships are pure math, just like array index calculations.</div>
+  </div>
+
+  <div class="card">
+    <h3>Heap Operations & Big O</h3>
+    <table>
+      <thead><tr><th>Operation</th><th>Time</th><th>How?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Get Min/Max</strong> (peek)</td><td><span class="badge b-fast">O(1)</span></td><td>Always at index 0 (root)</td></tr>
+        <tr><td><strong>Insert</strong></td><td><span class="badge b-fast">O(log n)</span></td><td>Add at end, bubble UP</td></tr>
+        <tr><td><strong>Extract Min/Max</strong></td><td><span class="badge b-fast">O(log n)</span></td><td>Remove root, bubble DOWN</td></tr>
+        <tr><td><strong>Build Heap</strong></td><td><span class="badge b-ok">O(n)</span></td><td>Heapify from bottom up</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ TRICKS ══════════ -->
+<div class="section" id="tricks">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">🛠️</div>
+    <h2>Essential Tree Tricks</h2>
+  </div>
+
+  <div class="card">
+    <h3>Trick 1: Serialize & Deserialize a Tree</h3>
+    <pre><code><span class="code-line">// Convert tree → string (preorder with nulls)</span>
+<span class="code-line lit">function serialize(root) {</span>
+<span class="code-line lit">  if (!root) return 'null';</span>
+<span class="code-line lit">  return root.val + ',' + serialize(root.left)</span>
+<span class="code-line lit">                  + ',' + serialize(root.right);</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// Convert string → tree</span>
+<span class="code-line lit">function deserialize(str) {</span>
+<span class="code-line lit">  const vals = str.split(',');</span>
+<span class="code-line lit">  let i = 0;</span>
+<span class="code-line lit">  function build() {</span>
+<span class="code-line lit">    if (vals[i] === 'null') { i++; return null; }</span>
+<span class="code-line lit">    const node = new TreeNode(+vals[i++]);</span>
+<span class="code-line lit">    node.left = build();</span>
+<span class="code-line lit">    node.right = build();</span>
+<span class="code-line lit">    return node;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return build();</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Trick 2: Build Tree from Traversals</h3>
+    <pre><code><span class="code-line">// Build tree from preorder + inorder</span>
+<span class="code-line lit">function buildTree(preorder, inorder) {</span>
+<span class="code-line lit">  if (!preorder.length) return null;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  const rootVal = preorder[0];</span>
+<span class="code-line lit">  const root = new TreeNode(rootVal);</span>
+<span class="code-line lit">  const mid = inorder.indexOf(rootVal);</span>
+<span class="code-line"></span>
+<span class="code-line lit">  root.left = buildTree(</span>
+<span class="code-line lit">    preorder.slice(1, mid + 1),   // left part of preorder</span>
+<span class="code-line lit">    inorder.slice(0, mid)          // left part of inorder</span>
+<span class="code-line lit">  );</span>
+<span class="code-line lit">  root.right = buildTree(</span>
+<span class="code-line lit">    preorder.slice(mid + 1),       // right part of preorder</span>
+<span class="code-line lit">    inorder.slice(mid + 1)         // right part of inorder</span>
+<span class="code-line lit">  );</span>
+<span class="code-line lit">  return root;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Key insight:</strong> Preorder's first element is always the root. Find that root in inorder — everything left of it is the left subtree, everything right is the right subtree. Recurse!</div>
+  </div>
+
+  <div class="card">
+    <h3>Trick 3: Morris Traversal — O(1) Space</h3>
+    <p>Traverse a tree <strong>without recursion AND without a stack</strong>. Uses temporary thread pointers:</p>
+    <pre><code><span class="code-line lit">function morrisInorder(root) {</span>
+<span class="code-line lit">  const result = [];</span>
+<span class="code-line lit">  let current = root;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (current) {</span>
+<span class="code-line lit">    if (!current.left) {</span>
+<span class="code-line lit">      result.push(current.val);  // visit</span>
+<span class="code-line lit">      current = current.right;</span>
+<span class="code-line lit">    } else {</span>
+<span class="code-line lit">      // Find inorder predecessor</span>
+<span class="code-line lit">      let pred = current.left;</span>
+<span class="code-line lit">      while (pred.right && pred.right !== current)</span>
+<span class="code-line lit">        pred = pred.right;</span>
+<span class="code-line"></span>
+<span class="code-line lit">      if (!pred.right) {</span>
+<span class="code-line lit">        pred.right = current;    // create thread</span>
+<span class="code-line lit">        current = current.left;</span>
+<span class="code-line lit">      } else {</span>
+<span class="code-line lit">        pred.right = null;       // remove thread</span>
+<span class="code-line lit">        result.push(current.val); // visit</span>
+<span class="code-line lit">        current = current.right;</span>
+<span class="code-line lit">      }</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip warn-tip"><strong>Advanced technique.</strong> O(n) time, O(1) space (ignoring output). Temporarily modifies the tree but restores it. Asked in hard interviews — know it exists.</div>
+  </div>
+</div>
+
+<!-- ══════════ TOP PROBLEMS ══════════ -->
+<div class="section" id="problems">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">💎</div>
+    <h2>Top 25 Tree Interview Problems</h2>
+  </div>
+
+  <div class="card">
+    <h3>Must-Solve Problems (Grouped by Pattern)</h3>
+    <table>
+      <thead><tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Maximum Depth</strong></td><td>DFS Recursion</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>2</td><td><strong>Invert Binary Tree</strong></td><td>DFS Recursion</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>3</td><td><strong>Same Tree</strong></td><td>DFS Compare</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>4</td><td><strong>Symmetric Tree</strong></td><td>DFS Mirror</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>5</td><td><strong>Path Sum</strong></td><td>DFS + Subtract</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>6</td><td><strong>Subtree of Another Tree</strong></td><td>DFS Compare</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>7</td><td><strong>Diameter of Binary Tree</strong></td><td>DFS Heights</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>8</td><td><strong>Balanced Binary Tree</strong></td><td>DFS Heights</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>9</td><td><strong>Level Order Traversal</strong></td><td>BFS Queue</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>10</td><td><strong>Right Side View</strong></td><td>BFS / DFS</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>11</td><td><strong>Validate BST</strong></td><td>DFS + Range</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>12</td><td><strong>Kth Smallest in BST</strong></td><td>Inorder DFS</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>13</td><td><strong>Lowest Common Ancestor</strong></td><td>DFS Find</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>14</td><td><strong>LCA of BST</strong></td><td>BST Property</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>15</td><td><strong>Build Tree (Pre + In)</strong></td><td>Divide & Conquer</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>16</td><td><strong>Count Good Nodes</strong></td><td>DFS + Track Max</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>17</td><td><strong>Flatten BT to Linked List</strong></td><td>Preorder DFS</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>18</td><td><strong>Zigzag Level Order</strong></td><td>BFS + Flip</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>19</td><td><strong>Path Sum III</strong></td><td>DFS + Prefix Sum</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>20</td><td><strong>BST Iterator</strong></td><td>Controlled Inorder</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>21</td><td><strong>Serialize/Deserialize BT</strong></td><td>Preorder DFS</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>22</td><td><strong>Binary Tree Max Path Sum</strong></td><td>DFS + Global Max</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>23</td><td><strong>Vertical Order Traversal</strong></td><td>BFS + Coordinates</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>24</td><td><strong>Recover BST</strong></td><td>Inorder + Swap</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>25</td><td><strong>Count Complete Tree Nodes</strong></td><td>Binary Search + DFS</td><td><span class="badge b-ok">Medium</span></td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Study order:</strong> Master Easy problems first (they teach the core patterns). Then Medium. The Hard ones are variations of Medium patterns. Focus on <strong>recognizing the pattern</strong>, not memorizing solutions.</div>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section" id="quiz">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">🧪</div>
+    <h2>Quiz: Test Your Tree Knowledge</h2>
+  </div>
+
+  <div class="card">
+    <div id="quizArea"></div>
+  </div>
+
+  <div class="card" style="text-align:center;padding:40px;">
+    <h3 style="justify-content:center;font-size:24px;color:var(--green);">Trees — Mastered! 🌳</h3>
+    <p style="font-size:16px;max-width:520px;margin:12px auto 0;color:var(--fg3);">You now understand the hierarchical king of data structures. From root to leaves, BST to BFS, traversals to LCA — you've got it all.</p>
+    <p style="color:var(--green);font-weight:700;font-size:18px;margin-top:16px;">You're crushing it, Xasanov! Keep climbing! 🔥</p>
+    <div style="margin-top:20px;">
+      <a href="../../index.html" class="btn" style="display:inline-block;text-decoration:none;">← Back to All Topics</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ═══════════════════════════════════════
+// TREE RENDERING ENGINE
+// ═══════════════════════════════════════
+
+function buildTreeLayout(data, containerId, opts) {
+  opts = opts || {};
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  container.style.position = 'relative';
+
+  var W = container.offsetWidth || 500;
+  var H = parseInt(container.style.height) || 280;
+  var nodeSize = opts.nodeSize || 44;
+  var half = nodeSize / 2;
+
+  // Calculate positions for each node
+  var nodes = [];
+  var edges = [];
+
+  function layout(item, depth, left, right, parentIdx) {
+    if (!item) return;
+    var x = (left + right) / 2;
+    var y = 30 + depth * (opts.levelGap || 62);
+    var idx = nodes.length;
+    nodes.push({ val: item.val, x: x, y: y, cls: item.cls || 'tn-default', id: item.id || idx });
+    if (parentIdx !== undefined) {
+      edges.push({ from: parentIdx, to: idx, cls: '' });
+    }
+    layout(item.left, depth + 1, left, x, idx);
+    layout(item.right, depth + 1, x, right, idx);
+  }
+
+  layout(data, 0, 0, W, undefined);
+
+  // Draw SVG edges
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+  edges.forEach(function(e) {
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', nodes[e.from].x);
+    line.setAttribute('y1', nodes[e.from].y + half);
+    line.setAttribute('x2', nodes[e.to].x);
+    line.setAttribute('y2', nodes[e.to].y - half + 4);
+    line.setAttribute('class', e.cls || '');
+    line.setAttribute('stroke', 'var(--bg3)');
+    line.setAttribute('stroke-width', '2');
+    line.id = containerId + '-edge-' + e.from + '-' + e.to;
+    svg.appendChild(line);
+  });
+  container.appendChild(svg);
+
+  // Draw nodes
+  nodes.forEach(function(n, i) {
+    var div = document.createElement('div');
+    div.className = 'tree-node ' + n.cls;
+    div.textContent = n.val;
+    div.style.left = (n.x - half) + 'px';
+    div.style.top = (n.y - half) + 'px';
+    div.id = containerId + '-node-' + i;
+    div.dataset.idx = i;
+    if (opts.onClick) {
+      div.onclick = function() { opts.onClick(n, i, nodes, edges); };
+    }
+    container.appendChild(div);
+  });
+
+  return { nodes: nodes, edges: edges };
+}
+
+
+// ═══ Progress & Nav ═══
+window.addEventListener('scroll', function() {
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('prog').style.width = (window.scrollY / h * 100) + '%';
+  document.getElementById('scrollTop').classList.toggle('show', window.scrollY > 500);
+  document.querySelectorAll('.section').forEach(function(s) {
+    var a = document.querySelector('.topnav a[href="#' + s.id + '"]');
+    if (!a) return;
+    var r = s.getBoundingClientRect();
+    a.classList.toggle('active', r.top < 180 && r.bottom > 180);
+  });
+});
+
+
+// ═══════════════════════════════════════
+// SECTION: WHAT IS A TREE — Click Demo
+// ═══════════════════════════════════════
+
+(function() {
+  var treeData = {
+    val: 10, id: 0,
+    left: {
+      val: 5, id: 1,
+      left: { val: 3, id: 3, left: { val: 1, id: 7, left: null, right: null }, right: { val: 4, id: 8, left: null, right: null } },
+      right: { val: 7, id: 4, left: null, right: null }
+    },
+    right: {
+      val: 15, id: 2,
+      left: { val: 12, id: 5, left: null, right: null },
+      right: { val: 20, id: 6, left: null, right: null }
+    }
+  };
+
+  var parentMap = { 0: null, 1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2, 7: 3, 8: 3 };
+  var childMap = { 0: [1, 2], 1: [3, 4], 2: [5, 6], 3: [7, 8], 4: [], 5: [], 6: [], 7: [], 8: [] };
+  var vals = { 0: 10, 1: 5, 2: 15, 3: 3, 4: 7, 5: 12, 6: 20, 7: 1, 8: 4 };
+
+  function render(activeIdx) {
+    function setClass(item, idx) {
+      if (!item) return;
+      item.cls = idx === activeIdx ? 'tn-active' : 'tn-default';
+      if (item.left) setClass(item.left, item.left.id);
+      if (item.right) setClass(item.right, item.right.id);
+    }
+    setClass(treeData, treeData.id);
+
+    buildTreeLayout(treeData, 'whatTree', {
+      onClick: function(n) {
+        render(n.id);
+        var p = parentMap[n.id];
+        var ch = childMap[n.id];
+        var info = '<strong style="color:var(--green);">Node ' + n.val + '</strong> — ';
+        if (p === null) info += 'Root (no parent). ';
+        else info += 'Parent: ' + vals[p] + '. ';
+        if (ch.length === 0) info += 'Leaf node (no children). ';
+        else info += 'Children: ' + ch.map(function(c) { return vals[c]; }).join(', ') + '. ';
+        var depth = 0; var tmp = n.id; while (parentMap[tmp] !== null) { depth++; tmp = parentMap[tmp]; }
+        info += 'Depth: ' + depth + '.';
+        document.getElementById('whatTreeMsg').innerHTML = info;
+      }
+    });
+  }
+  render(-1);
+})();
+
+
+// ═══════════════════════════════════════
+// SECTION: TERMINOLOGY — Interactive
+// ═══════════════════════════════════════
+
+(function() {
+  var treeData = {
+    val: 'A', id: 0,
+    left: {
+      val: 'B', id: 1,
+      left: { val: 'D', id: 3, left: { val: 'H', id: 7, left: null, right: null }, right: null },
+      right: { val: 'E', id: 4, left: null, right: null }
+    },
+    right: {
+      val: 'C', id: 2,
+      left: { val: 'F', id: 5, left: null, right: null },
+      right: { val: 'G', id: 6, left: null, right: null }
+    }
+  };
+
+  var terms = {
+    0: 'Root — The topmost node. Depth 0. Height 3. Parent of B and C.',
+    1: 'Internal node — Has children (D, E). Depth 1. Sibling of C.',
+    2: 'Internal node — Has children (F, G). Depth 1. Sibling of B.',
+    3: 'Internal node — Has child H. Depth 2.',
+    4: 'Leaf — No children. Depth 2. Sibling of D.',
+    5: 'Leaf — No children. Depth 2. Sibling of G.',
+    6: 'Leaf — No children. Depth 2. Sibling of F.',
+    7: 'Leaf — Deepest node. Depth 3. The tree\'s height = 3.'
+  };
+
+  function render(activeIdx) {
+    function setClass(item) {
+      if (!item) return;
+      item.cls = item.id === activeIdx ? 'tn-active' : 'tn-default';
+      setClass(item.left); setClass(item.right);
+    }
+    setClass(treeData);
+
+    buildTreeLayout(treeData, 'termsTree', {
+      onClick: function(n) {
+        render(n.id);
+        document.getElementById('termsMsg').innerHTML = '<strong style="color:var(--green);">Node ' + n.val + ':</strong> ' + (terms[n.id] || '');
+      }
+    });
+  }
+  render(-1);
+})();
+
+
+// ═══════════════════════════════════════
+// SECTION: BST SEARCH
+// ═══════════════════════════════════════
+
+var bstData = {
+  val: 8, id: 0,
+  left: {
+    val: 4, id: 1,
+    left: { val: 2, id: 3, left: { val: 1, id: 7, left: null, right: null }, right: { val: 3, id: 8, left: null, right: null } },
+    right: { val: 7, id: 4, left: { val: 5, id: 9, left: null, right: null }, right: null }
+  },
+  right: {
+    val: 12, id: 2,
+    left: { val: 10, id: 5, left: null, right: { val: 11, id: 10, left: null, right: null } },
+    right: { val: 14, id: 6, left: { val: 13, id: 11, left: null, right: null }, right: null }
+  }
+};
+
+var bstSearchTimer;
+function bstSearchReset() {
+  clearInterval(bstSearchTimer);
+  function resetCls(n) { if (!n) return; n.cls = 'tn-default'; resetCls(n.left); resetCls(n.right); }
+  resetCls(bstData);
+  buildTreeLayout(bstData, 'bstSearchTree', { levelGap: 56 });
+  document.getElementById('bstSearchMsg').textContent = 'Click a value to search for it';
+  document.getElementById('bstSteps').textContent = '0';
+  document.getElementById('bstCompare').textContent = '-';
+}
+
+function bstSearch(target) {
+  bstSearchReset();
+  var path = [];
+  function findPath(node) {
+    if (!node) { path.push({ node: null, found: false }); return; }
+    path.push({ node: node, found: node.val === target });
+    if (node.val === target) return;
+    if (target < node.val) findPath(node.left);
+    else findPath(node.right);
+  }
+  findPath(bstData);
+
+  var step = 0;
+  document.getElementById('bstSearchMsg').textContent = 'Searching for ' + target + '...';
+  bstSearchTimer = setInterval(function() {
+    if (step >= path.length) { clearInterval(bstSearchTimer); return; }
+    var p = path[step];
+    if (!p.node) {
+      document.getElementById('bstSearchMsg').innerHTML = '<span style="color:var(--red);font-weight:700;">Not found! ' + target + ' is not in this BST.</span>';
+      clearInterval(bstSearchTimer);
+      return;
+    }
+    // Mark previous as visited
+    for (var i = 0; i < step; i++) if (path[i].node) path[i].node.cls = 'tn-visited';
+    p.node.cls = p.found ? 'tn-found' : 'tn-current';
+    document.getElementById('bstSteps').textContent = step + 1;
+    document.getElementById('bstCompare').textContent = target + ' vs ' + p.node.val;
+
+    if (p.found) {
+      document.getElementById('bstSearchMsg').innerHTML = '<span style="color:var(--green);font-weight:700;">Found ' + target + ' in ' + (step + 1) + ' steps!</span>';
+      clearInterval(bstSearchTimer);
+    } else {
+      var dir = target < p.node.val ? 'LEFT' : 'RIGHT';
+      document.getElementById('bstSearchMsg').textContent = target + (target < p.node.val ? ' < ' : ' > ') + p.node.val + ' → go ' + dir;
+    }
+
+    buildTreeLayout(bstData, 'bstSearchTree', { levelGap: 56 });
+    step++;
+  }, 700);
+}
+bstSearchReset();
+
+
+// ═══════════════════════════════════════
+// SECTION: TRAVERSALS
+// ═══════════════════════════════════════
+
+var travData = {
+  val: 10, id: 0,
+  left: {
+    val: 5, id: 1,
+    left: { val: 3, id: 3, left: null, right: null },
+    right: { val: 7, id: 4, left: null, right: null }
+  },
+  right: {
+    val: 15, id: 2,
+    left: { val: 12, id: 5, left: null, right: null },
+    right: { val: 20, id: 6, left: null, right: null }
+  }
+};
+
+var travTimer, travVisited;
+
+function travReset() {
+  clearInterval(travTimer);
+  travVisited = [];
+  function resetCls(n) { if (!n) return; n.cls = 'tn-default'; resetCls(n.left); resetCls(n.right); }
+  resetCls(travData);
+  buildTreeLayout(travData, 'travTree', {});
+  document.getElementById('travOrder').innerHTML = '';
+  document.getElementById('travMsg').textContent = 'Choose a traversal order';
+  document.getElementById('travLabel').textContent = 'DFS Traversals';
+}
+
+function travRun(type) {
+  travReset();
+  var order = [];
+
+  function inorder(n) { if (!n) return; inorder(n.left); order.push(n); inorder(n.right); }
+  function preorder(n) { if (!n) return; order.push(n); preorder(n.left); preorder(n.right); }
+  function postorder(n) { if (!n) return; postorder(n.left); postorder(n.right); order.push(n); }
+
+  if (type === 'inorder') { inorder(travData); document.getElementById('travLabel').textContent = 'Inorder: L → Root → R'; }
+  else if (type === 'preorder') { preorder(travData); document.getElementById('travLabel').textContent = 'Preorder: Root → L → R'; }
+  else { postorder(travData); document.getElementById('travLabel').textContent = 'Postorder: L → R → Root'; }
+
+  var step = 0;
+  travTimer = setInterval(function() {
+    if (step >= order.length) {
+      clearInterval(travTimer);
+      document.getElementById('travMsg').innerHTML = '<span style="color:var(--green);font-weight:700;">Complete! ' + type.charAt(0).toUpperCase() + type.slice(1) + ' traversal done.</span>';
+      return;
+    }
+    // Mark previous as visited
+    for (var i = 0; i < step; i++) order[i].cls = 'tn-visited';
+    order[step].cls = 'tn-active';
+    buildTreeLayout(travData, 'travTree', {});
+
+    var out = document.getElementById('travOrder');
+    var span = document.createElement('span');
+    span.className = 'order-item oi-active';
+    span.textContent = order[step].val;
+    out.appendChild(span);
+    // Color previous items
+    var items = out.querySelectorAll('.order-item');
+    for (var j = 0; j < items.length - 1; j++) items[j].className = 'order-item oi-visited';
+
+    document.getElementById('travMsg').textContent = 'Visiting node ' + order[step].val + ' (step ' + (step + 1) + '/' + order.length + ')';
+    step++;
+  }, 600);
+}
+travReset();
+
+
+// ═══════════════════════════════════════
+// SECTION: BFS
+// ═══════════════════════════════════════
+
+var bfsData = {
+  val: 1, id: 0,
+  left: {
+    val: 2, id: 1,
+    left: { val: 4, id: 3, left: null, right: null },
+    right: { val: 5, id: 4, left: null, right: null }
+  },
+  right: {
+    val: 3, id: 2,
+    left: { val: 6, id: 5, left: null, right: null },
+    right: { val: 7, id: 6, left: null, right: null }
+  }
+};
+
+var bfsQueue2, bfsVisited2, bfsTimer2, bfsCurrLevel;
+
+function bfsReset() {
+  clearInterval(bfsTimer2);
+  bfsQueue2 = [];
+  bfsVisited2 = [];
+  bfsCurrLevel = -1;
+  function resetCls(n) { if (!n) return; n.cls = 'tn-default'; resetCls(n.left); resetCls(n.right); }
+  resetCls(bfsData);
+  buildTreeLayout(bfsData, 'bfsTree', {});
+  document.getElementById('bfsOrder').innerHTML = '';
+  document.getElementById('bfsMsg').textContent = 'Click "Run BFS" to watch level-order traversal';
+  document.getElementById('bfsLevel').textContent = '-';
+  document.getElementById('bfsVisited').textContent = '0';
+  document.getElementById('bfsQueue').textContent = '-';
+}
+
+// For BFS we need to flatten the tree to access nodes by id
+var bfsNodeMap = {};
+(function flattenBfs(n, depth) {
+  if (!n) return;
+  bfsNodeMap[n.id] = { node: n, depth: depth, children: [] };
+  if (n.left) { bfsNodeMap[n.id].children.push(n.left.id); flattenBfs(n.left, depth + 1); }
+  if (n.right) { bfsNodeMap[n.id].children.push(n.right.id); flattenBfs(n.right, depth + 1); }
+})(bfsData, 0);
+
+function bfsInitQueue() {
+  if (bfsQueue2.length === 0 && bfsVisited2.length === 0) {
+    bfsQueue2.push(bfsData.id);
+  }
+}
+
+function bfsStep() {
+  bfsInitQueue();
+  if (bfsQueue2.length === 0) {
+    document.getElementById('bfsMsg').innerHTML = '<span style="color:var(--green);font-weight:700;">BFS Complete! All nodes visited level by level.</span>';
+    return;
+  }
+
+  var id = bfsQueue2.shift();
+  var info = bfsNodeMap[id];
+  bfsVisited2.push(id);
+
+  // Mark visited
+  info.node.cls = 'tn-active';
+  // Mark already-visited
+  bfsVisited2.forEach(function(vid) {
+    if (vid !== id) bfsNodeMap[vid].node.cls = 'tn-visited';
+  });
+  // Enqueue children
+  info.children.forEach(function(cid) { bfsQueue2.push(cid); });
+
+  buildTreeLayout(bfsData, 'bfsTree', {});
+
+  // Update output
+  var out = document.getElementById('bfsOrder');
+  var span = document.createElement('span');
+  span.className = 'order-item oi-active';
+  span.textContent = info.node.val;
+  out.appendChild(span);
+  var items = out.querySelectorAll('.order-item');
+  for (var j = 0; j < items.length - 1; j++) items[j].className = 'order-item oi-visited';
+
+  document.getElementById('bfsLevel').textContent = info.depth;
+  document.getElementById('bfsVisited').textContent = bfsVisited2.length;
+  document.getElementById('bfsQueue').textContent = bfsQueue2.length;
+  document.getElementById('bfsMsg').textContent = 'Visited node ' + info.node.val + ' (level ' + info.depth + '). Queue: ' + bfsQueue2.map(function(q) { return bfsNodeMap[q].node.val; }).join(', ');
+}
+
+function bfsAuto() {
+  bfsReset();
+  bfsInitQueue();
+  bfsTimer2 = setInterval(function() {
+    if (bfsQueue2.length === 0) {
+      clearInterval(bfsTimer2);
+      document.getElementById('bfsMsg').innerHTML = '<span style="color:var(--green);font-weight:700;">BFS Complete! All nodes visited level by level.</span>';
+      bfsVisited2.forEach(function(vid) { bfsNodeMap[vid].node.cls = 'tn-visited'; });
+      buildTreeLayout(bfsData, 'bfsTree', {});
+      return;
+    }
+    bfsStep();
+  }, 700);
+}
+bfsReset();
+
+
+// ═══════════════════════════════════════
+// SECTION: BALANCED vs UNBALANCED demo
+// ═══════════════════════════════════════
+
+(function() {
+  var balanced = {
+    val: 8, left: { val: 4, left: { val: 2, left: null, right: null }, right: { val: 6, left: null, right: null } },
+    right: { val: 12, left: { val: 10, left: null, right: null }, right: { val: 14, left: null, right: null } }
+  };
+  buildTreeLayout(balanced, 'balancedDemo', { nodeSize: 38, levelGap: 50 });
+
+  var unbalanced = {
+    val: 1, left: null,
+    right: { val: 2, left: null,
+      right: { val: 3, left: null,
+        right: { val: 4, left: null,
+          right: { val: 5, left: null, right: null }
+        }
+      }
+    }
+  };
+
+  // Manual render for the chain
+  var c = document.getElementById('unbalancedDemo');
+  c.innerHTML = '';
+  c.style.position = 'relative';
+  var vals = [1, 2, 3, 4, 5];
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+  for (var i = 0; i < vals.length; i++) {
+    var div = document.createElement('div');
+    div.className = 'tree-node tn-hot';
+    div.textContent = vals[i];
+    div.style.cssText = 'left:' + (60 + i * 12) + 'px;top:' + (10 + i * 34) + 'px;width:36px;height:36px;font-size:13px;';
+    c.appendChild(div);
+    if (i > 0) {
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', 60 + (i - 1) * 12 + 18);
+      line.setAttribute('y1', 10 + (i - 1) * 34 + 36);
+      line.setAttribute('x2', 60 + i * 12 + 18);
+      line.setAttribute('y2', 10 + i * 34);
+      line.setAttribute('stroke', 'var(--red)');
+      line.setAttribute('stroke-width', '2');
+      svg.appendChild(line);
+    }
+  }
+  c.appendChild(svg);
+})();
+
+
+// ═══════════════════════════════════════
+// SECTION: HEAP — Array Mapping
+// ═══════════════════════════════════════
+
+(function() {
+  var heapVals = [1, 3, 5, 7, 9, 8, 6];
+  var heapTree = {
+    val: 1,
+    left: {
+      val: 3,
+      left: { val: 7, left: null, right: null },
+      right: { val: 9, left: null, right: null }
+    },
+    right: {
+      val: 5,
+      left: { val: 8, left: null, right: null },
+      right: { val: 6, left: null, right: null }
+    }
+  };
+  buildTreeLayout(heapTree, 'heapTree', { nodeSize: 40, levelGap: 50 });
+
+  var c = document.getElementById('heapArray');
+  c.innerHTML = '';
+  heapVals.forEach(function(v, i) {
+    c.innerHTML += '<div class="cell c-highlight" style="width:48px;height:48px;">' + v + '<span class="sub-label">[' + i + ']</span></div>';
+  });
+})();
+
+
+// ═══════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════
+
+(function() {
+  var q = [
+    { code: 'What is the time complexity of searching in a balanced BST?', ans: 'O(log n)', why: 'Each comparison eliminates half the tree. Like binary search on a sorted array.' },
+    { code: 'Inorder traversal of a BST gives you...?', ans: 'Sorted order', why: 'Left → Root → Right on a BST visits values smallest to largest.' },
+    { code: 'What data structure does BFS use?', ans: 'Queue (FIFO)', why: 'BFS processes nodes level by level. A queue ensures first-in-first-out order.' },
+    { code: 'What is a leaf node?', ans: 'A node with no children', why: 'Both left and right pointers are null. It\'s at the "bottom" of the tree.' },
+    { code: 'Maximum nodes in a binary tree of height h?', ans: '2^(h+1) - 1', why: 'Each level doubles: 1, 2, 4, 8... = 2^0 + 2^1 + ... + 2^h = 2^(h+1) - 1.' },
+    { code: 'How do you find the LCA of two nodes in a binary tree?', ans: 'DFS: if left and right both found, current is LCA', why: 'If p is in left subtree and q is in right, the current node must be where their paths diverge — the LCA.' },
+    { code: 'What happens if you insert [1,2,3,4,5] into a BST?', ans: 'It becomes a linked list (skewed tree)', why: 'Every value is larger than the last, so everything goes right. Height = n, not log n.' },
+    { code: 'Preorder traversal visits nodes in what order?', ans: 'Root → Left → Right', why: '"Pre" means the root is processed BEFORE (pre) its children.' },
+    { code: 'How is a heap stored efficiently?', ans: 'As an array', why: 'Complete binary tree has no gaps, so array indices map perfectly: parent = (i-1)/2, children = 2i+1, 2i+2.' },
+    { code: 'How do you validate if a tree is a BST?', ans: 'Pass min/max range down recursively', why: 'Each node must be within a valid range. Left child narrows the max, right child narrows the min.' },
+    { code: 'Diameter of a binary tree is?', ans: 'Longest path between any two nodes', why: 'At each node, the path through it = leftHeight + rightHeight. Track the global maximum.' },
+    { code: 'DFS uses which data structure internally?', ans: 'Stack (call stack or explicit)', why: 'DFS goes deep before wide. The call stack (recursion) or an explicit stack manages the backtracking.' },
+  ];
+  document.getElementById('quizArea').innerHTML = q.map(function(x, i) {
+    return '<div style="background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:14px;">' +
+      '<div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;">QUESTION ' + (i + 1) + ' / ' + q.length + '</div>' +
+      '<div style="font-size:15px;font-weight:600;color:var(--fg);margin-bottom:12px;">' + x.code + '</div>' +
+      '<button class="btn btn-sm" onclick="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">Show Answer</button>' +
+      '<div style="display:none;margin-top:8px;animation:slideIn .3s;">' +
+      '<div style="font-size:18px;font-weight:800;color:var(--green);">' + x.ans + '</div>' +
+      '<div style="font-size:13px;color:var(--fg3);margin-top:4px;">' + x.why + '</div>' +
+      '</div></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

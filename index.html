@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Deep Dive — Learn Data Structures & Algorithms</title>
+<meta name="description" content="Learn DSA with interactive visualizations, simple explanations, and Gruvbox vibes.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<header class="navbar">
+  <a href="index.html" class="logo">DSA Deep Dive</a>
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    <a href="topics/big-o/index.html">Big O</a>
+    <a href="#topics">Topics</a>
+    <a href="#roadmap">Roadmap</a>
+  </nav>
+</header>
+
+<div class="container">
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <h1>Master DSA<br>One Topic at a Time</h1>
+  <p class="subtitle">Interactive deep dives into every Data Structure and Algorithm you need for coding interviews. Simple words, real visuals, zero fluff.</p>
+  <div class="badge-row">
+    <span class="badge"><span class="dot" style="background:var(--green);"></span> 18+ Topics</span>
+    <span class="badge"><span class="dot" style="background:var(--yellow);"></span> Interactive Visuals</span>
+    <span class="badge"><span class="dot" style="background:var(--blue);"></span> Interview Ready</span>
+    <span class="badge"><span class="dot" style="background:var(--purple);"></span> Gruvbox Theme</span>
+  </div>
+</section>
+
+<!-- ── Foundations ── -->
+<div id="topics">
+  <div class="section-title">
+    <span>Foundations</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="topic-grid">
+    <!-- Big O — READY -->
+    <a href="topics/big-o/index.html" class="topic-card" style="--card-color: var(--yellow);">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--yellow),var(--orange));"></div>
+      <div class="card-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">O</div>
+      <h3>Big O Notation</h3>
+      <p>Understand how fast your code runs. Every complexity explained with real-world analogies and animated visuals.</p>
+      <div class="card-footer">
+        <span class="tag tag-ready">Ready</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Arrays — READY -->
+    <a href="topics/arrays/index.html" class="topic-card" style="--card-color: var(--blue);">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--blue),var(--aqua));"></div>
+      <div class="card-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">[]</div>
+      <h3>Arrays</h3>
+      <p>Two pointers, sliding window, prefix sum, Kadane's, Dutch flag. The building block of everything else in DSA.</p>
+      <div class="card-footer">
+        <span class="tag tag-ready">Ready</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Strings — READY -->
+    <a href="topics/strings/index.html" class="topic-card" style="--card-color: var(--green);">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--aqua),var(--green));"></div>
+      <div class="card-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">""</div>
+      <h3>Strings</h3>
+      <p>Palindromes, anagrams, sliding window, pattern matching, immutability traps. Every string trick for interviews.</p>
+      <div class="card-footer">
+        <span class="tag tag-ready">Ready</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Hash Maps -->
+    <a href="topics/hash-maps/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">{}</div>
+      <h3>Hash Maps</h3>
+      <p>Your best friend in interviews. O(1) lookups, counting, and the Two Sum pattern.</p>
+      <div class="card-footer">
+        <span class="tag tag-soon">Coming Soon</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ── Data Structures ── -->
+<div>
+  <div class="section-title">
+    <span>Data Structures</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="topic-grid">
+    <a href="topics/linked-lists/index.html" class="topic-card" style="--card-color: var(--orange);">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--orange),var(--yellow));"></div>
+      <div class="card-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">→</div>
+      <h3>Linked Lists</h3>
+      <p>Nodes, pointers, fast & slow, reversing, merging, cycle detection, LRU cache. The chain interviews love.</p>
+      <div class="card-footer"><span class="tag tag-ready">Ready</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/stacks/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--green),var(--aqua));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">▤</div>
+      <h3>Stacks</h3>
+      <p>LIFO, matching brackets, monotonic stacks. Simple but powerful.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/queues/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">⟵⟶</div>
+      <h3>Queues</h3>
+      <p>FIFO, deques, priority queues. Essential for BFS and scheduling problems.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/trees/index.html" class="topic-card" style="--card-color: var(--green);">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--green),var(--aqua));"></div>
+      <div class="card-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🌳</div>
+      <h3>Trees</h3>
+      <p>Binary trees, BST, traversals, BFS/DFS patterns, heaps, balancing. The hierarchical king of DSA.</p>
+      <div class="card-footer"><span class="tag tag-ready">Ready</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/heaps/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--red),var(--orange));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">⛰</div>
+      <h3>Heaps</h3>
+      <p>Min/max heaps, priority queues, Kth largest, merging K sorted lists.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/graphs/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--purple),var(--red));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">◉</div>
+      <h3>Graphs</h3>
+      <p>DFS, BFS, topological sort, Union-Find, Dijkstra. Nodes and edges everywhere.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/tries/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--aqua),var(--blue));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">T</div>
+      <h3>Tries</h3>
+      <p>Prefix trees for autocomplete, spell check, and word search problems.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- ── Algorithms ── -->
+<div id="roadmap">
+  <div class="section-title">
+    <span>Algorithms</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="topic-grid">
+    <a href="topics/sorting/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--orange),var(--red));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">⇅</div>
+      <h3>Sorting</h3>
+      <p>Bubble, merge, quick, heap sort. Know when to use which and their Big O.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/binary-search/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--green),var(--yellow));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">÷</div>
+      <h3>Binary Search</h3>
+      <p>Cut in half each time. Works on sorted arrays and on the answer itself.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/recursion/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--blue),var(--green));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">∞</div>
+      <h3>Recursion & Backtracking</h3>
+      <p>Functions calling themselves. Subsets, permutations, N-Queens, Sudoku solver.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/dynamic-programming/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--yellow),var(--purple));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">DP</div>
+      <h3>Dynamic Programming</h3>
+      <p>Remember small answers, build big answers. The hardest topic made simple.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/greedy/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--red),var(--purple));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">★</div>
+      <h3>Greedy Algorithms</h3>
+      <p>Pick the best option now and hope for the best. Fast when it works.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/bit-manipulation/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--aqua),var(--purple));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">01</div>
+      <h3>Bit Manipulation</h3>
+      <p>AND, OR, XOR magic. Find the single number, count bits, reverse bits.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+
+    <a href="topics/intervals/index.html" class="topic-card">
+      <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--purple),var(--orange));opacity:0.5;"></div>
+      <div class="card-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">⟨⟩</div>
+      <h3>Intervals</h3>
+      <p>Merge, insert, find overlaps. Sort by start and sweep through.</p>
+      <div class="card-footer"><span class="tag tag-soon">Coming Soon</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- ── 8-Week Roadmap ── -->
+<div>
+  <div class="section-title">
+    <span>8-Week Study Plan</span>
+    <span class="line"></span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:80px;">
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--yellow);">
+      <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:4px;">WEEK 1</div>
+      <div style="font-weight:700;margin-bottom:4px;">Foundations</div>
+      <div style="font-size:13px;color:var(--fg4);">Arrays, Strings, Hash Maps — 3 easy/day</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--orange);">
+      <div style="font-size:12px;color:var(--orange);font-weight:700;margin-bottom:4px;">WEEK 2</div>
+      <div style="font-weight:700;margin-bottom:4px;">Search & Pointers</div>
+      <div style="font-size:13px;color:var(--fg4);">Two Pointers, Sliding Window, Binary Search</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--green);">
+      <div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:4px;">WEEK 3</div>
+      <div style="font-weight:700;margin-bottom:4px;">Linear Structures</div>
+      <div style="font-size:13px;color:var(--fg4);">Linked Lists, Stacks, Queues</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--blue);">
+      <div style="font-size:12px;color:var(--blue);font-weight:700;margin-bottom:4px;">WEEK 4</div>
+      <div style="font-weight:700;margin-bottom:4px;">Trees</div>
+      <div style="font-size:13px;color:var(--fg4);">Binary Trees, BST, BFS, DFS — 2-3 medium</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--purple);">
+      <div style="font-size:12px;color:var(--purple);font-weight:700;margin-bottom:4px;">WEEK 5</div>
+      <div style="font-weight:700;margin-bottom:4px;">Advanced Structures</div>
+      <div style="font-size:13px;color:var(--fg4);">Heaps, Graphs — 2-3 medium</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--red);">
+      <div style="font-size:12px;color:var(--red);font-weight:700;margin-bottom:4px;">WEEK 6</div>
+      <div style="font-weight:700;margin-bottom:4px;">Dynamic Programming</div>
+      <div style="font-size:13px;color:var(--fg4);">1D DP, 2D DP, Knapsack — take your time</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--aqua);">
+      <div style="font-size:12px;color:var(--aqua);font-weight:700;margin-bottom:4px;">WEEK 7</div>
+      <div style="font-weight:700;margin-bottom:4px;">Pattern Mastery</div>
+      <div style="font-size:13px;color:var(--fg4);">DP continued, Backtracking, Greedy</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--bg2);border-radius:12px;padding:20px;border-left:4px solid var(--dk-yellow);">
+      <div style="font-size:12px;color:var(--dk-yellow);font-weight:700;margin-bottom:4px;">WEEK 8</div>
+      <div style="font-weight:700;margin-bottom:4px;">Review & Mock</div>
+      <div style="font-size:13px;color:var(--fg4);">Tries, Bits, Intervals + Mock Interviews</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p>Built with <span class="heart">♥</span> for DSA learners — Gruvbox Edition</p>
+  <p style="margin-top:6px;font-size:12px;">Made by Xasanov</p>
+</footer>
+
+</body>
+</html>

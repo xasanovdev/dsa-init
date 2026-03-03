@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strings — DSA Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+/* ── String-specific styles (using GREEN as primary accent) ── */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--aqua),var(--blue));transition:width .15s;}
+
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--green);}
+
+.page-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+
+.page-hero{text-align:center;padding:50px 20px 40px;}
+.page-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--green),var(--aqua));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.page-hero .sub{color:var(--fg3);font-size:18px;max-width:600px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(184,187,38,0.1);border:1px solid rgba(184,187,38,0.2);color:var(--green);font-size:13px;font-weight:600;}
+
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.section-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;}
+.section-label h2{font-size:28px;font-weight:800;}
+
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:30px;margin-bottom:22px;}
+.card h3{font-size:19px;margin-bottom:14px;color:var(--green);display:flex;align-items:center;gap:10px;}
+.card p,.card li{color:var(--fg3);margin-bottom:10px;}
+.card strong{color:var(--fg);}
+.card ul{padding-left:20px;}
+
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:26px;margin:16px 0;position:relative;overflow:hidden;}
+.viz-tag{position:absolute;top:10px;right:14px;font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+
+.cells{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:8px 0;}
+.cell{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transition:all .35s;position:relative;}
+.cell .sub-label{position:absolute;bottom:-20px;font-size:10px;color:var(--fg4);font-weight:400;white-space:nowrap;}
+.c-default{background:var(--bg2);color:var(--fg);}
+.c-active{background:var(--green);color:var(--bg);transform:scale(1.1);box-shadow:0 0 20px rgba(184,187,38,0.3);}
+.c-done{background:var(--aqua);color:var(--bg);}
+.c-skip{background:var(--bg2);color:var(--fg4);opacity:.35;}
+.c-highlight{background:var(--blue);color:var(--bg);}
+.c-warn{background:var(--orange);color:var(--bg);}
+.c-hot{background:var(--red);color:var(--bg);}
+.c-purple{background:var(--purple);color:var(--bg);}
+.c-aqua{background:var(--aqua);color:var(--bg);}
+.c-empty{background:var(--bg2);color:var(--bg3);border:2px dashed var(--bg3);}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.btn{padding:8px 20px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.2s;user-select:none;}
+.btn:hover{background:var(--green);color:var(--bg);border-color:var(--green);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn.active{background:var(--green);color:var(--bg);border-color:var(--green);}
+
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:20px 24px;margin:14px 0;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:'Fira Code','Consolas',monospace;color:var(--fg2);}
+.code-line{transition:background .3s;padding:2px 4px;border-radius:4px;}
+.code-line.lit{background:rgba(184,187,38,0.08);}
+pre code{background:none;padding:0;}
+
+.tip{background:rgba(184,187,38,0.08);border:1px solid rgba(184,187,38,0.2);border-radius:12px;padding:18px 22px;margin:16px 0;font-size:14px;}
+.warn-tip{background:rgba(254,128,25,0.08);border-color:rgba(254,128,25,0.2);}
+.red-tip{background:rgba(251,73,52,0.08);border-color:rgba(251,73,52,0.2);}
+
+.analogy{background:linear-gradient(135deg,rgba(211,134,155,0.06),rgba(184,187,38,0.06));border:1px solid rgba(184,187,38,0.15);border-radius:14px;padding:22px 26px;margin:18px 0;}
+.analogy .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);font-weight:700;margin-bottom:8px;}
+
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.stat{flex:1;min-width:100px;background:var(--bg2);border-radius:12px;padding:14px 18px;text-align:center;}
+.stat .num{font-size:26px;font-weight:800;color:var(--green);}
+.stat .label{font-size:12px;color:var(--fg4);margin-top:2px;}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-weight:700;color:var(--green);border-bottom:2px solid var(--bg3);}
+td{padding:10px 16px;border-bottom:1px solid var(--bg2);color:var(--fg3);}
+tr:hover td{background:rgba(184,187,38,0.04);}
+
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.b-fast{background:rgba(184,187,38,0.15);color:var(--green);}
+.b-ok{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.b-mid{background:rgba(254,128,25,0.15);color:var(--orange);}
+.b-slow{background:rgba(251,73,52,0.15);color:var(--red);}
+
+.char-inspector{display:flex;gap:3px;flex-wrap:wrap;padding:10px 0;}
+.char-box{width:45px;height:45px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;background:var(--bg2);color:var(--fg);cursor:pointer;transition:.2s;font-size:16px;}
+.char-box:hover{background:var(--green);color:var(--bg);transform:scale(1.1);}
+.ascii-info{background:var(--bg2);border-radius:10px;padding:12px 16px;margin-top:12px;font-family:'Fira Code',monospace;font-size:13px;color:var(--fg2);}
+
+.freq-bars{display:flex;gap:8px;align-items:flex-end;height:180px;padding:20px 10px;background:var(--bg);border-radius:10px;border:1px solid var(--bg2);}
+.freq-bar{flex:1;background:var(--green);border-radius:6px;transition:.3s;position:relative;min-height:10px;}
+.freq-bar .label{position:absolute;bottom:-25px;font-size:11px;color:var(--fg4);text-align:center;width:100%;}
+.freq-bar.mismatch{background:var(--red);}
+
+.pattern-card{background:var(--bg2);border-radius:12px;padding:22px;margin-bottom:14px;border-left:4px solid var(--green);}
+.pattern-card h4{font-weight:700;margin-bottom:6px;font-size:16px;color:var(--green);}
+.pattern-card p{color:var(--fg3);font-size:14px;margin-bottom:0;}
+
+.step-indicator{display:flex;justify-content:center;gap:6px;margin:12px 0;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);transition:.3s;}
+.step-dot.active{background:var(--green);box-shadow:0 0 8px rgba(184,187,38,0.4);}
+.step-dot.done{background:var(--aqua);}
+
+@keyframes bounce-right{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+.arrow-bounce{display:inline-block;animation:bounce-right 1s infinite;}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 0 rgba(184,187,38,0);}50%{box-shadow:0 0 24px rgba(184,187,38,0.3);}}
+.glow{animation:glow-pulse 2s infinite;}
+
+.scroll-top{position:fixed;bottom:28px;right:28px;width:46px;height:46px;border-radius:50%;background:var(--green);color:var(--bg);border:none;cursor:pointer;font-size:22px;display:none;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(184,187,38,0.25);font-family:inherit;}
+.scroll-top.show{display:flex;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+.pointer-viz{display:flex;gap:2px;padding:10px 0;}
+.ptr-cell{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;background:var(--bg2);color:var(--fg);font-size:13px;transition:.2s;position:relative;}
+.ptr-cell.left-ptr{background:var(--green);}
+.ptr-cell.right-ptr{background:var(--blue);}
+.ptr-cell.both{background:var(--purple);}
+
+@media(max-width:700px){
+  .page-hero h1{font-size:32px;}
+  .card{padding:20px;}
+  .stat-row{flex-direction:column;}
+  .two-col{grid-template-columns:1fr;}
+  .topnav{top:60px;}
+  .cell{width:40px;height:40px;font-size:13px;}
+  .freq-bars{height:140px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Website Navbar -->
+<div class="navbar">
+  <a href="../../index.html" class="logo">DSA Deep Dive</a>
+  <nav>
+    <a href="../../index.html">Home</a>
+    <a href="#" class="active">Strings</a>
+  </nav>
+</div>
+
+<div class="progress"><div class="progress-fill" id="prog"></div></div>
+
+<nav class="topnav" id="topnav">
+  <a href="#what">What</a>
+  <a href="#immutability">Immutability</a>
+  <a href="#operations">Operations</a>
+  <a href="#palindromes">Palindromes</a>
+  <a href="#anagrams">Anagrams</a>
+  <a href="#sliding-window">Sliding Window</a>
+  <a href="#two-pointers">Two Pointers</a>
+  <a href="#builder">StringBuilder</a>
+  <a href="#pattern">Pattern Matching</a>
+  <a href="#encoding">Encoding</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#problems">Top Problems</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<div class="page-container">
+
+<!-- ══════════ HERO ══════════ -->
+<div class="page-hero">
+  <h1>Strings — The Complete Deep Dive</h1>
+  <p class="sub">Master string manipulation, from immutability traps to advanced patterns. Everything you need for interviews with interactive visualizations.</p>
+  <div class="hero-badge">DSA Chapter 3 — Strings & Character Sequences</div>
+</div>
+
+<!-- ══════════ WHAT IS A STRING ══════════ -->
+<div class="section" id="what">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">abc</div>
+    <h2>What Is a String?</h2>
+  </div>
+
+  <div class="card">
+    <h3>The One-Sentence Answer</h3>
+    <p>A string is <strong>a sequence of characters stored next to each other in memory.</strong> Just like an array, but each element is a character (letter, digit, symbol).</p>
+    <div class="analogy">
+      <div class="label">Real-World Analogy</div>
+      <p><strong>A word on paper.</strong> "HELLO" is 5 characters sitting side by side. H-E-L-L-O. You can grab any character by position: index 0 is 'H', index 3 is 'L'.</p>
+      <p>Strings and arrays are nearly identical — except strings have meaning (they spell words) and most languages treat them specially (immutability, methods, etc.).</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Character Inspector — Click to See ASCII</h3>
+    <p>Each character has an ASCII code (a number). A='65', a='97', '0'='48'. Click any character to see its code:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Click a char!</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="charInput" value="HELLO" maxlength="10" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:14px;width:100px;">
+      </div>
+      <div class="char-inspector" id="charInspector"></div>
+      <div class="ascii-info" id="asciiInfo">Click a character</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>String Fundamentals</h3>
+    <ul>
+      <li><strong>Length:</strong> Count of characters (O(1) in most languages)</li>
+      <li><strong>Index access:</strong> Get char at position — O(1)</li>
+      <li><strong>Immutable in Java, Python, JavaScript:</strong> Once created, can't change. (More on this next!)</li>
+      <li><strong>Mutable in C++, Go:</strong> Can modify characters in place</li>
+      <li><strong>Null-terminated vs length-prefixed:</strong> C uses null '\0' at end; Python stores length separately</li>
+    </ul>
+    <div class="tip"><strong>Interview fact:</strong> "String" problems are often "array problems in disguise" — use 2-pointers, sliding window, frequency arrays, etc.</div>
+  </div>
+</div>
+
+<!-- ══════════ IMMUTABILITY ══════════ -->
+<div class="section" id="immutability">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">⚠️</div>
+    <h2>Immutability — The #1 Trap</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Problem: String += in a Loop is O(n²)!</h3>
+    <p><strong>In Java, Python, JavaScript: strings are immutable.</strong> When you do <code>s += char</code>, the language creates a NEW string and copies all old characters into it. Then discards the old one.</p>
+    <div class="red-tip">
+      <strong>Wrong (O(n²)):</strong><br>
+      <code>let result = "";</code><br>
+      <code>for (let char of word) { result += char; } // Creates n strings!</code>
+    </div>
+    <div class="tip">
+      <strong>Right (O(n)):</strong><br>
+      <code>let chars = [];</code><br>
+      <code>for (let char of word) { chars.push(char); }</code><br>
+      <code>return chars.join(""); // One allocation at the end</code>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Watch the String Creation Cost</h3>
+    <div class="viz-box">
+      <div class="viz-tag">String Concatenation Demo</div>
+      <div style="text-align:center;margin:16px 0;">
+        <button class="btn" onclick="runStringConcatDemo('bad')">Build String (O(n²))</button>
+        <button class="btn" onclick="runStringConcatDemo('good')">Use Array (O(n))</button>
+      </div>
+      <div id="concatResult" style="color:var(--fg3);margin:16px 0;font-size:14px;"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="allocations">—</div><div class="label">Allocations</div></div>
+        <div class="stat"><div class="num" id="operations">—</div><div class="label">Operations</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The Takeaway</h3>
+    <ul>
+      <li><strong>Use StringBuilder (Java), list (Python), array + join (JS):</strong> Build in O(n), not O(n²)</li>
+      <li><strong>Immutability is a feature, not a bug:</strong> Makes strings safe in multithreading</li>
+      <li><strong>For interviews:</strong> Always use StringBuilder-like patterns when building strings</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ OPERATIONS & BIG O ══════════ -->
+<div class="section" id="operations">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">⏱️</div>
+    <h2>Operations & Big O Complexity</h2>
+  </div>
+
+  <div class="card">
+    <h3>String Operation Costs</h3>
+    <table>
+      <tr>
+        <th>Operation</th>
+        <th>Time</th>
+        <th>Space</th>
+        <th>Note</th>
+      </tr>
+      <tr>
+        <td>Access by index: <code>s[i]</code></td>
+        <td><span class="badge b-fast">O(1)</span></td>
+        <td>O(1)</td>
+        <td>Direct memory access</td>
+      </tr>
+      <tr>
+        <td>Length: <code>len(s)</code></td>
+        <td><span class="badge b-fast">O(1)</span></td>
+        <td>O(1)</td>
+        <td>Stored in header</td>
+      </tr>
+      <tr>
+        <td>Substring: <code>s[i:j]</code></td>
+        <td><span class="badge b-mid">O(j-i)</span></td>
+        <td>O(j-i)</td>
+        <td>Must copy chars</td>
+      </tr>
+      <tr>
+        <td>Concatenation: <code>s1 + s2</code></td>
+        <td><span class="badge b-mid">O(n+m)</span></td>
+        <td>O(n+m)</td>
+        <td>Copy both strings</td>
+      </tr>
+      <tr>
+        <td>Search: <code>s.find(t)</code></td>
+        <td><span class="badge b-mid">O(n)</span> naive</td>
+        <td>O(1)</td>
+        <td>KMP is O(n+m)</td>
+      </tr>
+      <tr>
+        <td>Replace: <code>s.replace(a,b)</code></td>
+        <td><span class="badge b-mid">O(n)</span></td>
+        <td>O(n)</td>
+        <td>Build new string</td>
+      </tr>
+      <tr>
+        <td>Comparison: <code>s1 == s2</code></td>
+        <td><span class="badge b-mid">O(n)</span></td>
+        <td>O(1)</td>
+        <td>Compare each char</td>
+      </tr>
+      <tr>
+        <td>Split: <code>s.split(',')</code></td>
+        <td><span class="badge b-mid">O(n)</span></td>
+        <td>O(k)</td>
+        <td>k = num parts</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Key Insight</h3>
+    <p><strong>Most string operations scan the entire string = O(n).</strong> This is why they're easier than graph problems but harder than array access.</p>
+    <p>The tricks in interviews are to <strong>avoid rescanning the string multiple times.</strong> Use sliding window, two pointers, frequency counting — scan once or twice, not three times!</p>
+  </div>
+</div>
+
+<!-- ══════════ PALINDROMES ══════════ -->
+<div class="section" id="palindromes">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">🔄</div>
+    <h2>Palindromes — Expand Around Center</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Golden Approach: O(n²) Time, O(1) Space</h3>
+    <p>A <strong>palindrome</strong> reads the same forwards and backwards: "racecar", "madam", "noon".</p>
+    <p><strong>Trick:</strong> For each possible center, expand outward until chars don't match. Try even-length (center between two chars) and odd-length (center on a char).</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p>Think of a mirror in the middle. Match pairs on both sides. "r|acecar" — the center is between 'a' and 'c', and they don't match, so there's no 2-char palindrome here.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Palindrome Checker</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Palindrome Detector</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="palindromeInput" value="racecar" maxlength="15" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:14px;">
+      </div>
+      <div class="pointer-viz" id="palindromeViz"></div>
+      <div style="text-align:center;color:var(--fg3);margin:16px 0;font-size:14px;" id="palindromeStatus">Check a palindrome</div>
+      <div class="controls">
+        <button class="btn" onclick="updatePalindrome()">Check</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code: Longest Palindromic Substring</h3>
+    <pre><code><span class="code-line lit">function longestPalindrome(s) {</span>
+<span class="code-line lit">  let maxLen = 0, start = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  function expandAroundCenter(left, right) {</span>
+<span class="code-line lit">    while (left >= 0 && right < s.length && s[left] === s[right]) {</span>
+<span class="code-line lit">      left--; right++;</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    return right - left - 1; // length of palindrome</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let i = 0; i < s.length; i++) {</span>
+<span class="code-line lit">    // Odd-length palindrome (center on char)</span>
+<span class="code-line lit">    let len1 = expandAroundCenter(i, i);</span>
+<span class="code-line lit">    // Even-length palindrome (center between chars)</span>
+<span class="code-line lit">    let len2 = expandAroundCenter(i, i + 1);</span>
+<span class="code-line"></span>
+<span class="code-line lit">    let len = Math.max(len1, len2);</span>
+<span class="code-line lit">    if (len > maxLen) {</span>
+<span class="code-line lit">      maxLen = len;</span>
+<span class="code-line lit">      start = i - Math.floor((len - 1) / 2);</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return s.substring(start, start + maxLen);</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ══════════ ANAGRAMS & FREQUENCY ══════════ -->
+<div class="section" id="anagrams">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">📊</div>
+    <h2>Anagrams & Frequency Counting</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Definition</h3>
+    <p><strong>Two strings are anagrams if they contain the same characters in different orders.</strong> "listen" and "silent" are anagrams.</p>
+    <p><strong>The trick:</strong> Count character frequencies. If both strings have the same frequency map, they're anagrams.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p>You have a bag of Scrabble tiles. Can you spell "silent" with the tiles from "listen"? Only if the bags have identical tiles.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Anagram Frequency Comparison</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Anagram Detector</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="str1Input" value="listen" maxlength="12" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:13px;width:120px;">
+        <span style="color:var(--fg4);margin:0 8px;">vs</span>
+        <input type="text" id="str2Input" value="silent" maxlength="12" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:13px;width:120px;">
+      </div>
+      <div style="text-align:center;color:var(--fg3);margin:12px 0;font-size:14px;" id="anagramStatus">—</div>
+      <div class="freq-bars" id="freqBars"></div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="updateAnagramFreq()">Compare</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3 Approaches</h3>
+    <div class="pattern-card">
+      <h4>Approach 1: Frequency Array (Best for ASCII)</h4>
+      <p><strong>O(n) time, O(1) space</strong> — Use an array of size 26 (for 'a'-'z') or 256 (ASCII). Count both strings, compare.</p>
+    </div>
+    <div class="pattern-card">
+      <h4>Approach 2: HashMap (Best for Unicode)</h4>
+      <p><strong>O(n) time, O(k) space</strong> (k=unique chars) — Handle any language, not just 26 letters.</p>
+    </div>
+    <div class="pattern-card">
+      <h4>Approach 3: Sort & Compare (Simple but O(n log n))</h4>
+      <p>Sort both strings. If sorted versions are equal, they're anagrams. Easy to code, slower.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDING WINDOW ══════════ -->
+<div class="section" id="sliding-window">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🪟</div>
+    <h2>Sliding Window on Strings</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Pattern: "Longest Substring Without Repeating Characters"</h3>
+    <p>Find the longest substring with no duplicate characters. Example: "abcabcbb" → "abc" (length 3).</p>
+    <p><strong>Approach:</strong> Use two pointers (left, right) forming a window. Move right to expand, move left to shrink when a duplicate is found. Track chars in a Set or frequency map.</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Sliding Window Demo</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Longest Substring No Repeating</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="slidingInput" value="abcabcbb" maxlength="16" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:14px;">
+      </div>
+      <div class="cells" id="slidingViz" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;color:var(--fg3);margin:12px 0;font-size:13px;" id="slidingStatus">—</div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="maxLen">0</div><div class="label">Max Length</div></div>
+        <div class="stat"><div class="num" id="windowSize">0</div><div class="label">Current Window</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="runSlidingWindow()">Start</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code</h3>
+    <pre><code><span class="code-line lit">function lengthOfLongestSubstring(s) {</span>
+<span class="code-line lit">  let charIndex = {}; // last seen index of each char</span>
+<span class="code-line lit">  let maxLen = 0, left = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let right = 0; right < s.length; right++) {</span>
+<span class="code-line lit">    if (charIndex[s[right]] !== undefined && charIndex[s[right]] >= left) {</span>
+<span class="code-line lit">      // Duplicate found, shrink from left</span>
+<span class="code-line lit">      left = charIndex[s[right]] + 1;</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    charIndex[s[right]] = right;</span>
+<span class="code-line lit">    maxLen = Math.max(maxLen, right - left + 1);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return maxLen;</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ══════════ TWO POINTERS ══════════ -->
+<div class="section" id="two-pointers">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">↔️</div>
+    <h2>Two Pointers on Strings</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Classic Problems</h3>
+    <ul>
+      <li><strong>Valid Palindrome:</strong> Ignore non-alphanumeric, use left & right pointers</li>
+      <li><strong>Reverse String:</strong> Two pointers start at ends, swap and move inward</li>
+      <li><strong>Reverse Words:</strong> Reverse entire string, then reverse each word</li>
+      <li><strong>Container With Most Water:</strong> Start at ends, move the shorter pointer inward</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Valid Palindrome Checker</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Two Pointers Palindrome</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="validPalinInput" value="A man, a plan, a canal: Panama" maxlength="40" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:12px;width:100%;">
+      </div>
+      <div style="color:var(--fg3);font-size:13px;margin:10px 0;">After filtering non-alphanumeric:</div>
+      <div class="pointer-viz" id="validPalinViz"></div>
+      <div style="text-align:center;color:var(--fg3);margin:12px 0;font-size:14px;" id="validPalinStatus">—</div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="checkValidPalindrome()">Check</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The Pattern: Why It Works</h3>
+    <p><strong>Two pointers eliminate redundant checks.</strong> Instead of comparing every char to every other char (O(n²)), you compare pairs moving toward the center (O(n)).</p>
+    <div class="tip">Whenever you see "palindrome", "valid", or "reverse" in a string problem, think two pointers first.</div>
+  </div>
+</div>
+
+<!-- ══════════ STRINGBUILDER ══════════ -->
+<div class="section" id="builder">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">🔨</div>
+    <h2>StringBuilder / Buffer Pattern</h2>
+  </div>
+
+  <div class="card">
+    <h3>When & Why to Use It</h3>
+    <p><strong>Use StringBuilder (or array + join) when building a string character by character.</strong></p>
+    <ul>
+      <li><strong>Java:</strong> <code>StringBuilder sb = new StringBuilder();</code> then <code>sb.append(char)</code></li>
+      <li><strong>Python:</strong> <code>chars = []; chars.append(char)</code> then <code>''.join(chars)</code></li>
+      <li><strong>JavaScript:</strong> <code>let arr = []; arr.push(char)</code> then <code>arr.join('')</code></li>
+      <li><strong>Go:</strong> <code>var buf bytes.Buffer; buf.WriteRune(ch)</code></li>
+    </ul>
+    <p><strong>Why?</strong> String concatenation is O(n), done n times = O(n²). StringBuilder amortizes to O(n).</p>
+  </div>
+
+  <div class="card">
+    <h3>Code Comparison</h3>
+    <pre><code><span class="code-line">// ❌ SLOW (O(n²))</span>
+<span class="code-line lit">let result = "";</span>
+<span class="code-line lit">for (let i = 0; i < n; i++) {</span>
+<span class="code-line lit">  result += someChar; // New string created each time</span>
+<span class="code-line lit">}</span>
+<span class="code-line"></span>
+<span class="code-line">// ✅ FAST (O(n))</span>
+<span class="code-line lit">let result = [];</span>
+<span class="code-line lit">for (let i = 0; i < n; i++) {</span>
+<span class="code-line lit">  result.push(someChar); // O(1) amortized</span>
+<span class="code-line lit">}</span>
+<span class="code-line lit">return result.join(''); // O(n) final join</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Common Use Cases</h3>
+    <div class="pattern-card">
+      <h4>Reverse a String</h4>
+      <p>Build characters in reverse order into StringBuilder.</p>
+    </div>
+    <div class="pattern-card">
+      <h4>Run-Length Encoding</h4>
+      <p>Count consecutive chars, append count + char to builder.</p>
+    </div>
+    <div class="pattern-card">
+      <h4>Remove Duplicates / Whitespace</h4>
+      <p>Iterate through, selectively append to builder.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PATTERN MATCHING ══════════ -->
+<div class="section" id="pattern">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🔍</div>
+    <h2>Pattern Matching: Naive & KMP</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Problem: Find All Occurrences of a Substring</h3>
+    <p>Find the pattern "AB" in text "ABABAB". Return all start indices: [0, 2, 4].</p>
+    <p><strong>Naive approach:</strong> For each position in text, check if pattern matches. O(n×m) in worst case.</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Naive String Search Visualizer</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Naive Search O(n×m)</div>
+      <div style="text-align:center;margin:10px 0;">
+        <div style="margin:8px 0;">
+          <label style="color:var(--fg4);font-size:13px;">Text:</label>
+          <input type="text" id="naiveText" value="ABABAB" maxlength="16" style="padding:6px 10px;border-radius:6px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:12px;">
+        </div>
+        <div style="margin:8px 0;">
+          <label style="color:var(--fg4);font-size:13px;">Pattern:</label>
+          <input type="text" id="naivePattern" value="AB" maxlength="8" style="padding:6px 10px;border-radius:6px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:12px;">
+        </div>
+      </div>
+      <div class="cells" id="naiveSearchViz"></div>
+      <div style="text-align:center;color:var(--fg3);margin:12px 0;font-size:13px;" id="naiveSearchStatus">—</div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="comparisons">0</div><div class="label">Comparisons</div></div>
+        <div class="stat"><div class="num" id="matches">0</div><div class="label">Matches Found</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="runNaiveSearch()">Search</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>KMP Algorithm (Brief)</h3>
+    <p><strong>KMP = Knuth-Morris-Pratt.</strong> Idea: Build a "failure function" that tells you how much to skip when a mismatch occurs.</p>
+    <p><strong>Time:</strong> O(n + m) instead of O(n×m). Only matters for large m or many mismatches.</p>
+    <p>Rarely asked in interviews, but good to know the idea: <strong>failure function tracks overlap in the pattern itself.</strong></p>
+    <div class="tip">For interviews, naive search is usually fine. Mention KMP if time is critical, but know you might not have time to code it perfectly.</div>
+  </div>
+</div>
+
+<!-- ══════════ ENCODING ══════════ -->
+<div class="section" id="encoding">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">📦</div>
+    <h2>String Encoding & Manipulation</h2>
+  </div>
+
+  <div class="card">
+    <h3>Run-Length Encoding</h3>
+    <p><strong>Compress a string by counting consecutive identical characters.</strong> "AAABBBCC" → "A3B3C2".</p>
+    <p><strong>Common interview twist:</strong> "A", "B1", "C3" format. Or decode: "A3B2" → "AAABB".</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: RLE Encoder / Decoder</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Run-Length Encoding</div>
+      <div style="text-align:center;margin:10px 0;">
+        <input type="text" id="rleInput" value="AAABBBCC" maxlength="20" style="padding:8px 12px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);font-size:13px;width:150px;">
+      </div>
+      <div class="controls">
+        <button class="btn" onclick="encodeRLE()">Encode</button>
+        <button class="btn" onclick="decodeRLE()">Decode</button>
+      </div>
+      <div style="background:var(--bg2);border-radius:10px;padding:12px;margin:12px 0;font-family:'Fira Code',monospace;color:var(--fg2);font-size:13px;" id="rleOutput">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Other Common Manipulations</h3>
+    <ul>
+      <li><strong>String to Integer (atoi):</strong> "123" → 123, "  45" → 45, "abc" → 0. Handle signs, overflow.</li>
+      <li><strong>Reverse Words:</strong> "the sky is blue" → "blue is sky the". Reverse entire string, then reverse each word.</li>
+      <li><strong>Remove Duplicates:</strong> "abacabad" → "abcd" (keeping order). Use Set or frequency tracking.</li>
+      <li><strong>Decode String:</strong> "3[a2[c]]" → "accaccacc". Use stack with nested counts.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ TRICKS & TECHNIQUES ══════════ -->
+<div class="section" id="tricks">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">✨</div>
+    <h2>Essential Tricks & Techniques</h2>
+  </div>
+
+  <div class="card">
+    <h3>Trick 1: String Rotation Check — (s+s).includes(t)</h3>
+    <p>Check if string `t` is a rotation of string `s`. Example: "waterbottle" contains "bottlewater".</p>
+    <pre><code><span class="code-line lit">function isRotation(s, t) {</span>
+<span class="code-line lit">  if (s.length !== t.length) return false;</span>
+<span class="code-line lit">  return (s + s).includes(t);</span>
+<span class="code-line lit">}</span></code></pre>
+    <p><strong>Why it works:</strong> All rotations of "abc" appear in "abcabc": "abc", "bca", "cab".</p>
+  </div>
+
+  <div class="card">
+    <h3>Trick 2: Character Index — c - 'a' for 0-25 indexing</h3>
+    <p>Convert char 'a' to 0, 'b' to 1, ..., 'z' to 25.</p>
+    <pre><code><span class="code-line lit">// Build frequency array for lowercase letters</span>
+<span class="code-line lit">let freq = new Array(26).fill(0);</span>
+<span class="code-line lit">for (let char of word) {</span>
+<span class="code-line lit">  freq[char.charCodeAt(0) - 'a'.charCodeAt(0)]++;</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Trick 3: StringBuilder for Reverse</h3>
+    <p>Don't use string concatenation. Use array + reverse + join.</p>
+    <pre><code><span class="code-line lit">function reverse(s) {</span>
+<span class="code-line lit">  return s.split('').reverse().join('');</span>
+<span class="code-line lit">  // In-place in languages with mutable strings</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Trick 4: XOR for Single Difference</h3>
+    <p>Find the one character that differs between two similar strings.</p>
+    <pre><code><span class="code-line lit">// If strings differ by exactly one char</span>
+<span class="code-line lit">let diff = 0;</span>
+<span class="code-line lit">for (let i = 0; i < s.length; i++) {</span>
+<span class="code-line lit">  diff ^= s.charCodeAt(i) ^ t.charCodeAt(i);</span>
+<span class="code-line lit">}</span>
+<span class="code-line lit">return String.fromCharCode(diff);</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Trick 5: Comparing Char Arrays Instead of Strings</h3>
+    <p>For anagrams or character-order problems, compare sorted char arrays — often cleaner than string manipulation.</p>
+    <pre><code><span class="code-line lit">function areAnagrams(s, t) {</span>
+<span class="code-line lit">  return s.split('').sort().join('') === t.split('').sort().join('');</span>
+<span class="code-line lit">}</span></code></pre>
+    <p><strong>Trade-off:</strong> Easier to code, O(n log n) instead of O(n), but often acceptable.</p>
+  </div>
+</div>
+
+<!-- ══════════ TOP 20 PROBLEMS ══════════ -->
+<div class="section" id="problems">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">📋</div>
+    <h2>Top 20 String Problems</h2>
+  </div>
+
+  <div class="card">
+    <h3>Essential String Problems for Interviews</h3>
+    <table>
+      <tr>
+        <th>Problem</th>
+        <th>Difficulty</th>
+        <th>Key Pattern</th>
+        <th>LeetCode #</th>
+      </tr>
+      <tr>
+        <td>Reverse String</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>Two pointers</td>
+        <td>#344</td>
+      </tr>
+      <tr>
+        <td>Valid Anagram</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>Frequency count</td>
+        <td>#242</td>
+      </tr>
+      <tr>
+        <td>Valid Palindrome</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>Two pointers + filter</td>
+        <td>#125</td>
+      </tr>
+      <tr>
+        <td>Longest Substring Without Repeating</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Sliding window + hash</td>
+        <td>#3</td>
+      </tr>
+      <tr>
+        <td>Group Anagrams</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Hash map + sorting</td>
+        <td>#49</td>
+      </tr>
+      <tr>
+        <td>Longest Palindromic Substring</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Expand around center</td>
+        <td>#5</td>
+      </tr>
+      <tr>
+        <td>String to Integer (atoi)</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Parsing + edge cases</td>
+        <td>#8</td>
+      </tr>
+      <tr>
+        <td>Implement strStr()</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Pattern matching (KMP or naive)</td>
+        <td>#28</td>
+      </tr>
+      <tr>
+        <td>Longest Common Prefix</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>Horizontal scan or Trie</td>
+        <td>#14</td>
+      </tr>
+      <tr>
+        <td>Zigzag Conversion</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Pattern recognition</td>
+        <td>#6</td>
+      </tr>
+      <tr>
+        <td>Minimum Window Substring</td>
+        <td><span class="badge b-mid">Hard</span></td>
+        <td>Sliding window + hash</td>
+        <td>#76</td>
+      </tr>
+      <tr>
+        <td>Decode Ways</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Dynamic programming</td>
+        <td>#91</td>
+      </tr>
+      <tr>
+        <td>Edit Distance</td>
+        <td><span class="badge b-mid">Hard</span></td>
+        <td>DP (Levenshtein)</td>
+        <td>#72</td>
+      </tr>
+      <tr>
+        <td>Word Break</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>DP or BFS</td>
+        <td>#139</td>
+      </tr>
+      <tr>
+        <td>Letter Combinations of Phone</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Backtracking</td>
+        <td>#17</td>
+      </tr>
+      <tr>
+        <td>Count Palindromic Substrings</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Expand around center</td>
+        <td>#647</td>
+      </tr>
+      <tr>
+        <td>Longest Repeating Character Replacement</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Sliding window + frequency</td>
+        <td>#424</td>
+      </tr>
+      <tr>
+        <td>Backspace String Compare</td>
+        <td><span class="badge b-ok">Medium</span></td>
+        <td>Two pointers (reverse scan)</td>
+        <td>#844</td>
+      </tr>
+      <tr>
+        <td>Isomorphic Strings</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>Hash map (bijection)</td>
+        <td>#205</td>
+      </tr>
+      <tr>
+        <td>Rotate String</td>
+        <td><span class="badge b-fast">Easy</span></td>
+        <td>(s+s).includes(t)</td>
+        <td>#796</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Study Path</h3>
+    <ol>
+      <li><strong>Easy (Foundation):</strong> Reverse, Valid Anagram, Valid Palindrome, Longest Common Prefix</li>
+      <li><strong>Medium (Core Patterns):</strong> Sliding Window, Group Anagrams, Palindromic Substring, String to Integer</li>
+      <li><strong>Hard (Advanced):</strong> Edit Distance, Minimum Window Substring — do these last</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section" id="quiz">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">❓</div>
+    <h2>Quiz — Test Your Knowledge</h2>
+  </div>
+
+  <div class="card">
+    <div id="quizContainer"></div>
+    <div id="quizResult" style="display:none;padding:16px;border-radius:10px;margin-top:16px;font-size:15px;"></div>
+  </div>
+</div>
+
+</div><!-- end page-container -->
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="footer">
+  <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
+</div>
+
+<script>
+// ══════════ PROGRESS BAR ══════════
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollY / docHeight) * 100;
+  document.getElementById('prog').style.width = progress + '%';
+  document.getElementById('scrollTop').classList.toggle('show', scrollY > 200);
+});
+
+// ══════════ TOPNAV HIGHLIGHT ══════════
+const topnavLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  document.querySelectorAll('section[id]').forEach(section => {
+    const sectionTop = section.offsetTop;
+    if (window.scrollY >= sectionTop - 200) current = section.getAttribute('id');
+  });
+  topnavLinks.forEach(link => link.classList.remove('active'));
+  const activeLink = document.querySelector(`.topnav a[href="#${current}"]`);
+  if (activeLink) activeLink.classList.add('active');
+});
+
+// ══════════ CHARACTER INSPECTOR ══════════
+function updateCharInspector() {
+  const input = document.getElementById('charInput').value;
+  const inspector = document.getElementById('charInspector');
+  inspector.innerHTML = '';
+  for (let char of input) {
+    const box = document.createElement('div');
+    box.className = 'char-box';
+    box.textContent = char;
+    box.onclick = () => {
+      document.getElementById('asciiInfo').innerHTML =
+        `<strong>${char}</strong> = ASCII ${char.charCodeAt(0)} (hex: ${char.charCodeAt(0).toString(16).toUpperCase()})`;
+    };
+    inspector.appendChild(box);
+  }
+}
+document.getElementById('charInput').addEventListener('input', updateCharInspector);
+updateCharInspector();
+
+// ══════════ STRING CONCATENATION DEMO ══════════
+function runStringConcatDemo(method) {
+  const allocations = document.getElementById('allocations');
+  const operations = document.getElementById('operations');
+  const result = document.getElementById('concatResult');
+  const n = 8;
+
+  if (method === 'bad') {
+    let allocs = 0;
+    let start = performance.now();
+    let str = '';
+    for (let i = 0; i < n; i++) {
+      str += String.fromCharCode(65 + i); // A, B, C, ...
+      allocs++;
+    }
+    let time = performance.now() - start;
+
+    allocations.textContent = (allocs * (allocs + 1) / 2); // sum of 1..n
+    operations.textContent = allocs;
+    result.innerHTML = `<strong>String concatenation (O(n²)):</strong><br>Result: "${str}"<br>Time: ${time.toFixed(3)}ms<br>Allocations create new strings exponentially!`;
+  } else {
+    let start = performance.now();
+    let arr = [];
+    for (let i = 0; i < n; i++) {
+      arr.push(String.fromCharCode(65 + i));
+    }
+    let str = arr.join('');
+    let time = performance.now() - start;
+
+    allocations.textContent = 1;
+    operations.textContent = n;
+    result.innerHTML = `<strong>Array + join (O(n)):</strong><br>Result: "${str}"<br>Time: ${time.toFixed(3)}ms<br>One allocation at the end!`;
+  }
+}
+
+// ══════════ PALINDROME CHECKER ══════════
+function updatePalindrome() {
+  const input = document.getElementById('palindromeInput').value;
+  const viz = document.getElementById('palindromeViz');
+  const status = document.getElementById('palindromeStatus');
+
+  let left = 0, right = input.length - 1;
+  viz.innerHTML = '';
+
+  while (left < right) {
+    const cell = document.createElement('div');
+    cell.className = 'ptr-cell';
+    if (left < right) {
+      if (input[left] === input[right]) {
+        cell.classList.add('left-ptr');
+      } else {
+        cell.classList.add('left-ptr');
+      }
+    }
+    cell.textContent = input[left];
+    viz.appendChild(cell);
+    left++;
+  }
+
+  left = 0; right = input.length - 1;
+  let isPalin = true;
+  while (left < right) {
+    if (input[left] !== input[right]) isPalin = false;
+    left++; right--;
+  }
+
+  status.textContent = isPalin ? '✓ This is a palindrome!' : '✗ Not a palindrome';
+  status.style.color = isPalin ? 'var(--green)' : 'var(--red)';
+}
+
+// ══════════ ANAGRAM FREQUENCY COMPARISON ══════════
+function updateAnagramFreq() {
+  const str1 = document.getElementById('str1Input').value;
+  const str2 = document.getElementById('str2Input').value;
+  const status = document.getElementById('anagramStatus');
+  const bars = document.getElementById('freqBars');
+
+  let freq1 = {}, freq2 = {};
+  for (let c of str1) freq1[c] = (freq1[c] || 0) + 1;
+  for (let c of str2) freq2[c] = (freq2[c] || 0) + 1;
+
+  const allChars = new Set([...str1, ...str2]);
+  const isAnagram = str1.split('').sort().join('') === str2.split('').sort().join('');
+
+  bars.innerHTML = '';
+  for (let char of allChars) {
+    const f1 = freq1[char] || 0;
+    const f2 = freq2[char] || 0;
+    const maxF = Math.max(f1, f2, 1);
+
+    const bar = document.createElement('div');
+    bar.className = 'freq-bar' + (f1 !== f2 ? ' mismatch' : '');
+    bar.style.height = (f1 / maxF * 100) + '%';
+    bar.innerHTML = `<div class="label">${char}:${f1}</div>`;
+    bars.appendChild(bar);
+  }
+
+  status.textContent = isAnagram ? '✓ These are anagrams!' : '✗ Not anagrams';
+  status.style.color = isAnagram ? 'var(--green)' : 'var(--red)';
+}
+
+// ══════════ SLIDING WINDOW ══════════
+function runSlidingWindow() {
+  const input = document.getElementById('slidingInput').value;
+  const viz = document.getElementById('slidingViz');
+  const status = document.getElementById('slidingStatus');
+  const maxLenElem = document.getElementById('maxLen');
+  const windowElem = document.getElementById('windowSize');
+
+  viz.innerHTML = '';
+  for (let i = 0; i < input.length; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell c-default';
+    cell.textContent = input[i];
+    viz.appendChild(cell);
+  }
+
+  let maxLen = 0, left = 0;
+  const charSet = new Set();
+  const cells = viz.querySelectorAll('.cell');
+
+  for (let right = 0; right < input.length; right++) {
+    while (charSet.has(input[right])) {
+      charSet.delete(input[left]);
+      left++;
+    }
+    charSet.add(input[right]);
+
+    const len = right - left + 1;
+    if (len > maxLen) maxLen = len;
+
+    // Color cells
+    for (let i = 0; i < input.length; i++) {
+      cells[i].classList.remove('c-default', 'c-active', 'c-done');
+      if (i >= left && i <= right) cells[i].classList.add('c-active');
+      else if (i < left) cells[i].classList.add('c-done');
+      else cells[i].classList.add('c-default');
+    }
+
+    windowElem.textContent = len;
+    maxLenElem.textContent = maxLen;
+    status.textContent = `Current window: "${input.substring(left, right + 1)}"`;
+  }
+}
+
+// ══════════ VALID PALINDROME (TWO POINTERS) ══════════
+function checkValidPalindrome() {
+  const input = document.getElementById('validPalinInput').value;
+  const filtered = input.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const viz = document.getElementById('validPalinViz');
+  const status = document.getElementById('validPalinStatus');
+
+  viz.innerHTML = '';
+  for (let char of filtered) {
+    const cell = document.createElement('div');
+    cell.className = 'ptr-cell';
+    cell.textContent = char;
+    viz.appendChild(cell);
+  }
+
+  let left = 0, right = filtered.length - 1;
+  let isValid = true;
+  while (left < right) {
+    if (filtered[left] !== filtered[right]) isValid = false;
+    left++; right--;
+  }
+
+  status.textContent = isValid ? '✓ Valid palindrome!' : '✗ Not a valid palindrome';
+  status.style.color = isValid ? 'var(--green)' : 'var(--red)';
+}
+
+// ══════════ RLE ENCODER / DECODER ══════════
+function encodeRLE() {
+  const input = document.getElementById('rleInput').value;
+  let result = '';
+  for (let i = 0; i < input.length; i++) {
+    let count = 1;
+    while (i + 1 < input.length && input[i] === input[i + 1]) {
+      count++;
+      i++;
+    }
+    result += input[i] + count;
+  }
+  document.getElementById('rleOutput').textContent = result || '(empty)';
+}
+
+function decodeRLE() {
+  const input = document.getElementById('rleInput').value;
+  let result = '';
+  for (let i = 0; i < input.length; i += 2) {
+    const char = input[i];
+    let count = '';
+    while (i + 1 < input.length && /\d/.test(input[i + 1])) {
+      count += input[i + 1];
+      i++;
+    }
+    result += char.repeat(parseInt(count) || 1);
+  }
+  document.getElementById('rleOutput').textContent = result || '(empty)';
+}
+
+// ══════════ NAIVE STRING SEARCH ══════════
+function runNaiveSearch() {
+  const text = document.getElementById('naiveText').value;
+  const pattern = document.getElementById('naivePattern').value;
+  const viz = document.getElementById('naiveSearchViz');
+  const status = document.getElementById('naiveSearchStatus');
+  const comparisonsElem = document.getElementById('comparisons');
+  const matchesElem = document.getElementById('matches');
+
+  viz.innerHTML = '';
+  for (let char of text) {
+    const cell = document.createElement('div');
+    cell.className = 'cell c-default';
+    cell.textContent = char;
+    viz.appendChild(cell);
+  }
+
+  let comparisons = 0, matches = [];
+  const cells = viz.querySelectorAll('.cell');
+
+  for (let i = 0; i <= text.length - pattern.length; i++) {
+    let match = true;
+    for (let j = 0; j < pattern.length; j++) {
+      comparisons++;
+      if (text[i + j] !== pattern[j]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) matches.push(i);
+  }
+
+  comparisonsElem.textContent = comparisons;
+  matchesElem.textContent = matches.length;
+  status.innerHTML = matches.length > 0 ?
+    `Found at indices: ${matches.join(', ')}` : 'Pattern not found';
+
+  // Color matches
+  for (let idx of matches) {
+    for (let j = 0; j < pattern.length; j++) {
+      cells[idx + j].classList.remove('c-default');
+      cells[idx + j].classList.add('c-active');
+    }
+  }
+}
+
+// ══════════ QUIZ ══════════
+const quizData = [
+  {
+    q: 'What is the time complexity of accessing a character at index i in a string?',
+    opts: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'],
+    ans: 0
+  },
+  {
+    q: 'Why is string concatenation in a loop (s += char) O(n²)?',
+    opts: ['Each concatenation creates a new string and copies all old characters', 'String indexing is slow', 'Loops are inherently O(n²)', 'Strings use linked lists'],
+    ans: 0
+  },
+  {
+    q: 'Which data structure should you use to build a string character-by-character efficiently?',
+    opts: ['String directly', 'StringBuilder / array + join', 'Linked list', 'Queue'],
+    ans: 1
+  },
+  {
+    q: 'What is the expand-around-center approach used for?',
+    opts: ['Finding anagrams', 'Palindrome detection', 'String reversal', 'Pattern matching'],
+    ans: 1
+  },
+  {
+    q: 'Two strings are anagrams if they have the same _____.',
+    opts: ['length', 'first and last characters', 'character frequencies', 'vowel count'],
+    ans: 2
+  },
+  {
+    q: 'For longest substring without repeating characters, which pattern is most suitable?',
+    opts: ['Two pointers', 'Sliding window', 'Binary search', 'Recursion'],
+    ans: 1
+  },
+  {
+    q: 'What does this trick do: (s + s).includes(t)?',
+    opts: ['Find all substrings', 'Check if t is a rotation of s', 'Count occurrences', 'Reverse a string'],
+    ans: 1
+  },
+  {
+    q: 'The KMP algorithm improves string pattern matching to which complexity?',
+    opts: ['O(n)', 'O(n + m)', 'O(n log n)', 'O(n × m)'],
+    ans: 1
+  },
+  {
+    q: 'In "valid palindrome" problems, why do we often use two pointers?',
+    opts: ['To go faster', 'To compare pairs moving toward the center, avoiding redundant checks', 'To handle unicode characters', 'To use less memory'],
+    ans: 1
+  },
+  {
+    q: 'What is run-length encoding used for?',
+    opts: ['Encrypting strings', 'Compressing strings with consecutive identical characters', 'Sorting characters', 'Finding palindromes'],
+    ans: 1
+  }
+];
+
+function initQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+
+  quizData.forEach((q, i) => {
+    const qDiv = document.createElement('div');
+    qDiv.style.marginBottom = '28px';
+    qDiv.innerHTML = `<h4 style="color:var(--fg);margin-bottom:12px;font-size:15px;">Q${i+1}. ${q.q}</h4>`;
+
+    q.opts.forEach((opt, j) => {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      label.style.marginBottom = '8px';
+      label.style.cursor = 'pointer';
+      label.innerHTML = `<input type="radio" name="q${i}" value="${j}" style="margin-right:8px;">${opt}`;
+      qDiv.appendChild(label);
+    });
+
+    container.appendChild(qDiv);
+  });
+
+  const submitBtn = document.createElement('button');
+  submitBtn.className = 'btn';
+  submitBtn.textContent = 'Submit Quiz';
+  submitBtn.onclick = checkQuiz;
+  container.appendChild(submitBtn);
+}
+
+function checkQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.ans) score++;
+  });
+
+  const resultDiv = document.getElementById('quizResult');
+  resultDiv.style.display = 'block';
+  resultDiv.style.background = `rgba(184,187,38,0.1)`;
+  resultDiv.style.borderLeft = `4px solid var(--green)`;
+  resultDiv.innerHTML = `<strong style="color:var(--green);font-size:16px;">Score: ${score}/${quizData.length}</strong><br>
+    ${score === quizData.length ? '🎉 Perfect! You master strings!' :
+      score >= 8 ? '✓ Great job! Review a few concepts.' :
+      'Keep learning! Re-read the sections and try again.'}`;
+}
+
+initQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big O Notation — DSA Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+/* ── Big O specific styles ── */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--yellow),var(--orange),var(--red));transition:width .15s;}
+
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--yellow);}
+
+.bigo-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+
+.bigo-hero{text-align:center;padding:50px 20px 40px;}
+.bigo-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--yellow),var(--orange),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.bigo-hero .sub{color:var(--fg3);font-size:18px;max-width:560px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(250,189,47,0.1);border:1px solid rgba(250,189,47,0.2);color:var(--yellow);font-size:13px;font-weight:600;}
+
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.section-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;}
+.section-label h2{font-size:28px;font-weight:800;}
+
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:30px;margin-bottom:22px;}
+.card h3{font-size:19px;margin-bottom:14px;color:var(--yellow);display:flex;align-items:center;gap:10px;}
+.card p,.card li{color:var(--fg3);margin-bottom:10px;}
+.card strong{color:var(--fg);}
+
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:26px;margin:16px 0;position:relative;overflow:hidden;}
+.viz-tag{position:absolute;top:10px;right:14px;font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+
+.cells{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:8px 0;}
+.cell{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transition:all .35s;position:relative;}
+.cell .sub-label{position:absolute;bottom:-20px;font-size:10px;color:var(--fg4);font-weight:400;white-space:nowrap;}
+.c-default{background:var(--bg2);color:var(--fg);}
+.c-active{background:var(--yellow);color:var(--bg);transform:scale(1.1);box-shadow:0 0 20px rgba(250,189,47,0.3);}
+.c-done{background:var(--green);color:var(--bg);}
+.c-skip{background:var(--bg2);color:var(--fg4);opacity:.35;}
+.c-highlight{background:var(--blue);color:var(--bg);}
+.c-warn{background:var(--orange);color:var(--bg);}
+.c-hot{background:var(--red);color:var(--bg);}
+.c-purple{background:var(--purple);color:var(--bg);}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.btn{padding:8px 20px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.2s;user-select:none;}
+.btn:hover{background:var(--yellow);color:var(--bg);border-color:var(--yellow);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:20px 24px;margin:14px 0;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:'Fira Code','Consolas',monospace;color:var(--fg2);}
+.code-line{transition:background .3s;padding:2px 4px;border-radius:4px;}
+.code-line.lit{background:rgba(250,189,47,0.08);}
+pre code{background:none;padding:0;}
+
+.tip{background:rgba(131,165,152,0.08);border:1px solid rgba(131,165,152,0.2);border-radius:12px;padding:18px 22px;margin:16px 0;font-size:14px;}
+.warn-tip{background:rgba(254,128,25,0.08);border-color:rgba(254,128,25,0.2);}
+
+.analogy{background:linear-gradient(135deg,rgba(211,134,155,0.06),rgba(131,165,152,0.06));border:1px solid rgba(211,134,155,0.15);border-radius:14px;padding:22px 26px;margin:18px 0;}
+.analogy .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);font-weight:700;margin-bottom:8px;}
+
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.stat{flex:1;min-width:110px;background:var(--bg2);border-radius:12px;padding:14px 18px;text-align:center;}
+.stat .num{font-size:26px;font-weight:800;color:var(--yellow);}
+.stat .label{font-size:12px;color:var(--fg4);margin-top:2px;}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-weight:700;color:var(--yellow);border-bottom:2px solid var(--bg3);}
+td{padding:10px 16px;border-bottom:1px solid var(--bg2);color:var(--fg3);}
+tr:hover td{background:rgba(250,189,47,0.04);}
+
+.b-fast{background:rgba(184,187,38,0.15);color:var(--green);}
+.b-ok{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.b-mid{background:rgba(254,128,25,0.15);color:var(--orange);}
+.b-slow{background:rgba(251,73,52,0.15);color:var(--red);}
+
+.bar-chart{margin:16px 0;}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.bar-label{width:100px;text-align:right;font-size:13px;font-weight:600;color:var(--fg4);flex-shrink:0;}
+.bar-track{flex:1;height:32px;background:var(--bg2);border-radius:8px;position:relative;overflow:hidden;}
+.bar-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:700;color:var(--bg);transition:width 1s ease-out;}
+
+.step-indicator{display:flex;justify-content:center;gap:6px;margin:12px 0;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);transition:.3s;}
+.step-dot.active{background:var(--yellow);box-shadow:0 0 8px rgba(250,189,47,0.4);}
+.step-dot.done{background:var(--green);}
+
+@keyframes bounce-right{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+.arrow-bounce{display:inline-block;animation:bounce-right 1s infinite;}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 0 rgba(250,189,47,0);}50%{box-shadow:0 0 24px rgba(250,189,47,0.3);}}
+.glow{animation:glow-pulse 2s infinite;}
+
+.scroll-top{position:fixed;bottom:28px;right:28px;width:46px;height:46px;border-radius:50%;background:var(--yellow);color:var(--bg);border:none;cursor:pointer;font-size:22px;display:none;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(250,189,47,0.25);font-family:inherit;}
+.scroll-top.show{display:flex;}
+
+.tag-easy{background:rgba(184,187,38,0.15);color:var(--green);}
+.tag-medium{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.tag-hard{background:rgba(251,73,52,0.15);color:var(--red);}
+
+@media(max-width:700px){
+  .bigo-hero h1{font-size:32px;}
+  .card{padding:20px;}
+  .stat-row{flex-direction:column;}
+  .bar-label{width:70px;font-size:11px;}
+  .topnav{top:60px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Website Navbar -->
+<div class="navbar">
+  <a href="../../index.html" class="logo">DSA Deep Dive</a>
+  <nav>
+    <a href="../../index.html">Home</a>
+    <a href="#" class="active">Big O</a>
+  </nav>
+</div>
+
+<div class="progress"><div class="progress-fill" id="prog"></div></div>
+
+<nav class="topnav" id="topnav">
+  <a href="#intro">What & Why</a>
+  <a href="#o1">O(1)</a>
+  <a href="#ologn">O(log n)</a>
+  <a href="#on">O(n)</a>
+  <a href="#onlogn">O(n log n)</a>
+  <a href="#on2">O(n²)</a>
+  <a href="#o2n">O(2ⁿ)</a>
+  <a href="#onf">O(n!)</a>
+  <a href="#compare">Compare</a>
+  <a href="#space">Space</a>
+  <a href="#rules">Rules</a>
+  <a href="#practice">Practice</a>
+</nav>
+
+<div class="bigo-container">
+
+<!-- HERO -->
+<div class="bigo-hero">
+  <h1>Big O Notation</h1>
+  <p class="sub">The complete under-the-hood guide. Every complexity explained with real-world stories, animated visuals, and actual code.</p>
+  <div class="hero-badge">Fundamentals of DSA — Chapter 1</div>
+</div>
+
+<!-- INTRO -->
+<div class="section" id="intro">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">?</div>
+    <h2>What Is Big O & Why Care?</h2>
+  </div>
+  <div class="card">
+    <h3>The One-Sentence Answer</h3>
+    <p>Big O tells you: <strong>"As my input gets bigger, how much MORE work does my code do?"</strong></p>
+    <p>It doesn't measure exact seconds. It measures the <strong>growth rate</strong> — how the work <em>scales</em>.</p>
+  </div>
+  <div class="card">
+    <h3>The Story That Explains Everything</h3>
+    <div class="analogy">
+      <div class="label">Real-World Analogy</div>
+      <p><strong>Imagine a phone book</strong> with everyone's name and number.</p>
+      <p>Your friend asks: "What is Alice's phone number?"</p>
+      <p><strong>Method 1 (Slow):</strong> Read every single name from page 1 until you find "Alice." If 1,000,000 names, maybe 1,000,000 checks. That's <code>O(n)</code>.</p>
+      <p><strong>Method 2 (Fast):</strong> Open the middle. Is "Alice" before or after? Throw away half. Repeat. About 20 checks for 1,000,000 names. That's <code>O(log n)</code>.</p>
+      <p><strong>Same problem, wildly different speeds.</strong> Big O helps you pick the right method.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>See the Difference — Live</h3>
+    <p>Drag the slider and watch each complexity grow differently:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Interactive — Drag Slider</div>
+      <div style="text-align:center;margin-bottom:16px;">
+        <label style="color:var(--fg3);font-size:14px;">Input size (n): </label>
+        <input type="range" id="introSlider" min="1" max="100" value="10" style="width:200px;vertical-align:middle;accent-color:var(--yellow);" oninput="updateIntroChart()">
+        <span id="introN" style="color:var(--yellow);font-weight:800;font-size:18px;margin-left:8px;">10</span>
+      </div>
+      <div class="bar-chart" id="introChart"></div>
+    </div>
+    <div class="tip"><strong>Drag to 100</strong> and watch O(n²) explode while O(1) stays the same. This is why Big O matters!</div>
+  </div>
+</div>
+
+<!-- O(1) -->
+<div class="section" id="o1">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">1</div>
+    <h2>O(1) — Constant Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>No matter how big the input, the work stays the same.</strong> 10 items or 10 billion — same steps.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Checking your mailbox.</strong> Doesn't matter how many letters exist in the world. You walk to YOUR box and open it. Same work every time.</p>
+      <p><strong>Turning on a light switch.</strong> Room size doesn't matter. One flip = done.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Visual: Array Access by Index</h3>
+    <p>Click any cell — the computer jumps <strong>directly</strong> to it. No searching!</p>
+    <div class="viz-box">
+      <div class="viz-tag">Click a cell!</div>
+      <div class="cells" id="o1Array" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;color:var(--fg4);font-size:14px;margin-top:12px;" id="o1Status">Click any box to access it in O(1)</div>
+      <div class="stat-row" style="margin-top:14px;">
+        <div class="stat"><div class="num" id="o1Steps">0</div><div class="label">Steps Taken</div></div>
+        <div class="stat"><div class="num">1</div><div class="label">Always O(1)</div></div>
+        <div class="stat"><div class="num">10</div><div class="label">Array Size</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Code Examples</h3>
+    <pre><code><span class="code-line lit">let value = array[5];      // O(1) — jump straight to index 5</span>
+<span class="code-line lit">array.push(42);            // O(1) — add at the end</span>
+<span class="code-line lit">let phone = map["Alice"];  // O(1) — instant lookup</span>
+<span class="code-line lit">let isEven = (n % 2 === 0); // O(1) — one calculation</span>
+<span class="code-line lit">let top = stack[stack.length - 1]; // O(1) — peek</span></code></pre>
+    <div class="tip"><strong>How to spot O(1):</strong> No loops. No recursion. Just direct access or simple math.</div>
+  </div>
+</div>
+
+<!-- O(log n) -->
+<div class="section" id="ologn">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">log</div>
+    <h2>O(log n) — Logarithmic Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>Each step cuts the remaining work IN HALF.</strong> Even huge inputs need very few steps.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">10</div><div class="label">items → ~3 steps</div></div>
+      <div class="stat"><div class="num">1,000</div><div class="label">items → ~10 steps</div></div>
+      <div class="stat"><div class="num">1M</div><div class="label">items → ~20 steps</div></div>
+      <div class="stat"><div class="num">1B</div><div class="label">items → ~30 steps</div></div>
+    </div>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Guessing Game.</strong> I think of a number 1–1000. You guess the middle, I say "higher" or "lower." ~10 guesses to find it. That's log₂(1000) ≈ 10.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Binary Search</h3>
+    <p>Find <strong id="bsTargetDisplay">23</strong> in this sorted array. Watch it cut in half each time!</p>
+    <div class="viz-box">
+      <div class="viz-tag">Binary Search</div>
+      <div class="cells" id="bsArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <div style="color:var(--fg4);font-size:14px;" id="bsMsg">Click "Next Step" to start</div>
+        <div class="step-indicator" id="bsSteps"></div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="bsStepCount">0</div><div class="label">Steps</div></div>
+        <div class="stat"><div class="num" id="bsRemaining">16</div><div class="label">Items Left</div></div>
+        <div class="stat"><div class="num" id="bsEliminated">0</div><div class="label">Eliminated</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="bsReset()">Reset</button>
+      <button class="btn" onclick="bsStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="bsAutoPlay()">Auto Play</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Why "log"? The Tree</h3>
+    <p>Each halving is one level of a tree. 8 items = 3 levels deep = log₂(8) = 3 steps max.</p>
+    <div class="viz-box">
+      <svg viewBox="0 0 600 240" style="width:100%;max-width:600px;margin:0 auto;display:block;">
+        <line x1="300" y1="35" x2="150" y2="90" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="300" y1="35" x2="450" y2="90" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="150" y1="90" x2="75" y2="150" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="150" y1="90" x2="225" y2="150" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="450" y1="90" x2="375" y2="150" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="450" y1="90" x2="525" y2="150" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="75" y1="150" x2="40" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="75" y1="150" x2="110" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="225" y1="150" x2="190" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="225" y1="150" x2="260" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="375" y1="150" x2="340" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="375" y1="150" x2="410" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="525" y1="150" x2="490" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <line x1="525" y1="150" x2="560" y2="205" stroke="var(--bg3)" stroke-width="2"/>
+        <circle cx="300" cy="35" r="22" fill="var(--yellow)"/>
+        <text x="300" y="40" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">8 items</text>
+        <circle cx="150" cy="90" r="20" fill="var(--orange)"/>
+        <text x="150" y="95" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">4</text>
+        <circle cx="450" cy="90" r="20" fill="var(--orange)"/>
+        <text x="450" y="95" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">4</text>
+        <circle cx="75" cy="150" r="18" fill="var(--blue)"/>
+        <text x="75" y="155" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">2</text>
+        <circle cx="225" cy="150" r="18" fill="var(--blue)"/>
+        <text x="225" y="155" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">2</text>
+        <circle cx="375" cy="150" r="18" fill="var(--blue)"/>
+        <text x="375" y="155" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">2</text>
+        <circle cx="525" cy="150" r="18" fill="var(--blue)"/>
+        <text x="525" y="155" text-anchor="middle" fill="var(--bg)" font-weight="700" font-size="12" font-family="DM Sans,sans-serif">2</text>
+        <circle cx="40" cy="205" r="13" fill="var(--aqua)"/><circle cx="110" cy="205" r="13" fill="var(--aqua)"/>
+        <circle cx="190" cy="205" r="13" fill="var(--aqua)"/><circle cx="260" cy="205" r="13" fill="var(--aqua)"/>
+        <circle cx="340" cy="205" r="13" fill="var(--aqua)"/><circle cx="410" cy="205" r="13" fill="var(--aqua)"/>
+        <circle cx="490" cy="205" r="13" fill="var(--aqua)"/><circle cx="560" cy="205" r="13" fill="var(--aqua)"/>
+        <text x="588" y="40" fill="var(--fg4)" font-size="11" font-family="DM Sans,sans-serif">Level 0</text>
+        <text x="588" y="95" fill="var(--fg4)" font-size="11" font-family="DM Sans,sans-serif">Level 1</text>
+        <text x="588" y="155" fill="var(--fg4)" font-size="11" font-family="DM Sans,sans-serif">Level 2</text>
+        <text x="588" y="210" fill="var(--fg4)" font-size="11" font-family="DM Sans,sans-serif">Level 3</text>
+      </svg>
+      <div style="text-align:center;font-size:14px;color:var(--fg3);margin-top:10px;">8 → 4 → 2 → 1 = <strong style="color:var(--yellow);">3 steps</strong> = log₂(8)</div>
+    </div>
+    <div class="tip"><strong>Spot it:</strong> Problem gets <strong>halved</strong> each step. Keywords: "sorted", "binary search", "divide".</div>
+  </div>
+</div>
+
+<!-- O(n) -->
+<div class="section" id="on">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">n</div>
+    <h2>O(n) — Linear Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>You look at every item once.</strong> 100 items = ~100 steps. 1 million = ~1 million. Fair and proportional.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Reading a book.</strong> 300 pages = read 300 pages. Twice as many pages = twice the work.</p>
+      <p><strong>Counting people in a line.</strong> Point at each person: "1, 2, 3..." More people = more counting.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Linear Search</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Linear Search — O(n)</div>
+      <div class="cells" id="lsArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="lsMsg">Click "Search" to watch it scan left-to-right</div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="lsChecked">0</div><div class="label">Checked</div></div>
+        <div class="stat"><div class="num">16</div><div class="label">Total</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="lsReset()">Reset</button>
+      <button class="btn" onclick="lsAutoPlay()">Search</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Why O(2n) = O(n)?</h3>
+    <p>Big O <strong>drops constants</strong>. It only cares about the shape of growth.</p>
+    <div class="viz-box">
+      <div style="text-align:center;font-size:16px;line-height:2.4;">
+        <span style="color:var(--fg4);">O(2n)</span> → drop the 2 → <span style="color:var(--yellow);font-weight:800;">O(n)</span><br>
+        <span style="color:var(--fg4);">O(5n + 3)</span> → drop 5 and 3 → <span style="color:var(--yellow);font-weight:800;">O(n)</span><br>
+        <span style="color:var(--fg4);">O(n/2)</span> → drop the /2 → <span style="color:var(--yellow);font-weight:800;">O(n)</span><br>
+        <span style="color:var(--fg4);">O(100)</span> → constant → <span style="color:var(--green);font-weight:800;">O(1)</span>
+      </div>
+    </div>
+    <div class="tip"><strong>Spot it:</strong> A single loop going through the whole input. Two separate (non-nested) loops = still O(n).</div>
+  </div>
+</div>
+
+<!-- O(n log n) -->
+<div class="section" id="onlogn">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">n·log</div>
+    <h2>O(n log n) — Linearithmic</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p>The <strong>best possible sorting speed</strong> (for comparison sorts). Split into halves (log n levels), do n work at each level.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Sorting cards with Merge Sort.</strong> Split the deck, sort each half, merge back. Splitting goes log n deep, merging touches all n cards each level.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Visual: Merge Sort</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Merge Sort — Split & Merge</div>
+      <svg viewBox="0 0 600 300" style="width:100%;max-width:600px;margin:0 auto;display:block;">
+        <rect x="140" y="10" width="320" height="34" rx="8" fill="var(--bg2)" stroke="var(--bg3)"/>
+        <text x="300" y="32" text-anchor="middle" fill="var(--fg)" font-size="14" font-weight="700" font-family="monospace">[ 38  27  43  3  9  82  10 ]</text>
+        <text x="300" y="60" text-anchor="middle" fill="var(--orange)" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">SPLIT</text>
+        <rect x="50" y="70" width="210" height="30" rx="8" fill="var(--bg2)" stroke="var(--bg3)"/>
+        <text x="155" y="90" text-anchor="middle" fill="var(--fg2)" font-size="13" font-weight="700" font-family="monospace">[ 38  27  43  3 ]</text>
+        <rect x="340" y="70" width="190" height="30" rx="8" fill="var(--bg2)" stroke="var(--bg3)"/>
+        <text x="435" y="90" text-anchor="middle" fill="var(--fg2)" font-size="13" font-weight="700" font-family="monospace">[ 9  82  10 ]</text>
+        <text x="300" y="120" text-anchor="middle" fill="var(--orange)" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">SPLIT MORE</text>
+        <rect x="20" y="130" width="110" height="28" rx="8" fill="var(--bg2)" stroke="var(--blue)"/>
+        <text x="75" y="149" text-anchor="middle" fill="var(--blue)" font-size="12" font-weight="700" font-family="monospace">[38 27]</text>
+        <rect x="150" y="130" width="110" height="28" rx="8" fill="var(--bg2)" stroke="var(--blue)"/>
+        <text x="205" y="149" text-anchor="middle" fill="var(--blue)" font-size="12" font-weight="700" font-family="monospace">[43  3]</text>
+        <rect x="320" y="130" width="100" height="28" rx="8" fill="var(--bg2)" stroke="var(--blue)"/>
+        <text x="370" y="149" text-anchor="middle" fill="var(--blue)" font-size="12" font-weight="700" font-family="monospace">[9  82]</text>
+        <rect x="440" y="130" width="60" height="28" rx="8" fill="var(--bg2)" stroke="var(--aqua)"/>
+        <text x="470" y="149" text-anchor="middle" fill="var(--aqua)" font-size="12" font-weight="700" font-family="monospace">[10]</text>
+        <text x="300" y="182" text-anchor="middle" fill="var(--green)" font-size="12" font-weight="800" font-family="DM Sans,sans-serif">SORT & MERGE BACK</text>
+        <rect x="50" y="194" width="210" height="30" rx="8" fill="var(--bg2)" stroke="var(--aqua)"/>
+        <text x="155" y="214" text-anchor="middle" fill="var(--aqua)" font-size="13" font-weight="700" font-family="monospace">[ 3  27  38  43 ]</text>
+        <rect x="340" y="194" width="190" height="30" rx="8" fill="var(--bg2)" stroke="var(--aqua)"/>
+        <text x="435" y="214" text-anchor="middle" fill="var(--aqua)" font-size="13" font-weight="700" font-family="monospace">[ 9  10  82 ]</text>
+        <text x="300" y="248" text-anchor="middle" fill="var(--green)" font-size="12" font-weight="800" font-family="DM Sans,sans-serif">FINAL MERGE</text>
+        <rect x="100" y="258" width="400" height="36" rx="8" fill="var(--bg1)" stroke="var(--green)" stroke-width="2"/>
+        <text x="300" y="281" text-anchor="middle" fill="var(--green)" font-size="15" font-weight="800" font-family="monospace">[ 3  9  10  27  38  43  82 ]</text>
+      </svg>
+      <div style="text-align:center;font-size:13px;color:var(--fg4);margin-top:10px;">log n levels × n work each = <strong style="color:var(--orange);">O(n log n)</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- O(n²) -->
+<div class="section" id="on2">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">n²</div>
+    <h2>O(n²) — Quadratic Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>For each item, you check every OTHER item.</strong> Loop inside a loop. 100 items = 10,000 steps!</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Handshakes at a party.</strong> Every person shakes hands with every other person. 10 people ≈ 45 handshakes. 100 people ≈ 4,950. 1000 people ≈ 500,000!</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Nested Loop Grid</h3>
+    <p>Outer loop picks a <span style="color:var(--yellow);">row</span>, inner loop scans every <span style="color:var(--orange);">column</span>:</p>
+    <div class="viz-box">
+      <div class="viz-tag">O(n²) — Nested Loops</div>
+      <div id="gridViz" style="display:flex;flex-direction:column;align-items:center;gap:3px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="gridMsg">Click "Run" to watch</div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="gridOps">0</div><div class="label">Operations</div></div>
+        <div class="stat"><div class="num">64</div><div class="label">Total (8×8)</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="gridReset()">Reset</button>
+      <button class="btn" onclick="gridRun()">Run</button>
+    </div>
+    <div class="tip warn-tip"><strong>Interview red flag:</strong> O(n²) is usually the brute force. The interviewer wants you to optimize — use a hash map O(n) or sorting O(n log n).</div>
+  </div>
+</div>
+
+<!-- O(2^n) -->
+<div class="section" id="o2n">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">2ⁿ</div>
+    <h2>O(2ⁿ) — Exponential Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>Work DOUBLES with each additional item.</strong> 10 items = 1,024 steps. 20 items = over 1 MILLION. 30 items = over 1 BILLION.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Rice on a chessboard.</strong> 1 grain on square 1, 2 on square 2, 4 on square 3... By square 64, more rice than exists on Earth!</p>
+      <p><strong>Outfit choices.</strong> For each clothing item: "wear it" or "don't." 20 items = 2²⁰ = 1,048,576 outfits.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">10</div><div class="label">→ 1,024</div></div>
+      <div class="stat"><div class="num">20</div><div class="label">→ 1,048,576</div></div>
+      <div class="stat"><div class="num">30</div><div class="label">→ 1 BILLION</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Visual: Fibonacci Explosion</h3>
+    <div class="viz-box">
+      <div class="viz-tag">fib(6) Call Tree</div>
+      <svg viewBox="0 0 700 230" style="width:100%;max-width:700px;margin:0 auto;display:block;">
+        <line x1="350" y1="28" x2="200" y2="70" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="350" y1="28" x2="500" y2="70" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="200" y1="70" x2="120" y2="118" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="200" y1="70" x2="280" y2="118" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="500" y1="70" x2="430" y2="118" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="500" y1="70" x2="570" y2="118" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="120" y1="118" x2="80" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="120" y1="118" x2="160" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="280" y1="118" x2="250" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="280" y1="118" x2="310" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="430" y1="118" x2="400" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="430" y1="118" x2="460" y2="165" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="80" y1="165" x2="55" y2="205" stroke="var(--bg3)" stroke-width="1.5"/>
+        <line x1="80" y1="165" x2="105" y2="205" stroke="var(--bg3)" stroke-width="1.5"/>
+        <circle cx="350" cy="28" r="20" fill="var(--red)"/>
+        <text x="350" y="33" text-anchor="middle" fill="var(--bg)" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">f(6)</text>
+        <circle cx="200" cy="70" r="18" fill="var(--orange)"/>
+        <text x="200" y="75" text-anchor="middle" fill="var(--bg)" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">f(5)</text>
+        <circle cx="500" cy="70" r="18" fill="var(--orange)"/>
+        <text x="500" y="75" text-anchor="middle" fill="var(--bg)" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">f(4)</text>
+        <circle cx="120" cy="118" r="16" fill="var(--yellow)"/>
+        <text x="120" y="123" text-anchor="middle" fill="var(--bg)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">f(4)</text>
+        <circle cx="280" cy="118" r="16" fill="var(--yellow)"/>
+        <text x="280" y="123" text-anchor="middle" fill="var(--bg)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">f(3)</text>
+        <circle cx="430" cy="118" r="16" fill="var(--yellow)"/>
+        <text x="430" y="123" text-anchor="middle" fill="var(--bg)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">f(3)</text>
+        <circle cx="570" cy="118" r="16" fill="var(--yellow)"/>
+        <text x="570" y="123" text-anchor="middle" fill="var(--bg)" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">f(2)</text>
+        <circle cx="80" cy="165" r="14" fill="var(--blue)"/>
+        <text x="80" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(3)</text>
+        <circle cx="160" cy="165" r="14" fill="var(--blue)"/>
+        <text x="160" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(2)</text>
+        <circle cx="250" cy="165" r="14" fill="var(--blue)"/>
+        <text x="250" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(2)</text>
+        <circle cx="310" cy="165" r="14" fill="var(--blue)"/>
+        <text x="310" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(1)</text>
+        <circle cx="400" cy="165" r="14" fill="var(--blue)"/>
+        <text x="400" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(2)</text>
+        <circle cx="460" cy="165" r="14" fill="var(--blue)"/>
+        <text x="460" y="170" text-anchor="middle" fill="var(--bg)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">f(1)</text>
+        <circle cx="55" cy="205" r="11" fill="var(--aqua)"/>
+        <circle cx="105" cy="205" r="11" fill="var(--aqua)"/>
+        <text x="350" y="225" text-anchor="middle" fill="var(--fg4)" font-size="12" font-family="DM Sans,sans-serif">25 calls for just fib(6)! f(3) computed 3 times. Massive waste.</text>
+      </svg>
+    </div>
+    <div class="tip"><strong>Fix:</strong> Use <strong>memoization</strong> (DP) to store computed results. Turns O(2ⁿ) → O(n).</div>
+  </div>
+</div>
+
+<!-- O(n!) -->
+<div class="section" id="onf">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.15);color:var(--red);">n!</div>
+    <h2>O(n!) — Factorial Time</h2>
+  </div>
+  <div class="card">
+    <h3>What Does It Mean?</h3>
+    <p><strong>The slowest thing you'll ever see.</strong> n! means n × (n-1) × (n-2) × ... × 1. It grows so fast your brain can't even imagine it.</p>
+    <p><code>5! = 5 × 4 × 3 × 2 × 1 = 120</code></p>
+    <p><code>10! = 3,628,800</code> (over 3 million)</p>
+    <p><code>20! = 2,432,902,008,176,640,000</code> (2.4 QUINTILLION)</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Arranging people in a line.</strong> How many different orders can 5 people stand in? The first spot has 5 choices. The second spot has 4. Then 3, 2, 1. Total: 5 × 4 × 3 × 2 × 1 = 120 arrangements.</p>
+      <p>With 10 people? Over <strong>3.6 million</strong> arrangements.</p>
+      <p>With 20 people? More arrangements than <strong>atoms in your body</strong>.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">5!</div><div class="label">= 120</div></div>
+      <div class="stat"><div class="num">8!</div><div class="label">= 40,320</div></div>
+      <div class="stat"><div class="num">10!</div><div class="label">= 3,628,800</div></div>
+      <div class="stat"><div class="num">13!</div><div class="label">= 6.2 BILLION</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Factorial Growth Explosion</h3>
+    <p>Watch how fast n! grows compared to 2ⁿ:</p>
+    <div class="viz-box">
+      <div class="viz-tag">n! vs 2ⁿ vs n²</div>
+      <div style="text-align:center;margin-bottom:14px;">
+        <label style="color:var(--fg3);font-size:14px;">n = </label>
+        <input type="range" id="factSlider" min="1" max="12" value="5" style="width:200px;vertical-align:middle;accent-color:var(--red);" oninput="updateFactorial()">
+        <span id="factN" style="color:var(--red);font-weight:800;font-size:22px;margin-left:8px;">5</span>
+      </div>
+      <div class="bar-chart" id="factChart"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Visual: All Permutations of [A, B, C]</h3>
+    <p>With just 3 items, there are already 3! = 6 arrangements:</p>
+    <div class="viz-box">
+      <div class="viz-tag">3! = 6 permutations</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px;margin:0 auto;">
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div></div>
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div></div>
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div></div>
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div></div>
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div></div>
+        <div style="display:flex;gap:4px;justify-content:center;"><div class="cell c-purple" style="width:40px;height:40px;border-radius:8px;">C</div><div class="cell c-highlight" style="width:40px;height:40px;border-radius:8px;">B</div><div class="cell c-active" style="width:40px;height:40px;border-radius:8px;">A</div></div>
+      </div>
+      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--fg4);">3 items → 6 permutations. Now imagine 10 items → <strong style="color:var(--red);">3,628,800</strong> permutations!</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Code Example — The Traveling Salesman (Brute Force)</h3>
+    <pre><code><span class="code-line">// Visit every city exactly once. What's the shortest route?</span>
+<span class="code-line">// Brute force: try ALL possible orderings = O(n!)</span>
+<span class="code-line"></span>
+<span class="code-line lit">function permute(cities, path = []) {</span>
+<span class="code-line lit">  if (cities.length === 0) {</span>
+<span class="code-line lit">    checkDistance(path);  // is this the shortest?</span>
+<span class="code-line lit">    return;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  for (let i = 0; i < cities.length; i++) {</span>
+<span class="code-line lit">    const remaining = [...cities];</span>
+<span class="code-line lit">    const city = remaining.splice(i, 1);</span>
+<span class="code-line lit">    permute(remaining, [...path, city]);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line">}</span>
+<span class="code-line">// 10 cities = 3,628,800 routes to check</span>
+<span class="code-line">// 15 cities = 1,307,674,368,000 routes (IMPOSSIBLE)</span></code></pre>
+    <div class="tip"><strong>When you see O(n!):</strong> This is almost always "generate all permutations." Classic problems: Traveling Salesman (brute force), N-Queens (worst case). In interviews, you need to find a smarter approach!</div>
+    <div class="tip warn-tip"><strong>O(n!) vs O(2ⁿ):</strong> Factorial is even WORSE than exponential! At n=15, 2¹⁵ = 32,768 but 15! = 1,307,674,368,000. That's 40 million times worse!</div>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div class="section" id="compare">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">⚡</div>
+    <h2>Compare All — The Big Picture</h2>
+  </div>
+  <div class="card">
+    <h3>Growth Chart</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Drag Slider</div>
+      <canvas id="bigChart" width="800" height="340" style="width:100%;max-width:800px;"></canvas>
+      <div style="text-align:center;margin-top:12px;">
+        <label style="color:var(--fg3);">n = </label>
+        <input type="range" id="chartSlider" min="2" max="50" value="20" style="width:240px;vertical-align:middle;accent-color:var(--yellow);" oninput="drawBigChart()">
+        <span id="chartN" style="color:var(--yellow);font-weight:800;font-size:18px;margin-left:8px;">20</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>The Complete Cheat Sheet</h3>
+    <table>
+      <thead><tr><th>Big O</th><th>Name</th><th>n=10</th><th>n=100</th><th>n=1000</th><th>Speed</th></tr></thead>
+      <tbody>
+        <tr><td><code>O(1)</code></td><td>Constant</td><td>1</td><td>1</td><td>1</td><td><span class="badge b-fast">Blazing</span></td></tr>
+        <tr><td><code>O(log n)</code></td><td>Logarithmic</td><td>3</td><td>7</td><td>10</td><td><span class="badge b-fast">Excellent</span></td></tr>
+        <tr><td><code>O(n)</code></td><td>Linear</td><td>10</td><td>100</td><td>1,000</td><td><span class="badge b-ok">Good</span></td></tr>
+        <tr><td><code>O(n log n)</code></td><td>Linearithmic</td><td>33</td><td>664</td><td>9,966</td><td><span class="badge b-mid">Decent</span></td></tr>
+        <tr><td><code>O(n²)</code></td><td>Quadratic</td><td>100</td><td>10,000</td><td>1,000,000</td><td><span class="badge b-slow">Slow</span></td></tr>
+        <tr><td><code>O(2ⁿ)</code></td><td>Exponential</td><td>1,024</td><td>1.27×10³⁰</td><td>lol</td><td><span class="badge b-slow">Terrible</span></td></tr>
+        <tr><td><code>O(n!)</code></td><td>Factorial</td><td>3,628,800</td><td>9.3×10¹⁵⁷</td><td>lol</td><td><span class="badge b-slow">Nope</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>If Each Op Takes 1 Nanosecond (n=50)</h3>
+    <div class="bar-chart">
+      <div class="bar-row"><div class="bar-label">O(1)</div><div class="bar-track"><div class="bar-fill" style="width:1%;background:var(--green);">1 ns</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(log n)</div><div class="bar-track"><div class="bar-fill" style="width:2%;background:var(--blue);">6 ns</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(n)</div><div class="bar-track"><div class="bar-fill" style="width:4%;background:var(--yellow);">50 ns</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(n log n)</div><div class="bar-track"><div class="bar-fill" style="width:7%;background:var(--orange);">282 ns</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(n²)</div><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--red);">2,500 ns</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(2ⁿ)</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--purple);">13 DAYS</div></div></div>
+      <div class="bar-row"><div class="bar-label">O(n!)</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,var(--red),var(--dk-red));">9.6 × 10⁴⁷ YEARS</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SPACE -->
+<div class="section" id="space">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">💾</div>
+    <h2>Space Complexity</h2>
+  </div>
+  <div class="card">
+    <h3>Same Idea, Different Resource</h3>
+    <p>Time = how much <strong>time</strong>. Space = how much <strong>memory</strong>.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Cooking.</strong> Time complexity = how long you cook. Space complexity = how many pots and pans you use.</p>
+    </div>
+    <table>
+      <thead><tr><th>Space</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>O(1)</code></td><td>No extra memory</td><td>Swap two variables</td></tr>
+        <tr><td><code>O(n)</code></td><td>Grows with input</td><td>Copy an array, hash map</td></tr>
+        <tr><td><code>O(n²)</code></td><td>2D table</td><td>DP grid for two strings</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Interview tip:</strong> Always mention BOTH. "This is O(n) time and O(1) space."</div>
+  </div>
+</div>
+
+<!-- RULES -->
+<div class="section" id="rules">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">📏</div>
+    <h2>The 7 Rules for Calculating Big O</h2>
+  </div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--yellow);">
+        <div style="font-weight:700;color:var(--yellow);margin-bottom:4px;">Rule 1: Drop Constants</div>
+        <div style="color:var(--fg3);">O(2n) → <strong style="color:var(--fg);">O(n)</strong> &nbsp;|&nbsp; O(500) → <strong style="color:var(--fg);">O(1)</strong></div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--orange);">
+        <div style="font-weight:700;color:var(--orange);margin-bottom:4px;">Rule 2: Drop Smaller Terms</div>
+        <div style="color:var(--fg3);">O(n² + n) → <strong style="color:var(--fg);">O(n²)</strong> &nbsp;|&nbsp; O(n + log n) → <strong style="color:var(--fg);">O(n)</strong></div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--green);">
+        <div style="font-weight:700;color:var(--green);margin-bottom:4px;">Rule 3: One Loop = O(n)</div>
+        <div style="color:var(--fg3);">A single <code>for</code> loop through n items</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--red);">
+        <div style="font-weight:700;color:var(--red);margin-bottom:4px;">Rule 4: Nested Loops = Multiply</div>
+        <div style="color:var(--fg3);">Loop inside a loop → O(n × n) = <strong style="color:var(--fg);">O(n²)</strong></div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--blue);">
+        <div style="font-weight:700;color:var(--blue);margin-bottom:4px;">Rule 5: Sequential Loops = Add</div>
+        <div style="color:var(--fg3);">Loop then another loop (not nested) = O(n + n) = <strong style="color:var(--fg);">O(n)</strong></div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--aqua);">
+        <div style="font-weight:700;color:var(--aqua);margin-bottom:4px;">Rule 6: Halving = O(log n)</div>
+        <div style="color:var(--fg3);">Divide the data in half each step</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:18px 22px;border-left:4px solid var(--purple);">
+        <div style="font-weight:700;color:var(--purple);margin-bottom:4px;">Rule 7: Different Inputs = Different Variables</div>
+        <div style="color:var(--fg3);">Loop A (size n) then B (size m) → <strong style="color:var(--fg);">O(n + m)</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div class="section" id="practice">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">?</div>
+    <h2>Quiz: What's the Big O?</h2>
+  </div>
+  <div class="card">
+    <div id="quizArea"></div>
+  </div>
+  <div class="card" style="text-align:center;padding:40px;">
+    <h3 style="justify-content:center;font-size:24px;color:var(--yellow);">You Now Understand Big O!</h3>
+    <p style="font-size:16px;max-width:520px;margin:12px auto 0;color:var(--fg3);">This is the foundation of everything in DSA. Every time you write code, ask: <strong style="color:var(--fg);">"What's the Big O?"</strong></p>
+    <p style="color:var(--yellow);font-weight:700;font-size:18px;margin-top:16px;">Keep going, Xasanov!</p>
+  </div>
+</div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Progress & Nav
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(window.scrollY/h*100)+'%';
+  document.getElementById('scrollTop').classList.toggle('show',window.scrollY>500);
+  document.querySelectorAll('.section').forEach(s=>{
+    const a=document.querySelector('.topnav a[href="#'+s.id+'"]');
+    if(!a)return;const r=s.getBoundingClientRect();
+    a.classList.toggle('active',r.top<180&&r.bottom>180);
+  });
+});
+
+// Intro Chart
+function updateIntroChart(){
+  const n=+document.getElementById('introSlider').value;
+  document.getElementById('introN').textContent=n;
+  const d=[
+    {l:'O(1)',v:1,c:'var(--green)'},
+    {l:'O(log n)',v:Math.max(1,Math.floor(Math.log2(n))),c:'var(--blue)'},
+    {l:'O(n)',v:n,c:'var(--yellow)'},
+    {l:'O(n log n)',v:Math.max(1,Math.floor(n*Math.log2(n))),c:'var(--orange)'},
+    {l:'O(n²)',v:n*n,c:'var(--red)'},
+  ];
+  const mx=d[d.length-1].v;
+  document.getElementById('introChart').innerHTML=d.map(x=>{
+    const p=Math.max(1,x.v/mx*100);
+    const t=x.v>99999?(x.v/1000).toFixed(0)+'k':x.v.toLocaleString();
+    return '<div class="bar-row"><div class="bar-label">'+x.l+'</div><div class="bar-track"><div class="bar-fill" style="width:'+p+'%;background:'+x.c+';">'+t+'</div></div></div>';
+  }).join('');
+}
+updateIntroChart();
+
+// O(1) Click
+(function(){
+  const a=[14,27,3,88,56,71,42,9,63,35];
+  const c=document.getElementById('o1Array');
+  function r(act){c.innerHTML='';a.forEach((v,i)=>{
+    const cls=i===act?'c-active glow':'c-default';
+    c.innerHTML+='<div class="cell '+cls+'" style="cursor:pointer;" onclick="o1C('+i+')">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });}
+  window.o1C=function(i){r(i);document.getElementById('o1Status').innerHTML='Accessed <strong>array['+i+'] = '+a[i]+'</strong> in <span style="color:var(--green);font-weight:800;">1 step</span>';document.getElementById('o1Steps').textContent='1';};
+  r(-1);
+})();
+
+// Binary Search
+var bsArr=[2,5,7,9,12,15,18,23,27,31,35,40,44,49,53,58],bsTgt=23,bsL,bsR,bsM,bsD,bsSN,bsAI;
+function bsRender(){var c=document.getElementById('bsArray');c.innerHTML='';bsArr.forEach(function(v,i){var cl='c-default';if(i<bsL||i>bsR)cl='c-skip';if(i===bsM&&bsD)cl='c-done';else if(i===bsM)cl='c-warn';else if((i===bsL||i===bsR)&&!bsD&&i>=bsL&&i<=bsR)cl='c-highlight';c.innerHTML+='<div class="cell '+cl+'" style="width:42px;height:42px;font-size:12px;">'+v+'<span class="sub-label">'+(i===bsL?'L':i===bsR?'R':i===bsM?'M':'')+'</span></div>';});document.getElementById('bsRemaining').textContent=Math.max(0,bsR-bsL+1);document.getElementById('bsEliminated').textContent=bsArr.length-Math.max(0,bsR-bsL+1);var d=document.getElementById('bsSteps');d.innerHTML='';for(var i=0;i<5;i++){d.innerHTML+='<div class="step-dot '+(i<bsSN?(bsD&&i===bsSN-1?'done':'active'):'')+'"></div>';}}
+function bsReset(){clearInterval(bsAI);bsL=0;bsR=bsArr.length-1;bsM=-1;bsD=false;bsSN=0;bsRender();document.getElementById('bsMsg').textContent='Searching for '+bsTgt+'...';document.getElementById('bsStepCount').textContent='0';}
+function bsStep(){if(bsD||bsL>bsR)return;bsM=Math.floor((bsL+bsR)/2);bsSN++;document.getElementById('bsStepCount').textContent=bsSN;if(bsArr[bsM]===bsTgt){bsD=true;document.getElementById('bsMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Found '+bsTgt+' at index '+bsM+' in '+bsSN+' steps!</span>';}else if(bsArr[bsM]<bsTgt){document.getElementById('bsMsg').innerHTML='Step '+bsSN+': mid='+bsArr[bsM]+' < '+bsTgt+' → <span style="color:var(--yellow);">throw away LEFT</span>';bsL=bsM+1;}else{document.getElementById('bsMsg').innerHTML='Step '+bsSN+': mid='+bsArr[bsM]+' > '+bsTgt+' → <span style="color:var(--blue);">throw away RIGHT</span>';bsR=bsM-1;}bsRender();}
+function bsAutoPlay(){bsReset();bsAI=setInterval(function(){if(bsD||bsL>bsR){clearInterval(bsAI);return;}bsStep();},900);}
+bsReset();
+
+// Linear Search
+var lsA,lsT,lsI,lsC,lsAI2;
+function lsInit(){lsA=Array.from({length:16},function(){return Math.floor(Math.random()*99)+1;});lsT=Math.floor(Math.random()*16);lsI=lsT;lsC=-1;}
+function lsRender(){var c=document.getElementById('lsArray');c.innerHTML='';lsA.forEach(function(v,i){var cl='c-default';if(i<lsC)cl='c-skip';if(i===lsC)cl=i===lsI?'c-done':'c-active';if(i===lsI&&lsC>=lsI)cl='c-done';c.innerHTML+='<div class="cell '+cl+'" style="width:42px;height:42px;font-size:'+(i===lsI?'17':'12')+'px;">'+(i===lsI?'★':v)+'<span class="sub-label">['+i+']</span></div>';});}
+function lsReset(){clearInterval(lsAI2);lsInit();lsC=-1;lsRender();document.getElementById('lsMsg').innerHTML='Finding <strong>★</strong>... Click "Search"';document.getElementById('lsChecked').textContent='0';}
+function lsAutoPlay(){lsReset();lsAI2=setInterval(function(){lsC++;document.getElementById('lsChecked').textContent=lsC+1;if(lsC===lsI){document.getElementById('lsMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Found ★ at index '+lsI+' after '+(lsI+1)+' checks!</span>';lsRender();clearInterval(lsAI2);return;}document.getElementById('lsMsg').textContent='Checking ['+lsC+']... not here.';lsRender();},180);}
+lsReset();
+
+// Grid
+var gS=8,gI=-1,gJ=-1,gO=0,gAI;
+function gR(){var c=document.getElementById('gridViz');c.innerHTML='';for(var i=0;i<gS;i++){var r=document.createElement('div');r.style.cssText='display:flex;gap:3px;';for(var j=0;j<gS;j++){var bg='var(--bg2)';if(i<gI||(i===gI&&j<gJ))bg='var(--yellow)';if(i===gI&&j===gJ)bg='var(--orange)';r.innerHTML+='<div style="width:30px;height:30px;border-radius:5px;background:'+bg+';transition:background .1s;"></div>';}c.appendChild(r);}}
+function gridReset(){clearInterval(gAI);gI=-1;gJ=-1;gO=0;document.getElementById('gridOps').textContent='0';document.getElementById('gridMsg').textContent='Click "Run" to watch nested loops';gR();}
+function gridRun(){gridReset();gAI=setInterval(function(){gJ++;if(gJ>=gS){gJ=0;gI++;}else if(gI<0)gI=0;gO++;document.getElementById('gridOps').textContent=gO;if(gI>=gS){clearInterval(gAI);document.getElementById('gridMsg').innerHTML='<span style="color:var(--orange);font-weight:700;">Done! '+gS+'×'+gS+' = '+(gS*gS)+' operations</span>';return;}gR();},35);}
+gridReset();
+
+// Big Chart
+function drawBigChart(){
+  var n=+document.getElementById('chartSlider').value;
+  document.getElementById('chartN').textContent=n;
+  var cv=document.getElementById('bigChart'),ctx=cv.getContext('2d'),W=800,H=340;
+  ctx.clearRect(0,0,W,H);
+  var p={l:60,r:30,t:30,b:50},gw=W-p.l-p.r,gh=H-p.t-p.b;
+  ctx.strokeStyle='#3c3836';ctx.lineWidth=1;
+  for(var i=0;i<=5;i++){var y=p.t+(i/5)*gh;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();}
+  ctx.strokeStyle='#665c54';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.l,p.t);ctx.lineTo(p.l,H-p.b);ctx.lineTo(W-p.r,H-p.b);ctx.stroke();
+  ctx.fillStyle='#a89984';ctx.font='13px DM Sans,sans-serif';ctx.textAlign='center';ctx.fillText('Input Size (n)',W/2,H-8);
+  ctx.save();ctx.translate(16,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('Steps',0,0);ctx.restore();
+  var ls=[{l:'O(1)',c:'#b8bb26',fn:function(){return 1;}},{l:'O(log n)',c:'#83a598',fn:function(x){return Math.log2(Math.max(1,x));}},{l:'O(n)',c:'#fabd2f',fn:function(x){return x;}},{l:'O(n log n)',c:'#fe8019',fn:function(x){return x*Math.log2(Math.max(1,x));}},{l:'O(n²)',c:'#fb4934',fn:function(x){return x*x;}}];
+  var mx=n*n;
+  ls.forEach(function(l){ctx.strokeStyle=l.c;ctx.lineWidth=3;ctx.beginPath();for(var i=0;i<=n;i++){var x=p.l+(i/n)*gw,y2=H-p.b-Math.min(l.fn(i)/mx,1)*gh;i===0?ctx.moveTo(x,y2):ctx.lineTo(x,y2);}ctx.stroke();});
+  ctx.textAlign='left';ctx.font='12px DM Sans,sans-serif';var lx=p.l+12;
+  ls.forEach(function(l){ctx.fillStyle=l.c;ctx.fillRect(lx,p.t+8,16,4);ctx.fillStyle='#ebdbb2';ctx.fillText(l.l,lx+22,p.t+14);lx+=ctx.measureText(l.l).width+46;});
+}
+drawBigChart();
+
+// Factorial Chart
+function updateFactorial(){
+  var n=+document.getElementById('factSlider').value;
+  document.getElementById('factN').textContent=n;
+  function fact(x){var r=1;for(var i=2;i<=x;i++)r*=i;return r;}
+  var nf=fact(n),n2=Math.pow(2,n),nsq=n*n;
+  var mx=nf||1;
+  var fmt=function(v){return v>999999?(v/1e6).toFixed(1)+'M':v>9999?(v/1000).toFixed(0)+'k':v.toLocaleString();};
+  document.getElementById('factChart').innerHTML=[
+    {l:'O(n²)',v:nsq,c:'var(--red)'},
+    {l:'O(2ⁿ)',v:n2,c:'var(--purple)'},
+    {l:'O(n!)',v:nf,c:'var(--dk-red)'},
+  ].map(function(x){
+    var p=Math.max(1,x.v/mx*100);
+    return '<div class="bar-row"><div class="bar-label">'+x.l+'</div><div class="bar-track"><div class="bar-fill" style="width:'+p+'%;background:'+x.c+';">'+fmt(x.v)+'</div></div></div>';
+  }).join('');
+}
+updateFactorial();
+
+// Quiz
+(function(){
+  var q=[
+    {code:'return array[0] + array[1];',ans:'O(1)',why:'No loops. Direct access. Constant.'},
+    {code:'for (let i = 0; i < n; i++) {\n  sum += array[i];\n}',ans:'O(n)',why:'One loop through all n items.'},
+    {code:'for (let i = 0; i < n; i++)\n  for (let j = 0; j < n; j++)\n    matrix[i][j] = 0;',ans:'O(n²)',why:'Nested loops: n × n.'},
+    {code:'while (n > 1) {\n  n = Math.floor(n / 2);\n}',ans:'O(log n)',why:'Halving each step = logarithmic.'},
+    {code:'for (let i = 0; i < n; i++) { ... }\nfor (let j = 0; j < n; j++) { ... }',ans:'O(n)',why:'Two separate loops = O(n+n) = O(n).'},
+    {code:'for (let i = 0; i < a.length; i++)\n  for (let j = 0; j < b.length; j++) ...',ans:'O(a × b)',why:'Different arrays = different variables!'},
+    {code:'array.sort();\nfor (let i = 0; i < n; i++) { ... }',ans:'O(n log n)',why:'Sort O(n log n) + loop O(n). Drop smaller.'},
+    {code:'function permute(arr) {\n  // generates all orderings\n}',ans:'O(n!)',why:'All permutations of n items = n! orderings.'},
+  ];
+  document.getElementById('quizArea').innerHTML=q.map(function(x,i){return '<div style="background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:14px;"><div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">PUZZLE '+(i+1)+'</div><pre style="margin:0 0 12px;"><code>'+x.code+'</code></pre><button class="btn btn-sm" onclick="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">Show Answer</button><div style="display:none;margin-top:8px;"><div style="font-size:18px;font-weight:800;color:var(--yellow);">'+x.ans+'</div><div style="font-size:13px;color:var(--fg3);margin-top:4px;">'+x.why+'</div></div></div>';}).join('');
+})();
+</script>
+</body>
+</html>

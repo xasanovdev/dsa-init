@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrays — DSA Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+/* ── Array-specific styles ── */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--yellow),var(--orange),var(--red));transition:width .15s;}
+
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--yellow);}
+
+.page-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+
+.page-hero{text-align:center;padding:50px 20px 40px;}
+.page-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--yellow),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.page-hero .sub{color:var(--fg3);font-size:18px;max-width:600px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(250,189,47,0.1);border:1px solid rgba(250,189,47,0.2);color:var(--yellow);font-size:13px;font-weight:600;}
+
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.section-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;}
+.section-label h2{font-size:28px;font-weight:800;}
+
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:30px;margin-bottom:22px;}
+.card h3{font-size:19px;margin-bottom:14px;color:var(--yellow);display:flex;align-items:center;gap:10px;}
+.card p,.card li{color:var(--fg3);margin-bottom:10px;}
+.card strong{color:var(--fg);}
+.card ul{padding-left:20px;}
+
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:26px;margin:16px 0;position:relative;overflow:hidden;}
+.viz-tag{position:absolute;top:10px;right:14px;font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+
+.cells{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:8px 0;}
+.cell{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transition:all .35s;position:relative;}
+.cell .sub-label{position:absolute;bottom:-20px;font-size:10px;color:var(--fg4);font-weight:400;white-space:nowrap;}
+.c-default{background:var(--bg2);color:var(--fg);}
+.c-active{background:var(--yellow);color:var(--bg);transform:scale(1.1);box-shadow:0 0 20px rgba(250,189,47,0.3);}
+.c-done{background:var(--green);color:var(--bg);}
+.c-skip{background:var(--bg2);color:var(--fg4);opacity:.35;}
+.c-highlight{background:var(--blue);color:var(--bg);}
+.c-warn{background:var(--orange);color:var(--bg);}
+.c-hot{background:var(--red);color:var(--bg);}
+.c-purple{background:var(--purple);color:var(--bg);}
+.c-aqua{background:var(--aqua);color:var(--bg);}
+.c-empty{background:var(--bg2);color:var(--bg3);border:2px dashed var(--bg3);}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.btn{padding:8px 20px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.2s;user-select:none;}
+.btn:hover{background:var(--yellow);color:var(--bg);border-color:var(--yellow);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn.active{background:var(--yellow);color:var(--bg);border-color:var(--yellow);}
+
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:20px 24px;margin:14px 0;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:'Fira Code','Consolas',monospace;color:var(--fg2);}
+.code-line{transition:background .3s;padding:2px 4px;border-radius:4px;}
+.code-line.lit{background:rgba(250,189,47,0.08);}
+pre code{background:none;padding:0;}
+
+.tip{background:rgba(131,165,152,0.08);border:1px solid rgba(131,165,152,0.2);border-radius:12px;padding:18px 22px;margin:16px 0;font-size:14px;}
+.warn-tip{background:rgba(254,128,25,0.08);border-color:rgba(254,128,25,0.2);}
+.red-tip{background:rgba(251,73,52,0.08);border-color:rgba(251,73,52,0.2);}
+
+.analogy{background:linear-gradient(135deg,rgba(211,134,155,0.06),rgba(131,165,152,0.06));border:1px solid rgba(211,134,155,0.15);border-radius:14px;padding:22px 26px;margin:18px 0;}
+.analogy .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);font-weight:700;margin-bottom:8px;}
+
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.stat{flex:1;min-width:100px;background:var(--bg2);border-radius:12px;padding:14px 18px;text-align:center;}
+.stat .num{font-size:26px;font-weight:800;color:var(--yellow);}
+.stat .label{font-size:12px;color:var(--fg4);margin-top:2px;}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-weight:700;color:var(--yellow);border-bottom:2px solid var(--bg3);}
+td{padding:10px 16px;border-bottom:1px solid var(--bg2);color:var(--fg3);}
+tr:hover td{background:rgba(250,189,47,0.04);}
+
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.b-fast{background:rgba(184,187,38,0.15);color:var(--green);}
+.b-ok{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.b-mid{background:rgba(254,128,25,0.15);color:var(--orange);}
+.b-slow{background:rgba(251,73,52,0.15);color:var(--red);}
+
+.mem-row{display:flex;gap:2px;justify-content:center;margin:10px 0;}
+.mem-cell{width:70px;height:50px;border:1px solid var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;transition:.3s;border-radius:4px;}
+.mem-cell .addr{font-size:9px;color:var(--fg4);font-family:'Fira Code',monospace;}
+.mem-cell .val{font-weight:700;}
+
+.step-indicator{display:flex;justify-content:center;gap:6px;margin:12px 0;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);transition:.3s;}
+.step-dot.active{background:var(--yellow);box-shadow:0 0 8px rgba(250,189,47,0.4);}
+.step-dot.done{background:var(--green);}
+
+.pattern-card{background:var(--bg2);border-radius:12px;padding:22px;margin-bottom:14px;border-left:4px solid var(--yellow);}
+.pattern-card h4{font-weight:700;margin-bottom:6px;font-size:16px;}
+.pattern-card p{color:var(--fg3);font-size:14px;margin-bottom:0;}
+
+@keyframes bounce-right{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+.arrow-bounce{display:inline-block;animation:bounce-right 1s infinite;}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 0 rgba(250,189,47,0);}50%{box-shadow:0 0 24px rgba(250,189,47,0.3);}}
+.glow{animation:glow-pulse 2s infinite;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.scroll-top{position:fixed;bottom:28px;right:28px;width:46px;height:46px;border-radius:50%;background:var(--yellow);color:var(--bg);border:none;cursor:pointer;font-size:22px;display:none;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(250,189,47,0.25);font-family:inherit;}
+.scroll-top.show{display:flex;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){
+  .page-hero h1{font-size:32px;}
+  .card{padding:20px;}
+  .stat-row{flex-direction:column;}
+  .mem-cell{width:50px;height:40px;font-size:11px;}
+  .two-col{grid-template-columns:1fr;}
+  .topnav{top:60px;}
+  .cell{width:40px;height:40px;font-size:13px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Website Navbar -->
+<div class="navbar">
+  <a href="../../index.html" class="logo">DSA Deep Dive</a>
+  <nav>
+    <a href="../../index.html">Home</a>
+    <a href="../big-o/index.html">Big O</a>
+    <a href="#" class="active">Arrays</a>
+  </nav>
+</div>
+
+<div class="progress"><div class="progress-fill" id="prog"></div></div>
+
+<nav class="topnav" id="topnav">
+  <a href="#what">What</a>
+  <a href="#memory">Memory</a>
+  <a href="#ops">Operations</a>
+  <a href="#static-dynamic">Static vs Dynamic</a>
+  <a href="#two-pointers">Two Pointers</a>
+  <a href="#sliding-window">Sliding Window</a>
+  <a href="#prefix-sum">Prefix Sum</a>
+  <a href="#kadane">Kadane</a>
+  <a href="#dutch">Dutch Flag</a>
+  <a href="#binary-search">Binary Search</a>
+  <a href="#matrix">2D Arrays</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#problems">Top Problems</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<div class="page-container">
+
+<!-- ══════════ HERO ══════════ -->
+<div class="page-hero">
+  <h1>Arrays — The Complete Deep Dive</h1>
+  <p class="sub">Everything you need to know about arrays for coding interviews. From memory layout to advanced patterns — all in simple words with interactive visuals.</p>
+  <div class="hero-badge">DSA Chapter 2 — The Most Important Data Structure</div>
+</div>
+
+<!-- ══════════ WHAT IS AN ARRAY ══════════ -->
+<div class="section" id="what">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">[]</div>
+    <h2>What Is an Array?</h2>
+  </div>
+
+  <div class="card">
+    <h3>The One-Sentence Answer</h3>
+    <p>An array is a <strong>list of items stored next to each other in memory</strong>. That's it. Items sit side by side like books on a shelf.</p>
+    <div class="analogy">
+      <div class="label">Real-World Analogy</div>
+      <p><strong>A row of lockers in school.</strong> Locker #0, Locker #1, Locker #2... Each one holds something. You know exactly where each locker is because they're numbered and side by side.</p>
+      <p>Want locker #5? Walk straight to it. Don't need to check lockers #0–4.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Click Any Index — Instant Access</h3>
+    <p>Arrays let you jump to any position <strong>instantly</strong> using the index number:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Click a cell!</div>
+      <div class="cells" id="whatArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;color:var(--fg4);font-size:14px;margin-top:12px;" id="whatStatus">Click any box to access it in O(1)</div>
+    </div>
+    <div class="tip"><strong>Key fact:</strong> Arrays start at index <code>0</code>, not <code>1</code>. An array of 5 items has indices 0, 1, 2, 3, 4.</div>
+  </div>
+
+  <div class="card">
+    <h3>Why Arrays Are #1 in Interviews</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="num">~40%</div><div class="label">of all interview Qs</div></div>
+      <div class="stat"><div class="num">#1</div><div class="label">most common DS</div></div>
+      <div class="stat"><div class="num">10+</div><div class="label">key patterns</div></div>
+      <div class="stat"><div class="num">O(1)</div><div class="label">random access</div></div>
+    </div>
+    <p>Arrays are the building block. <strong>Strings are arrays of characters.</strong> Hash maps, stacks, queues, heaps — they're all often built ON arrays.</p>
+  </div>
+</div>
+
+<!-- ══════════ MEMORY LAYOUT ══════════ -->
+<div class="section" id="memory">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🧠</div>
+    <h2>Under the Hood — Memory Layout</h2>
+  </div>
+
+  <div class="card">
+    <h3>How the Computer Actually Stores an Array</h3>
+    <p>When you write <code>let arr = [10, 20, 30, 40, 50]</code>, the computer reserves a <strong>block of consecutive memory addresses</strong>:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Memory Addresses</div>
+      <div class="mem-row" id="memViz">
+        <div class="mem-cell" style="background:var(--bg1);"><div class="val" style="color:var(--yellow);">10</div><div class="addr">0x100</div></div>
+        <div class="mem-cell" style="background:var(--bg1);"><div class="val" style="color:var(--yellow);">20</div><div class="addr">0x104</div></div>
+        <div class="mem-cell" style="background:var(--bg1);"><div class="val" style="color:var(--yellow);">30</div><div class="addr">0x108</div></div>
+        <div class="mem-cell" style="background:var(--bg1);"><div class="val" style="color:var(--yellow);">40</div><div class="addr">0x10C</div></div>
+        <div class="mem-cell" style="background:var(--bg1);"><div class="val" style="color:var(--yellow);">50</div><div class="addr">0x110</div></div>
+      </div>
+      <div style="text-align:center;font-size:13px;color:var(--fg4);margin-top:12px;">
+        Each number takes 4 bytes. Address of <code>arr[i]</code> = <strong style="color:var(--aqua);">start + (i × 4)</strong>
+      </div>
+    </div>
+    <p>This is the magic formula! The computer doesn't "search" for index 3. It <strong>calculates the address directly</strong>:</p>
+    <pre><code><span class="code-line lit">address of arr[3] = 0x100 + (3 × 4) = 0x10C → value is 40</span>
+<span class="code-line">// That's why array access is O(1) — it's just MATH!</span></code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: See the Address Calculation</h3>
+    <p>Click an index to see how the computer finds it:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Address Calculator</div>
+      <div class="cells" id="addrCells" style="padding-bottom:28px;"></div>
+      <div id="addrCalc" style="text-align:center;margin-top:16px;font-size:15px;color:var(--fg3);min-height:60px;">Click a cell to see the math</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why "Contiguous" Matters</h3>
+    <div class="analogy">
+      <div class="label">The Key Insight</div>
+      <p><strong>Contiguous</strong> = items are stored RIGHT NEXT TO EACH OTHER. No gaps.</p>
+      <p>This is WHY random access is O(1). The CPU knows exactly where to look because it can do simple math.</p>
+      <p>Compare with a <strong>Linked List</strong> where items can be scattered everywhere in memory — you have to follow pointers one by one. That's O(n).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ OPERATIONS & BIG O ══════════ -->
+<div class="section" id="ops">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">⚡</div>
+    <h2>Array Operations & Big O</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Complete Cheat Sheet</h3>
+    <table>
+      <thead><tr><th>Operation</th><th>Time</th><th>Why?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Access by index</strong> <code>arr[i]</code></td><td><span class="badge b-fast">O(1)</span></td><td>Direct math calculation</td></tr>
+        <tr><td><strong>Search</strong> (unsorted)</td><td><span class="badge b-ok">O(n)</span></td><td>Check each item one by one</td></tr>
+        <tr><td><strong>Search</strong> (sorted)</td><td><span class="badge b-fast">O(log n)</span></td><td>Binary search — halve each time</td></tr>
+        <tr><td><strong>Push</strong> (add at end)</td><td><span class="badge b-fast">O(1)*</span></td><td>Just add after last item</td></tr>
+        <tr><td><strong>Pop</strong> (remove from end)</td><td><span class="badge b-fast">O(1)</span></td><td>Just remove last item</td></tr>
+        <tr><td><strong>Insert at beginning</strong></td><td><span class="badge b-slow">O(n)</span></td><td>Must shift ALL items right</td></tr>
+        <tr><td><strong>Insert at middle</strong></td><td><span class="badge b-slow">O(n)</span></td><td>Must shift items after</td></tr>
+        <tr><td><strong>Delete from beginning</strong></td><td><span class="badge b-slow">O(n)</span></td><td>Must shift ALL items left</td></tr>
+        <tr><td><strong>Delete from middle</strong></td><td><span class="badge b-slow">O(n)</span></td><td>Must shift items to fill gap</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>* Amortized O(1):</strong> Push is usually O(1), but occasionally the array needs to <strong>resize</strong> (copy everything to a bigger block). On average, it's still O(1).</div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Insert at Beginning — Watch the Shift!</h3>
+    <p>See why inserting at index 0 is O(n) — <strong>every element must move</strong>:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Insert at index 0</div>
+      <div class="cells" id="insertViz" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="insertMsg">Click "Insert 99" to watch</div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="insertShifts">0</div><div class="label">Shifts needed</div></div>
+        <div class="stat"><div class="num" id="insertLen">6</div><div class="label">Array length</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="insertReset()">Reset</button>
+      <button class="btn" onclick="insertRun()">Insert 99 at start <span class="arrow-bounce">→</span></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Delete from Middle — Watch the Collapse!</h3>
+    <p>When you remove an item, everything after it must <strong>shift left</strong> to fill the gap:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Delete from middle</div>
+      <div class="cells" id="deleteViz" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="deleteMsg">Click "Delete index 2" to watch</div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="deleteShifts">0</div><div class="label">Shifts needed</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="deleteReset()">Reset</button>
+      <button class="btn" onclick="deleteRun()">Delete index 2 <span class="arrow-bounce">→</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ STATIC VS DYNAMIC ══════════ -->
+<div class="section" id="static-dynamic">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">📐</div>
+    <h2>Static vs Dynamic Arrays</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Two Types</h3>
+    <div class="two-col">
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--blue);">
+        <div style="font-weight:800;color:var(--blue);font-size:16px;margin-bottom:8px;">Static Array</div>
+        <p style="font-size:14px;"><strong>Fixed size.</strong> You declare the size upfront and it can't change.</p>
+        <pre style="font-size:12px;margin:8px 0;"><code>int arr[5]; // C/C++ — always 5 slots
+int[] arr = new int[5]; // Java</code></pre>
+        <p style="font-size:13px;color:var(--fg4);">Used in: C, C++, Java (primitive arrays)</p>
+      </div>
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;border-top:3px solid var(--yellow);">
+        <div style="font-weight:800;color:var(--yellow);font-size:16px;margin-bottom:8px;">Dynamic Array</div>
+        <p style="font-size:14px;"><strong>Auto-resizes.</strong> It grows when you add items. Starts small, doubles when full.</p>
+        <pre style="font-size:12px;margin:8px 0;"><code>arr = []  # Python list
+let arr = []; // JavaScript
+ArrayList&lt;Integer&gt; // Java</code></pre>
+        <p style="font-size:13px;color:var(--fg4);">Used in: Python, JavaScript, Java (ArrayList)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How Dynamic Arrays Grow</h3>
+    <p>When a dynamic array is full and you push a new item:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Resize Animation</div>
+      <div id="resizeViz" style="text-align:center;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="resizeMsg">Click "Push" to add items and see the resize</div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="resizeReset()">Reset</button>
+      <button class="btn" onclick="resizePush()">Push item <span class="arrow-bounce">→</span></button>
+    </div>
+    <div class="tip"><strong>Doubling strategy:</strong> When the array is full, it creates a NEW array that's <strong>2× bigger</strong>, copies everything over, then adds the new item. This is why push is "amortized O(1)" — the expensive copy happens rarely.</div>
+  </div>
+</div>
+
+<!-- ══════════ TWO POINTERS ══════════ -->
+<div class="section" id="two-pointers">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">👆👆</div>
+    <h2>Pattern: Two Pointers</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is It?</h3>
+    <p><strong>Use two variables (pointers) that move through the array.</strong> They can start from both ends and walk toward each other, or both from the start at different speeds.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Two people reading the same book.</strong> One starts from page 1, the other from the last page. They walk toward each other until they meet in the middle.</p>
+    </div>
+    <p>This turns O(n²) brute force into <strong>O(n)</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Two Sum on Sorted Array</h3>
+    <p>Find two numbers that add up to <strong id="tpTarget">16</strong> in this sorted array:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Two Pointers — O(n)</div>
+      <div class="cells" id="tpArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <div style="color:var(--fg4);font-size:14px;" id="tpMsg">Click "Start" to watch two pointers solve it</div>
+        <div id="tpSum" style="font-size:18px;font-weight:800;margin-top:8px;min-height:28px;"></div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="tpSteps">0</div><div class="label">Steps</div></div>
+        <div class="stat"><div class="num">vs 28</div><div class="label">Brute force steps</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="tpReset()">Reset</button>
+      <button class="btn" onclick="tpStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="tpAuto()">Auto Play</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code: Two Sum (Sorted Array)</h3>
+    <pre><code><span class="code-line lit">function twoSum(arr, target) {</span>
+<span class="code-line lit">  let left = 0;</span>
+<span class="code-line lit">  let right = arr.length - 1;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (left < right) {</span>
+<span class="code-line lit">    const sum = arr[left] + arr[right];</span>
+<span class="code-line"></span>
+<span class="code-line lit">    if (sum === target) return [left, right];</span>
+<span class="code-line lit">    if (sum < target) left++;   // need bigger → move left up</span>
+<span class="code-line lit">    else              right--;  // need smaller → move right down</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return [-1, -1]; // not found</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Why it works:</strong> Array is sorted. If sum is too small, we move left pointer right (bigger number). If too big, we move right pointer left (smaller number). We shrink the window until we find the answer.</div>
+  </div>
+
+  <div class="card">
+    <h3>Classic Two Pointer Problems</h3>
+    <div class="pattern-card" style="border-left-color:var(--green);">
+      <h4 style="color:var(--green);">Reverse an Array</h4>
+      <p>Left starts at 0, right at end. Swap them. Move inward. O(n) time, O(1) space.</p>
+    </div>
+    <div class="pattern-card" style="border-left-color:var(--blue);">
+      <h4 style="color:var(--blue);">Remove Duplicates (Sorted)</h4>
+      <p>Slow pointer marks where to write. Fast pointer scans ahead. Skip duplicates.</p>
+    </div>
+    <div class="pattern-card" style="border-left-color:var(--orange);">
+      <h4 style="color:var(--orange);">Container With Most Water</h4>
+      <p>Two pointers from edges. Move the shorter side inward to try for more area.</p>
+    </div>
+    <div class="pattern-card" style="border-left-color:var(--purple);">
+      <h4 style="color:var(--purple);">3Sum (Three Sum)</h4>
+      <p>Sort array. Fix one number, then use two pointers on the rest. O(n²).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDING WINDOW ══════════ -->
+<div class="section" id="sliding-window">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🪟</div>
+    <h2>Pattern: Sliding Window</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is It?</h3>
+    <p><strong>A "window" (subarray) that slides across the array.</strong> Instead of recalculating everything from scratch, you add the new element and remove the old one.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Looking through a train window.</strong> The window is fixed size. As the train moves, new scenery enters from one side and old scenery leaves from the other. You don't need to re-see the whole journey to know what's currently visible.</p>
+    </div>
+    <p>Turns O(n × k) brute force into <strong>O(n)</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Max Sum of Subarray (size k=3)</h3>
+    <p>Find the subarray of <strong>3 consecutive elements</strong> with the largest sum:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Sliding Window — O(n)</div>
+      <div class="cells" id="swArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <div style="color:var(--fg4);font-size:14px;" id="swMsg">Click "Slide" to watch the window move</div>
+        <div id="swInfo" style="font-size:16px;font-weight:700;margin-top:8px;min-height:28px;"></div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="swCurrent">0</div><div class="label">Window Sum</div></div>
+        <div class="stat"><div class="num" id="swMax">0</div><div class="label">Max Sum</div></div>
+        <div class="stat"><div class="num" id="swPos">-</div><div class="label">Window Position</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="swReset()">Reset</button>
+      <button class="btn" onclick="swStep()">Slide <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="swAuto()">Auto Play</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code: Fixed Window — Max Sum Subarray</h3>
+    <pre><code><span class="code-line lit">function maxSubarraySum(arr, k) {</span>
+<span class="code-line lit">  let windowSum = 0;</span>
+<span class="code-line lit">  // Build the first window</span>
+<span class="code-line lit">  for (let i = 0; i < k; i++) windowSum += arr[i];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  let maxSum = windowSum;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  // Slide: add new right, remove old left</span>
+<span class="code-line lit">  for (let i = k; i < arr.length; i++) {</span>
+<span class="code-line lit">    windowSum += arr[i] - arr[i - k];  // THE TRICK!</span>
+<span class="code-line lit">    maxSum = Math.max(maxSum, windowSum);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return maxSum;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>The key line:</strong> <code>windowSum += arr[i] - arr[i - k]</code> — Add the new element entering the window, subtract the one leaving. No need to re-sum the entire window!</div>
+  </div>
+
+  <div class="card">
+    <h3>Variable-Length Sliding Window</h3>
+    <p>Sometimes the window size isn't fixed. You <strong>expand</strong> the right side and <strong>shrink</strong> the left side based on a condition:</p>
+    <pre><code><span class="code-line">// Smallest subarray with sum >= target</span>
+<span class="code-line lit">function minSubarrayLen(target, arr) {</span>
+<span class="code-line lit">  let left = 0, sum = 0, minLen = Infinity;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let right = 0; right < arr.length; right++) {</span>
+<span class="code-line lit">    sum += arr[right];           // expand window</span>
+<span class="code-line"></span>
+<span class="code-line lit">    while (sum >= target) {      // shrink window</span>
+<span class="code-line lit">      minLen = Math.min(minLen, right - left + 1);</span>
+<span class="code-line lit">      sum -= arr[left];           // remove left</span>
+<span class="code-line lit">      left++;                     // shrink</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return minLen === Infinity ? 0 : minLen;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="pattern-card" style="border-left-color:var(--aqua);">
+      <h4 style="color:var(--aqua);">When to Use Sliding Window?</h4>
+      <p>Look for keywords: "subarray", "substring", "consecutive", "contiguous", "window of size k", "minimum/maximum subarray".</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PREFIX SUM ══════════ -->
+<div class="section" id="prefix-sum">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">Σ</div>
+    <h2>Pattern: Prefix Sum</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is It?</h3>
+    <p><strong>Pre-compute a running total so you can find the sum of ANY range in O(1).</strong></p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Running total of your bank account.</strong> If you know you had $500 after Monday and $800 after Wednesday, then you earned $800 - $500 = <strong>$300</strong> on Tue+Wed. You didn't need to re-add each transaction!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Build a Prefix Sum</h3>
+    <p>Watch how the prefix sum is built, then use it to query any range:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Prefix Sum — O(n) build, O(1) query</div>
+      <div style="margin-bottom:8px;font-size:13px;color:var(--fg4);text-align:center;">Original Array:</div>
+      <div class="cells" id="psOriginal" style="padding-bottom:28px;"></div>
+      <div style="margin:18px 0 8px;font-size:13px;color:var(--fg4);text-align:center;">Prefix Sum Array:</div>
+      <div class="cells" id="psPrefix" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:18px;">
+        <div style="color:var(--fg4);font-size:14px;" id="psMsg">Click "Build" to create the prefix sum</div>
+        <div id="psCalc" style="font-size:16px;font-weight:700;margin-top:8px;min-height:28px;"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="psBuild()">Build Prefix Sum</button>
+      <button class="btn" onclick="psQuery(1,4)">Sum(1..4)</button>
+      <button class="btn" onclick="psQuery(2,5)">Sum(2..5)</button>
+      <button class="btn" onclick="psQuery(0,6)">Sum(0..6)</button>
+      <button class="btn" onclick="psReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The Formula</h3>
+    <pre><code><span class="code-line">// Build prefix sum: prefix[i] = sum of arr[0..i]</span>
+<span class="code-line lit">prefix[0] = arr[0];</span>
+<span class="code-line lit">for (let i = 1; i < n; i++)</span>
+<span class="code-line lit">  prefix[i] = prefix[i-1] + arr[i];</span>
+<span class="code-line"></span>
+<span class="code-line">// Query: sum from index L to R</span>
+<span class="code-line lit">sum(L, R) = prefix[R] - prefix[L-1]</span>
+<span class="code-line">// (if L === 0, just use prefix[R])</span></code></pre>
+    <div class="tip"><strong>Power move:</strong> Build prefix sum in O(n), then answer UNLIMITED range queries in O(1) each. Without it, each query is O(n).</div>
+  </div>
+</div>
+
+<!-- ══════════ KADANE'S ALGORITHM ══════════ -->
+<div class="section" id="kadane">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">🔥</div>
+    <h2>Pattern: Kadane's Algorithm</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Problem</h3>
+    <p><strong>Find the subarray with the maximum sum.</strong> This is one of the most famous interview questions ever. (LeetCode #53)</p>
+    <p>Example: <code>[-2, 1, -3, 4, -1, 2, 1, -5, 4]</code> → Answer is <strong>[4, -1, 2, 1] = 6</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Watch Kadane's Work</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Kadane's Algorithm — O(n)</div>
+      <div class="cells" id="kadArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <div style="color:var(--fg4);font-size:14px;" id="kadMsg">Click "Run" to watch Kadane's algorithm</div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="kadCurr">0</div><div class="label">Current Sum</div></div>
+        <div class="stat"><div class="num" id="kadMax">-∞</div><div class="label">Max Sum</div></div>
+        <div class="stat"><div class="num" id="kadIdx">-</div><div class="label">At Index</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="kadReset()">Reset</button>
+      <button class="btn" onclick="kadStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="kadAuto()">Auto Play</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The Brilliant Idea</h3>
+    <p>At each position, ask: <strong>"Is it better to extend the current subarray, or start fresh from here?"</strong></p>
+    <pre><code><span class="code-line lit">function maxSubarraySum(arr) {</span>
+<span class="code-line lit">  let currentSum = arr[0];</span>
+<span class="code-line lit">  let maxSum = arr[0];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let i = 1; i < arr.length; i++) {</span>
+<span class="code-line lit">    // KEY DECISION: extend or start fresh?</span>
+<span class="code-line lit">    currentSum = Math.max(arr[i], currentSum + arr[i]);</span>
+<span class="code-line lit">    maxSum = Math.max(maxSum, currentSum);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return maxSum;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>The trick:</strong> If <code>currentSum</code> goes negative, it means the past is dragging you down. Start fresh! <code>Math.max(arr[i], currentSum + arr[i])</code> handles this automatically.</div>
+  </div>
+</div>
+
+<!-- ══════════ DUTCH NATIONAL FLAG ══════════ -->
+<div class="section" id="dutch">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🇳🇱</div>
+    <h2>Pattern: Dutch National Flag</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is It?</h3>
+    <p><strong>Sort an array with only 3 distinct values in one pass.</strong> Uses three pointers: low, mid, high.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Sorting colored balls into 3 buckets</strong> — red, white, blue. You scan through, and swap each ball into its correct zone.</p>
+    </div>
+    <p>Classic problem: <strong>Sort Colors</strong> (LeetCode #75) — sort array of 0s, 1s, and 2s in one pass, O(1) space.</p>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Sort 0s, 1s, 2s</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Dutch National Flag — O(n)</div>
+      <div class="cells" id="dnfArray" style="padding-bottom:28px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="dnfMsg">Click "Sort" to watch three-pointer sorting</div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat"><div class="num" id="dnfSwaps">0</div><div class="label">Swaps</div></div>
+        <div class="stat"><div class="num" id="dnfSteps">0</div><div class="label">Steps</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="dnfReset()">Reset (Shuffle)</button>
+      <button class="btn" onclick="dnfStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="dnfAuto()">Auto Sort</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Code</h3>
+    <pre><code><span class="code-line lit">function sortColors(arr) {</span>
+<span class="code-line lit">  let low = 0, mid = 0, high = arr.length - 1;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (mid <= high) {</span>
+<span class="code-line lit">    if (arr[mid] === 0) {</span>
+<span class="code-line lit">      [arr[low], arr[mid]] = [arr[mid], arr[low]];</span>
+<span class="code-line lit">      low++; mid++;</span>
+<span class="code-line lit">    } else if (arr[mid] === 1) {</span>
+<span class="code-line lit">      mid++;  // already in right place</span>
+<span class="code-line lit">    } else { // arr[mid] === 2</span>
+<span class="code-line lit">      [arr[mid], arr[high]] = [arr[high], arr[mid]];</span>
+<span class="code-line lit">      high--; // don't advance mid — need to check swapped value</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ══════════ BINARY SEARCH ON ARRAYS ══════════ -->
+<div class="section" id="binary-search">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">÷</div>
+    <h2>Binary Search on Arrays</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Golden Rule</h3>
+    <p><strong>If the array is sorted, you can use binary search to find things in O(log n).</strong></p>
+    <p>This is one of the most important tools. Instead of checking every element, you cut the search space in half each time.</p>
+  </div>
+
+  <div class="card">
+    <h3>The 3 Templates You Need</h3>
+    <div class="pattern-card" style="border-left-color:var(--green);">
+      <h4 style="color:var(--green);">Template 1: Exact Match</h4>
+      <p>Find the exact value. Classic binary search.</p>
+    </div>
+    <pre><code><span class="code-line lit">function binarySearch(arr, target) {</span>
+<span class="code-line lit">  let lo = 0, hi = arr.length - 1;</span>
+<span class="code-line lit">  while (lo <= hi) {</span>
+<span class="code-line lit">    let mid = Math.floor((lo + hi) / 2);</span>
+<span class="code-line lit">    if (arr[mid] === target) return mid;</span>
+<span class="code-line lit">    if (arr[mid] < target) lo = mid + 1;</span>
+<span class="code-line lit">    else hi = mid - 1;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return -1;</span>
+<span class="code-line lit">}</span></code></pre>
+
+    <div class="pattern-card" style="border-left-color:var(--yellow);">
+      <h4 style="color:var(--yellow);">Template 2: First/Left Position</h4>
+      <p>Find the <strong>first</strong> occurrence or leftmost position where condition is true.</p>
+    </div>
+    <pre><code><span class="code-line lit">function lowerBound(arr, target) {</span>
+<span class="code-line lit">  let lo = 0, hi = arr.length;</span>
+<span class="code-line lit">  while (lo < hi) {</span>
+<span class="code-line lit">    let mid = Math.floor((lo + hi) / 2);</span>
+<span class="code-line lit">    if (arr[mid] < target) lo = mid + 1;</span>
+<span class="code-line lit">    else hi = mid;  // don't skip — might be the answer</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return lo;</span>
+<span class="code-line lit">}</span></code></pre>
+
+    <div class="pattern-card" style="border-left-color:var(--orange);">
+      <h4 style="color:var(--orange);">Template 3: Search on Answer Space</h4>
+      <p>Not searching the array — searching for the <strong>minimum/maximum valid answer</strong>.</p>
+    </div>
+    <pre><code><span class="code-line">// Example: "minimum capacity to ship packages in D days"</span>
+<span class="code-line lit">let lo = maxPackage, hi = totalWeight;</span>
+<span class="code-line lit">while (lo < hi) {</span>
+<span class="code-line lit">  let mid = Math.floor((lo + hi) / 2);</span>
+<span class="code-line lit">  if (canShipInDays(mid, D)) hi = mid;</span>
+<span class="code-line lit">  else lo = mid + 1;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip warn-tip"><strong>Interview trap:</strong> Many "hard" problems are just binary search in disguise. Keywords: "minimum/maximum that satisfies...", "smallest/largest possible..."</div>
+  </div>
+</div>
+
+<!-- ══════════ 2D ARRAYS / MATRIX ══════════ -->
+<div class="section" id="matrix">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">▦</div>
+    <h2>2D Arrays (Matrix)</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is a Matrix?</h3>
+    <p><strong>An array of arrays.</strong> Think of it as a grid with rows and columns.</p>
+    <div class="viz-box">
+      <div class="viz-tag">3×4 Matrix — Click a cell</div>
+      <div id="matrixViz" style="display:flex;flex-direction:column;align-items:center;gap:3px;"></div>
+      <div style="text-align:center;margin-top:14px;color:var(--fg4);font-size:14px;" id="matMsg">Access: <code>matrix[row][col]</code></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Key Matrix Traversals</h3>
+    <div class="two-col">
+      <div class="pattern-card" style="border-left-color:var(--green);">
+        <h4 style="color:var(--green);">Row by Row</h4>
+        <pre style="font-size:12px;margin:4px 0;"><code>for (let r = 0; r < rows; r++)
+  for (let c = 0; c < cols; c++)
+    visit(matrix[r][c]);</code></pre>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--blue);">
+        <h4 style="color:var(--blue);">Column by Column</h4>
+        <pre style="font-size:12px;margin:4px 0;"><code>for (let c = 0; c < cols; c++)
+  for (let r = 0; r < rows; r++)
+    visit(matrix[r][c]);</code></pre>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--yellow);">
+        <h4 style="color:var(--yellow);">Diagonal</h4>
+        <pre style="font-size:12px;margin:4px 0;"><code>for (let i = 0; i < n; i++)
+  visit(matrix[i][i]); // main diagonal</code></pre>
+      </div>
+      <div class="pattern-card" style="border-left-color:var(--purple);">
+        <h4 style="color:var(--purple);">4 Neighbors (BFS/DFS)</h4>
+        <pre style="font-size:12px;margin:4px 0;"><code>const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+for (let [dr,dc] of dirs) {
+  let nr = r+dr, nc = c+dc;
+  if (inBounds(nr,nc)) visit(nr,nc);
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Rotate Matrix 90° — The Classic</h3>
+    <p>The trick: <strong>Transpose + Reverse each row</strong></p>
+    <pre><code><span class="code-line">// Step 1: Transpose (swap rows ↔ columns)</span>
+<span class="code-line lit">for (let i = 0; i < n; i++)</span>
+<span class="code-line lit">  for (let j = i+1; j < n; j++)</span>
+<span class="code-line lit">    [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];</span>
+<span class="code-line"></span>
+<span class="code-line">// Step 2: Reverse each row</span>
+<span class="code-line lit">for (let row of matrix) row.reverse();</span></code></pre>
+    <div class="tip"><strong>Spiral traversal</strong> is another classic: Use 4 boundaries (top, bottom, left, right) and shrink them inward as you go around.</div>
+  </div>
+</div>
+
+<!-- ══════════ TRICKS & TECHNIQUES ══════════ -->
+<div class="section" id="tricks">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">🛠️</div>
+    <h2>Essential Array Tricks</h2>
+  </div>
+
+  <div class="card">
+    <h3>In-Place Operations (O(1) Space)</h3>
+    <div class="pattern-card" style="border-left-color:var(--yellow);">
+      <h4 style="color:var(--yellow);">Reverse an Array</h4>
+      <pre style="font-size:12px;margin:6px 0;"><code>let l = 0, r = arr.length - 1;
+while (l < r) {
+  [arr[l], arr[r]] = [arr[r], arr[l]];
+  l++; r--;
+}</code></pre>
+    </div>
+    <div class="pattern-card" style="border-left-color:var(--orange);">
+      <h4 style="color:var(--orange);">Rotate Array by k Steps</h4>
+      <pre style="font-size:12px;margin:6px 0;"><code>// [1,2,3,4,5,6,7] rotate by 3 → [5,6,7,1,2,3,4]
+// Trick: 3 reverses!
+k = k % arr.length;
+reverse(arr, 0, arr.length-1);  // reverse all
+reverse(arr, 0, k-1);            // reverse first k
+reverse(arr, k, arr.length-1);   // reverse rest</code></pre>
+    </div>
+    <div class="pattern-card" style="border-left-color:var(--green);">
+      <h4 style="color:var(--green);">Move Zeros to End</h4>
+      <pre style="font-size:12px;margin:6px 0;"><code>let writePos = 0;
+for (let i = 0; i < arr.length; i++) {
+  if (arr[i] !== 0) {
+    [arr[writePos], arr[i]] = [arr[i], arr[writePos]];
+    writePos++;
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Use Array as HashMap (Index as Key)</h3>
+    <p>When values are in a known range (like 1 to n), use the <strong>index itself</strong> to mark seen values:</p>
+    <pre><code><span class="code-line">// Find the missing number in [1..n]</span>
+<span class="code-line lit">function missingNumber(nums) {</span>
+<span class="code-line lit">  const n = nums.length;</span>
+<span class="code-line lit">  const expected = n * (n + 1) / 2;  // sum formula</span>
+<span class="code-line lit">  const actual = nums.reduce((a, b) => a + b, 0);</span>
+<span class="code-line lit">  return expected - actual;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Cycle sort / marking trick:</strong> For "find duplicates in [1..n]" — negate the value at index <code>abs(num)-1</code>. If already negative, it's a duplicate!</div>
+  </div>
+
+  <div class="card">
+    <h3>Boyer-Moore Voting Algorithm</h3>
+    <p>Find the <strong>majority element</strong> (appears more than n/2 times) in O(n) time, O(1) space:</p>
+    <pre><code><span class="code-line lit">function majorityElement(nums) {</span>
+<span class="code-line lit">  let candidate = null, count = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let num of nums) {</span>
+<span class="code-line lit">    if (count === 0) candidate = num;</span>
+<span class="code-line lit">    count += (num === candidate) ? 1 : -1;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return candidate;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="analogy">
+      <div class="label">Intuition</div>
+      <p>Think of it as a <strong>voting battle</strong>. Each element "votes" for itself. When two different elements clash, they cancel out. The majority element always wins because it has more votes than all others combined.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TOP INTERVIEW PROBLEMS ══════════ -->
+<div class="section" id="problems">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">💎</div>
+    <h2>Top 20 Array Interview Problems</h2>
+  </div>
+
+  <div class="card">
+    <h3>Must-Solve Problems (Grouped by Pattern)</h3>
+    <table>
+      <thead><tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Two Sum</strong></td><td>Hash Map</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>2</td><td><strong>Best Time to Buy/Sell Stock</strong></td><td>Kadane / Track Min</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>3</td><td><strong>Contains Duplicate</strong></td><td>Hash Set</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>4</td><td><strong>Maximum Subarray</strong></td><td>Kadane</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>5</td><td><strong>Product of Array Except Self</strong></td><td>Prefix/Suffix</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>6</td><td><strong>3Sum</strong></td><td>Sort + Two Pointers</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>7</td><td><strong>Container With Most Water</strong></td><td>Two Pointers</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>8</td><td><strong>Merge Intervals</strong></td><td>Sort + Sweep</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>9</td><td><strong>Sort Colors</strong></td><td>Dutch National Flag</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>10</td><td><strong>Rotate Array</strong></td><td>Three Reverses</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>11</td><td><strong>Find Min in Rotated Sorted</strong></td><td>Binary Search</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>12</td><td><strong>Search in Rotated Sorted</strong></td><td>Binary Search</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>13</td><td><strong>Subarray Sum Equals K</strong></td><td>Prefix Sum + Hash</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>14</td><td><strong>Next Permutation</strong></td><td>Array Manipulation</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>15</td><td><strong>Spiral Matrix</strong></td><td>Simulation</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>16</td><td><strong>Set Matrix Zeroes</strong></td><td>In-Place Marking</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>17</td><td><strong>Majority Element</strong></td><td>Boyer-Moore</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>18</td><td><strong>Trapping Rain Water</strong></td><td>Two Pointers / Stack</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>19</td><td><strong>First Missing Positive</strong></td><td>Cycle Sort</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>20</td><td><strong>Median of Two Sorted</strong></td><td>Binary Search</td><td><span class="badge b-slow">Hard</span></td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Study order:</strong> Start with Easy → Medium grouped by pattern → Then tackle Hard ones. Master the PATTERN, not just the solution.</div>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section" id="quiz">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">🧪</div>
+    <h2>Quiz: Test Your Array Knowledge</h2>
+  </div>
+
+  <div class="card">
+    <div id="quizArea"></div>
+  </div>
+
+  <div class="card" style="text-align:center;padding:40px;">
+    <h3 style="justify-content:center;font-size:24px;color:var(--yellow);">Arrays — Mastered! 🎯</h3>
+    <p style="font-size:16px;max-width:520px;margin:12px auto 0;color:var(--fg3);">You now know the building block of all DSA. Every pattern here will appear in interviews. Practice, practice, practice!</p>
+    <p style="color:var(--yellow);font-weight:700;font-size:18px;margin-top:16px;">You're crushing it, Xasanov! Next up → Strings 🔥</p>
+    <div style="margin-top:20px;">
+      <a href="../../index.html" class="btn" style="display:inline-block;text-decoration:none;">← Back to All Topics</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ═══ Progress & Nav ═══
+window.addEventListener('scroll',function(){
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(window.scrollY/h*100)+'%';
+  document.getElementById('scrollTop').classList.toggle('show',window.scrollY>500);
+  document.querySelectorAll('.section').forEach(function(s){
+    var a=document.querySelector('.topnav a[href="#'+s.id+'"]');
+    if(!a)return;var r=s.getBoundingClientRect();
+    a.classList.toggle('active',r.top<180&&r.bottom>180);
+  });
+});
+
+// ═══ What Is Array — Click Demo ═══
+(function(){
+  var a=['🍎','🍊','🍋','🍇','🫐','🍓','🥝'];
+  var c=document.getElementById('whatArray');
+  function r(act){c.innerHTML='';a.forEach(function(v,i){
+    var cls=i===act?'c-active glow':'c-default';
+    c.innerHTML+='<div class="cell '+cls+'" style="cursor:pointer;font-size:22px;" onclick="whatClick('+i+')">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });}
+  window.whatClick=function(i){r(i);document.getElementById('whatStatus').innerHTML='Accessed <strong>arr['+i+'] = '+a[i]+'</strong> in <span style="color:var(--green);font-weight:800;">O(1)</span> — one step!';};
+  r(-1);
+})();
+
+// ═══ Memory Address Calculator ═══
+(function(){
+  var vals=[42,17,93,68,25,81,54,36];
+  var baseAddr=256;
+  var c=document.getElementById('addrCells');
+  function r(act){c.innerHTML='';vals.forEach(function(v,i){
+    var cls=i===act?'c-active glow':'c-default';
+    c.innerHTML+='<div class="cell '+cls+'" style="cursor:pointer;" onclick="addrClick('+i+')">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });}
+  window.addrClick=function(i){
+    r(i);
+    var addr=baseAddr+(i*4);
+    document.getElementById('addrCalc').innerHTML=
+      '<div style="animation:slideIn .3s;">'+
+      '<span style="color:var(--fg4);">address = base + (index × size)</span><br>'+
+      '<span style="color:var(--aqua);font-family:Fira Code,monospace;">0x'+baseAddr.toString(16).toUpperCase()+' + ('+i+' × 4) = <strong style="color:var(--yellow);font-size:20px;">0x'+addr.toString(16).toUpperCase()+'</strong></span><br>'+
+      '<span style="color:var(--green);font-weight:700;">→ value = '+vals[i]+'</span></div>';
+  };
+  r(-1);
+})();
+
+// ═══ Insert at Beginning ═══
+var insArr,insAI;
+function insRender(highlight,newVal,phase){
+  var c=document.getElementById('insertViz');c.innerHTML='';
+  var arr=insArr.slice();
+  if(phase==='done')arr.unshift(newVal);
+  arr.forEach(function(v,i){
+    var cls='c-default';
+    if(phase==='shifting'&&i>=highlight)cls='c-warn';
+    if(phase==='done'&&i===0)cls='c-active glow';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+  if(phase==='space'){
+    c.innerHTML='<div class="cell c-empty" style="font-size:11px;">?</div>'+c.innerHTML;
+  }
+}
+function insertReset(){clearInterval(insAI);insArr=[10,20,30,40,50,60];insRender(-1,null,'idle');document.getElementById('insertMsg').textContent='Click "Insert 99" to watch';document.getElementById('insertShifts').textContent='0';document.getElementById('insertLen').textContent='6';}
+function insertRun(){
+  insertReset();
+  var step=insArr.length;
+  var shifts=0;
+  document.getElementById('insertMsg').textContent='Shifting elements right...';
+  insAI=setInterval(function(){
+    if(step>0){
+      step--;shifts++;
+      document.getElementById('insertShifts').textContent=shifts;
+      insRender(step,null,'shifting');
+      document.getElementById('insertMsg').textContent='Shift arr['+step+'] → arr['+(step+1)+']';
+    }else{
+      clearInterval(insAI);
+      insArr.unshift(99);
+      insRender(0,null,'idle');
+      // recolor
+      var c=document.getElementById('insertViz');
+      c.innerHTML='';insArr.forEach(function(v,i){
+        var cls=i===0?'c-active glow':'c-done';
+        c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+      });
+      document.getElementById('insertMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Done! Inserted 99 at index 0. Cost: '+shifts+' shifts = O(n)</span>';
+      document.getElementById('insertLen').textContent=insArr.length;
+    }
+  },400);
+}
+insertReset();
+
+// ═══ Delete from Middle ═══
+var delArr,delAI;
+function delRender(arr,highlight,phase){
+  var c=document.getElementById('deleteViz');c.innerHTML='';
+  arr.forEach(function(v,i){
+    var cls='c-default';
+    if(phase==='mark'&&i===2)cls='c-hot';
+    if(phase==='shifting'&&i===highlight)cls='c-warn';
+    if(phase==='done')cls='c-done';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+}
+function deleteReset(){clearInterval(delAI);delArr=[10,20,30,40,50,60,70];delRender(delArr,-1,'idle');document.getElementById('deleteMsg').textContent='Click "Delete index 2" to watch';document.getElementById('deleteShifts').textContent='0';}
+function deleteRun(){
+  deleteReset();
+  var shifts=0;
+  var step=2;
+  // First mark the element
+  setTimeout(function(){
+    delRender(delArr,2,'mark');
+    document.getElementById('deleteMsg').textContent='Removing arr[2] = 30...';
+    setTimeout(function(){
+      delArr.splice(2,1);
+      step=2;
+      delAI=setInterval(function(){
+        if(step<delArr.length){
+          shifts++;
+          document.getElementById('deleteShifts').textContent=shifts;
+          delRender(delArr,step,'shifting');
+          document.getElementById('deleteMsg').textContent='Shift arr['+(step+1)+'] → arr['+step+']';
+          step++;
+        }else{
+          clearInterval(delAI);
+          delRender(delArr,-1,'done');
+          document.getElementById('deleteMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Done! '+shifts+' shifts needed = O(n)</span>';
+        }
+      },400);
+    },500);
+  },300);
+}
+deleteReset();
+
+// ═══ Dynamic Array Resize ═══
+var resArr,resCap;
+function resRender(){
+  var c=document.getElementById('resizeViz');c.innerHTML='';
+  var row='<div class="cells" style="padding-bottom:4px;">';
+  for(var i=0;i<resCap;i++){
+    if(i<resArr.length){
+      row+='<div class="cell c-active" style="width:40px;height:40px;font-size:13px;">'+resArr[i]+'</div>';
+    }else{
+      row+='<div class="cell c-empty" style="width:40px;height:40px;font-size:10px;">-</div>';
+    }
+  }
+  row+='</div>';
+  c.innerHTML=row+'<div style="font-size:12px;color:var(--fg4);margin-top:4px;">Size: <strong style="color:var(--yellow);">'+resArr.length+'</strong> / Capacity: <strong style="color:var(--orange);">'+resCap+'</strong></div>';
+}
+function resizeReset(){resArr=[];resCap=4;resRender();document.getElementById('resizeMsg').textContent='Click "Push" to add items';}
+function resizePush(){
+  if(resArr.length>=resCap){
+    var oldCap=resCap;
+    resCap*=2;
+    document.getElementById('resizeMsg').innerHTML='<span style="color:var(--orange);font-weight:700;">RESIZE! Capacity '+oldCap+' → '+resCap+' (doubled). Copied '+resArr.length+' items.</span>';
+  }else{
+    document.getElementById('resizeMsg').textContent='Added item. '+( resCap-resArr.length-1)+' slots remaining.';
+  }
+  resArr.push(resArr.length+1);
+  resRender();
+  if(resArr.length>=32){document.getElementById('resizeMsg').textContent='Max demo reached!';}
+}
+resizeReset();
+
+// ═══ Two Pointers ═══
+var tpArr=[1,3,5,6,8,9,11,15],tpTgt=16,tpL,tpR,tpDone,tpAI;
+function tpRender(){
+  var c=document.getElementById('tpArray');c.innerHTML='';
+  tpArr.forEach(function(v,i){
+    var cls='c-default';
+    if(tpDone&&(i===tpL||i===tpR))cls='c-done glow';
+    else if(i===tpL)cls='c-active';
+    else if(i===tpR)cls='c-highlight';
+    else if(i<tpL||i>tpR)cls='c-skip';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">'+(i===tpL?'L':i===tpR?'R':'['+i+']')+'</span></div>';
+  });
+}
+function tpReset(){clearInterval(tpAI);tpL=0;tpR=tpArr.length-1;tpDone=false;tpRender();document.getElementById('tpMsg').textContent='Find two numbers that sum to '+tpTgt;document.getElementById('tpSum').textContent='';document.getElementById('tpSteps').textContent='0';}
+function tpStep(){
+  if(tpDone||tpL>=tpR)return;
+  var sum=tpArr[tpL]+tpArr[tpR];
+  var steps=+document.getElementById('tpSteps').textContent+1;
+  document.getElementById('tpSteps').textContent=steps;
+  document.getElementById('tpSum').innerHTML=tpArr[tpL]+' + '+tpArr[tpR]+' = <span style="color:'+(sum===tpTgt?'var(--green)':sum<tpTgt?'var(--orange)':'var(--red)')+';">'+sum+'</span>';
+  if(sum===tpTgt){
+    tpDone=true;
+    document.getElementById('tpMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Found it! '+tpArr[tpL]+' + '+tpArr[tpR]+' = '+tpTgt+' in '+steps+' steps!</span>';
+  }else if(sum<tpTgt){
+    document.getElementById('tpMsg').textContent='Sum '+sum+' < '+tpTgt+' → move left pointer RIGHT';
+    tpL++;
+  }else{
+    document.getElementById('tpMsg').textContent='Sum '+sum+' > '+tpTgt+' → move right pointer LEFT';
+    tpR--;
+  }
+  tpRender();
+}
+function tpAuto(){tpReset();tpAI=setInterval(function(){if(tpDone||tpL>=tpR){clearInterval(tpAI);return;}tpStep();},800);}
+tpReset();
+
+// ═══ Sliding Window ═══
+var swArr=[2,1,5,1,3,2,8,4,6],swK=3,swPos2,swCurSum,swMaxSum,swMaxPos,swDone2,swAI2;
+function swRender(){
+  var c=document.getElementById('swArray');c.innerHTML='';
+  swArr.forEach(function(v,i){
+    var cls='c-default';
+    if(swDone2&&i>=swMaxPos&&i<swMaxPos+swK)cls='c-done glow';
+    else if(i>=swPos2&&i<swPos2+swK)cls='c-active';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+}
+function swReset(){clearInterval(swAI2);swPos2=-1;swCurSum=0;swMaxSum=0;swMaxPos=0;swDone2=false;
+  var c=document.getElementById('swArray');c.innerHTML='';
+  swArr.forEach(function(v,i){c.innerHTML+='<div class="cell c-default">'+v+'<span class="sub-label">['+i+']</span></div>';});
+  document.getElementById('swMsg').textContent='Click "Slide" to start';document.getElementById('swInfo').textContent='';
+  document.getElementById('swCurrent').textContent='0';document.getElementById('swMax').textContent='0';document.getElementById('swPos').textContent='-';
+}
+function swStep(){
+  if(swDone2)return;
+  swPos2++;
+  if(swPos2===0){
+    swCurSum=swArr[0]+swArr[1]+swArr[2];
+  }else if(swPos2+swK-1>=swArr.length){
+    swDone2=true;
+    swRender();
+    // highlight max
+    var c=document.getElementById('swArray');c.innerHTML='';
+    swArr.forEach(function(v,i){
+      var cls=(i>=swMaxPos&&i<swMaxPos+swK)?'c-done glow':'c-default';
+      c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+    });
+    document.getElementById('swMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Max sum = '+swMaxSum+' at indices ['+swMaxPos+'..'+(swMaxPos+swK-1)+']</span>';
+    return;
+  }else{
+    swCurSum=swCurSum+swArr[swPos2+swK-1]-swArr[swPos2-1];
+    document.getElementById('swInfo').innerHTML='<span style="color:var(--fg4);">+'+swArr[swPos2+swK-1]+' -'+swArr[swPos2-1]+'</span>';
+  }
+  if(swCurSum>swMaxSum){swMaxSum=swCurSum;swMaxPos=swPos2;}
+  document.getElementById('swCurrent').textContent=swCurSum;
+  document.getElementById('swMax').textContent=swMaxSum;
+  document.getElementById('swPos').textContent=swPos2+'..'+(swPos2+swK-1);
+  document.getElementById('swMsg').textContent='Window at ['+swPos2+'..'+(swPos2+swK-1)+'] sum = '+swCurSum;
+  swRender();
+}
+function swAuto(){swReset();swAI2=setInterval(function(){if(swDone2){clearInterval(swAI2);return;}swStep();},700);}
+swReset();
+
+// ═══ Prefix Sum ═══
+var psArr=[3,1,4,1,5,9,2],psP=[],psBuilt=false;
+function psRenderOrig(hlL,hlR){
+  var c=document.getElementById('psOriginal');c.innerHTML='';
+  psArr.forEach(function(v,i){
+    var cls='c-default';
+    if(hlL!==undefined&&i>=hlL&&i<=hlR)cls='c-active';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+}
+function psRenderPrefix(hlIdx){
+  var c=document.getElementById('psPrefix');c.innerHTML='';
+  psP.forEach(function(v,i){
+    var cls='c-highlight';
+    if(i===hlIdx)cls='c-active glow';
+    c.innerHTML+='<div class="cell '+cls+'">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+}
+function psBuild(){
+  psP=[psArr[0]];
+  for(var i=1;i<psArr.length;i++)psP.push(psP[i-1]+psArr[i]);
+  psBuilt=true;
+  psRenderOrig();psRenderPrefix();
+  document.getElementById('psMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Prefix sum built! Now try querying any range.</span>';
+  document.getElementById('psCalc').textContent='';
+}
+function psQuery(l,r){
+  if(!psBuilt){psBuild();}
+  psRenderOrig(l,r);psRenderPrefix(r);
+  var sum=l===0?psP[r]:psP[r]-psP[l-1];
+  var formula=l===0?'prefix['+r+'] = '+psP[r]:'prefix['+r+'] - prefix['+(l-1)+'] = '+psP[r]+' - '+psP[l-1];
+  document.getElementById('psMsg').innerHTML='Sum of arr['+l+'..'+r+']:';
+  document.getElementById('psCalc').innerHTML='<span style="color:var(--aqua);">'+formula+' = </span><span style="color:var(--yellow);font-size:22px;">'+sum+'</span>';
+}
+function psReset(){psP=[];psBuilt=false;psRenderOrig();document.getElementById('psPrefix').innerHTML='';document.getElementById('psMsg').textContent='Click "Build" to create the prefix sum';document.getElementById('psCalc').textContent='';}
+psReset();
+
+// ═══ Kadane's Algorithm ═══
+var kadArr=[-2,1,-3,4,-1,2,1,-5,4],kadI,kadCurr2,kadMax2,kadDone3,kadAI3,kadBestL,kadBestR,kadTempL;
+function kadRender(){
+  var c=document.getElementById('kadArray');c.innerHTML='';
+  kadArr.forEach(function(v,i){
+    var cls='c-default';
+    if(kadDone3&&i>=kadBestL&&i<=kadBestR)cls='c-done glow';
+    else if(i===kadI)cls='c-active';
+    else if(i<kadI)cls='c-skip';
+    c.innerHTML+='<div class="cell '+cls+'" style="width:46px;height:46px;font-size:14px;">'+v+'<span class="sub-label">['+i+']</span></div>';
+  });
+}
+function kadReset(){clearInterval(kadAI3);kadI=-1;kadCurr2=0;kadMax2=-Infinity;kadDone3=false;kadBestL=0;kadBestR=0;kadTempL=0;kadRender();document.getElementById('kadMsg').textContent='Click "Run" to watch Kadane\'s algorithm';document.getElementById('kadCurr').textContent='0';document.getElementById('kadMax').textContent='-∞';document.getElementById('kadIdx').textContent='-';}
+function kadStep(){
+  if(kadDone3)return;
+  kadI++;
+  if(kadI>=kadArr.length){
+    kadDone3=true;kadRender();
+    document.getElementById('kadMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Max subarray sum = '+kadMax2+' (indices '+kadBestL+'..'+kadBestR+')</span>';
+    return;
+  }
+  document.getElementById('kadIdx').textContent=kadI;
+  // Kadane decision
+  if(kadCurr2+kadArr[kadI]>kadArr[kadI]){
+    kadCurr2+=kadArr[kadI];
+    document.getElementById('kadMsg').textContent='Extend: '+kadCurr2.toFixed?kadCurr2:kadCurr2;
+  }else{
+    kadCurr2=kadArr[kadI];
+    kadTempL=kadI;
+    document.getElementById('kadMsg').textContent='Start fresh at index '+kadI+' (past was dragging us down)';
+  }
+  if(kadCurr2>kadMax2){kadMax2=kadCurr2;kadBestL=kadTempL;kadBestR=kadI;}
+  document.getElementById('kadCurr').textContent=kadCurr2;
+  document.getElementById('kadMax').textContent=kadMax2;
+  kadRender();
+}
+function kadAuto(){kadReset();kadAI3=setInterval(function(){if(kadDone3){clearInterval(kadAI3);return;}kadStep();},600);}
+kadReset();
+
+// ═══ Dutch National Flag ═══
+var dnfArr,dnfLow,dnfMid,dnfHigh,dnfDone4,dnfAI4,dnfSwapCount,dnfStepCount;
+var dnfColors={0:'c-hot',1:'c-default',2:'c-highlight'};
+function dnfRender(){
+  var c=document.getElementById('dnfArray');c.innerHTML='';
+  dnfArr.forEach(function(v,i){
+    var cls=dnfColors[v];
+    if(!dnfDone4){
+      if(i===dnfMid)cls+=' glow';
+    }else{cls+=' glow';}
+    var lbl='';
+    if(!dnfDone4){if(i===dnfLow)lbl='L';if(i===dnfMid)lbl+=(lbl?'/':'')+'M';if(i===dnfHigh)lbl+=(lbl?'/':'')+'H';}
+    c.innerHTML+='<div class="cell '+cls+'" style="font-size:18px;">'+v+'<span class="sub-label">'+lbl+'</span></div>';
+  });
+}
+function dnfReset(){
+  clearInterval(dnfAI4);
+  dnfArr=[2,0,1,2,1,0,0,2,1,0,1,2];
+  // shuffle
+  for(var i=dnfArr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=dnfArr[i];dnfArr[i]=dnfArr[j];dnfArr[j]=t;}
+  dnfLow=0;dnfMid=0;dnfHigh=dnfArr.length-1;dnfDone4=false;dnfSwapCount=0;dnfStepCount=0;
+  dnfRender();document.getElementById('dnfMsg').textContent='Click "Sort" to watch';document.getElementById('dnfSwaps').textContent='0';document.getElementById('dnfSteps').textContent='0';
+}
+function dnfStep(){
+  if(dnfDone4||dnfMid>dnfHigh){
+    dnfDone4=true;dnfRender();
+    document.getElementById('dnfMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Sorted in '+dnfStepCount+' steps with '+dnfSwapCount+' swaps!</span>';
+    return;
+  }
+  dnfStepCount++;document.getElementById('dnfSteps').textContent=dnfStepCount;
+  if(dnfArr[dnfMid]===0){
+    var t=dnfArr[dnfLow];dnfArr[dnfLow]=dnfArr[dnfMid];dnfArr[dnfMid]=t;
+    dnfSwapCount++;document.getElementById('dnfSwaps').textContent=dnfSwapCount;
+    document.getElementById('dnfMsg').textContent='arr[mid]=0 → swap with low, advance both';
+    dnfLow++;dnfMid++;
+  }else if(dnfArr[dnfMid]===1){
+    document.getElementById('dnfMsg').textContent='arr[mid]=1 → already in place, advance mid';
+    dnfMid++;
+  }else{
+    var t2=dnfArr[dnfMid];dnfArr[dnfMid]=dnfArr[dnfHigh];dnfArr[dnfHigh]=t2;
+    dnfSwapCount++;document.getElementById('dnfSwaps').textContent=dnfSwapCount;
+    document.getElementById('dnfMsg').textContent='arr[mid]=2 → swap with high, shrink high';
+    dnfHigh--;
+  }
+  dnfRender();
+}
+function dnfAuto(){dnfReset();dnfAI4=setInterval(function(){if(dnfDone4||dnfMid>dnfHigh){dnfDone4=true;dnfRender();document.getElementById('dnfMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Sorted in '+dnfStepCount+' steps with '+dnfSwapCount+' swaps!</span>';clearInterval(dnfAI4);return;}dnfStep();},500);}
+dnfReset();
+
+// ═══ Matrix ═══
+(function(){
+  var mat=[[1,2,3,4],[5,6,7,8],[9,10,11,12]];
+  var c=document.getElementById('matrixViz');
+  c.innerHTML='';
+  for(var r=0;r<3;r++){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;gap:3px;';
+    for(var cl=0;cl<4;cl++){
+      (function(rr,cc){
+        var cell=document.createElement('div');
+        cell.className='cell c-default';
+        cell.style.cssText='width:55px;height:55px;cursor:pointer;font-size:14px;';
+        cell.textContent=mat[rr][cc];
+        cell.onclick=function(){
+          document.querySelectorAll('#matrixViz .cell').forEach(function(x){x.className='cell c-default';x.style.cssText='width:55px;height:55px;cursor:pointer;font-size:14px;';});
+          cell.className='cell c-active glow';
+          cell.style.cssText='width:55px;height:55px;cursor:pointer;font-size:14px;';
+          document.getElementById('matMsg').innerHTML='<code>matrix['+rr+']['+cc+'] = <strong style="color:var(--yellow);">'+mat[rr][cc]+'</strong></code> — O(1) access!';
+        };
+        row.appendChild(cell);
+      })(r,cl);
+    }
+    c.appendChild(row);
+  }
+})();
+
+// ═══ Quiz ═══
+(function(){
+  var q=[
+    {code:'What is the time complexity of accessing arr[500]?',ans:'O(1)',why:'Direct address calculation. Index doesn\'t matter — it\'s always one step.'},
+    {code:'You need to insert at the beginning of an array of n items. Time?',ans:'O(n)',why:'Every element must shift right to make room at index 0.'},
+    {code:'You have a SORTED array and need to find a value. Best approach?',ans:'Binary Search — O(log n)',why:'Sorted = use binary search. Cut the search space in half each step.'},
+    {code:'Find the max sum subarray. Which algorithm?',ans:'Kadane\'s Algorithm — O(n)',why:'Track current sum, reset when it goes negative. One pass through the array.'},
+    {code:'Find if two numbers in a SORTED array sum to target. Pattern?',ans:'Two Pointers — O(n)',why:'Left pointer at start, right at end. Move based on current sum vs target.'},
+    {code:'Find max sum of k consecutive elements. Pattern?',ans:'Sliding Window — O(n)',why:'Slide a window of size k. Add new element, remove old. Don\'t re-sum.'},
+    {code:'You need sum of arr[3..7] and arr[1..5] and arr[2..9]. Pattern?',ans:'Prefix Sum',why:'Build prefix sum once O(n), then each range query is O(1).'},
+    {code:'Sort an array containing only 0s, 1s, and 2s in one pass?',ans:'Dutch National Flag',why:'Three pointers: low, mid, high. Swap into correct zones. O(n) time, O(1) space.'},
+    {code:'What happens when a dynamic array is full and you push?',ans:'Resize (double capacity)',why:'Creates a new array 2x bigger, copies all elements. Amortized O(1).'},
+    {code:'Rotate array [1,2,3,4,5] right by 2. Best O(1) space method?',ans:'Three reverses',why:'Reverse all → reverse first k → reverse rest. [5,4,3,2,1] → [4,5,3,2,1] → [4,5,1,2,3].'},
+  ];
+  document.getElementById('quizArea').innerHTML=q.map(function(x,i){return '<div style="background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:14px;"><div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">QUESTION '+(i+1)+' / '+q.length+'</div><div style="font-size:15px;font-weight:600;color:var(--fg);margin-bottom:12px;">'+x.code+'</div><button class="btn btn-sm" onclick="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">Show Answer</button><div style="display:none;margin-top:8px;animation:slideIn .3s;"><div style="font-size:18px;font-weight:800;color:var(--yellow);">'+x.ans+'</div><div style="font-size:13px;color:var(--fg3);margin-top:4px;">'+x.why+'</div></div></div>';}).join('');
+})();
+</script>
+</body>
+</html>
