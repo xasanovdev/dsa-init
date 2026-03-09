@@ -7,8 +7,112 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../styles.css">
+<style>
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--purple),var(--aqua));transition:width .15s;}
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--blue);}
+.page-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+.page-hero{text-align:center;padding:50px 20px 40px;}
+.page-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.page-hero .sub{color:var(--fg3);font-size:18px;max-width:600px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(131,165,152,0.1);border:1px solid rgba(131,165,152,0.2);color:var(--blue);font-size:13px;font-weight:600;}
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.section-label .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.section-label h2{font-size:22px;font-weight:800;color:var(--fg1);}
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:28px;margin-bottom:18px;}
+.card h3{font-size:17px;font-weight:700;margin-bottom:10px;color:var(--fg1);}
+.card p,.card li{font-size:15px;color:var(--fg3);line-height:1.7;}
+.card ul{padding-left:18px;margin-top:6px;}
+.card li{margin-bottom:4px;}
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:24px;margin:18px 0;text-align:center;overflow-x:auto;}
+.viz-box .controls{margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.viz-box button{padding:8px 18px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg1);color:var(--fg2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;}
+.viz-box button:hover{border-color:var(--blue);color:var(--blue);}
+.viz-box .status{margin-top:12px;font-size:13px;color:var(--fg4);min-height:20px;}
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:14px 0;}
+.code-line{display:block;font-family:'Fira Code',monospace;font-size:13px;line-height:1.8;color:var(--fg3);}
+.code-line .kw{color:var(--red);}
+.code-line .fn{color:var(--green);}
+.code-line .str{color:var(--yellow);}
+.code-line .cm{color:var(--fg4);font-style:italic;}
+.code-line .num{color:var(--purple);}
+.code-line .lit{color:var(--blue);}
+.code-line .op{color:var(--aqua);}
+.tip{background:rgba(131,165,152,0.08);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;font-size:14px;color:var(--fg3);}
+.tip strong{color:var(--blue);}
+.analogy{background:rgba(211,134,155,0.08);border-left:3px solid var(--purple);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;font-size:14px;color:var(--fg3);}
+.analogy strong{color:var(--purple);}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;}
+.stat{flex:1;min-width:100px;background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:14px;text-align:center;}
+.stat .val{font-size:22px;font-weight:800;color:var(--blue);}
+.stat .lbl{font-size:11px;color:var(--fg4);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+.tag-easy{background:rgba(184,187,38,0.15);color:var(--green);padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+.tag-med{background:rgba(250,189,47,0.15);color:var(--yellow);padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+.tag-hard{background:rgba(251,73,52,0.15);color:var(--red);padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+table{width:100%;border-collapse:collapse;margin:12px 0;}
+th,td{text-align:left;padding:10px 14px;font-size:14px;border-bottom:1px solid var(--bg2);}
+th{color:var(--fg4);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+td{color:var(--fg3);}
+.quiz-card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:22px;margin-bottom:14px;}
+.quiz-card .q{font-weight:700;color:var(--fg1);margin-bottom:8px;}
+.quiz-card .a{display:none;padding:12px;background:var(--bg);border-radius:8px;margin-top:8px;font-size:14px;color:var(--fg3);border-left:3px solid var(--blue);}
+.quiz-card button{padding:5px 14px;border-radius:6px;border:1px solid var(--bg3);background:var(--bg);color:var(--fg4);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.quiz-card button:hover{border-color:var(--blue);color:var(--blue);}
+.scroll-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:12px;background:var(--blue);color:var(--bg);border:none;font-size:20px;cursor:pointer;display:none;z-index:99;transition:.2s;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
+.scroll-top:hover{transform:scale(1.1);}
+
+/* Queue visual styles */
+.q-container{display:flex;align-items:center;gap:0;justify-content:center;min-height:70px;position:relative;}
+.q-node{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-weight:700;font-size:18px;transition:all .3s;position:relative;}
+.q-default{background:var(--bg2);color:var(--fg2);border:2px solid var(--bg3);}
+.q-active{background:rgba(131,165,152,0.2);color:var(--blue);border:2px solid var(--blue);box-shadow:0 0 16px rgba(131,165,152,0.3);}
+.q-enqueue{background:rgba(184,187,38,0.2);color:var(--green);border:2px solid var(--green);animation:queueIn .4s ease-out;}
+.q-dequeue{background:rgba(251,73,52,0.2);color:var(--red);border:2px solid var(--red);animation:queueOut .4s ease-out;}
+.q-front{background:rgba(250,189,47,0.2);color:var(--yellow);border:2px solid var(--yellow);}
+.q-rear{background:rgba(211,134,155,0.2);color:var(--purple);border:2px solid var(--purple);}
+.q-arrow{color:var(--fg4);font-size:16px;margin:0 4px;}
+.q-label{position:absolute;top:-22px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+@keyframes queueIn{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes queueOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(-40px);opacity:0;}}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+/* BFS visual styles */
+.bfs-tree{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;}
+.bfs-row{display:flex;gap:8px;justify-content:center;margin:4px 0;}
+.bfs-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .3s;}
+.bfs-unvisited{background:var(--bg2);color:var(--fg3);border:2px solid var(--bg3);}
+.bfs-current{background:rgba(131,165,152,0.25);color:var(--blue);border:2px solid var(--blue);box-shadow:0 0 14px rgba(131,165,152,0.3);}
+.bfs-visited{background:rgba(184,187,38,0.2);color:var(--green);border:2px solid var(--green);}
+.bfs-queued{background:rgba(250,189,47,0.15);color:var(--yellow);border:2px solid var(--yellow);}
+
+/* Deque visual */
+.deque-container{display:flex;align-items:center;gap:0;justify-content:center;min-height:70px;}
+.deque-node{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-weight:700;font-size:16px;transition:all .3s;}
+.deque-default{background:var(--bg2);color:var(--fg2);border:2px solid var(--bg3);}
+.deque-highlight{background:rgba(131,165,152,0.2);color:var(--blue);border:2px solid var(--blue);box-shadow:0 0 12px rgba(131,165,152,0.3);}
+.deque-arrow{color:var(--fg4);font-size:14px;margin:0 3px;}
+
+/* Priority Queue */
+.pq-container{display:flex;gap:8px;justify-content:center;align-items:flex-end;min-height:100px;}
+.pq-bar{width:46px;border-radius:8px 8px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;font-family:'Fira Code',monospace;font-weight:700;font-size:14px;transition:all .3s;}
+.pq-default{background:var(--bg2);color:var(--fg3);border:2px solid var(--bg3);border-bottom:none;}
+.pq-min{background:rgba(184,187,38,0.2);color:var(--green);border:2px solid var(--green);border-bottom:none;box-shadow:0 0 12px rgba(184,187,38,0.2);}
+.pq-extracting{background:rgba(251,73,52,0.2);color:var(--red);border:2px solid var(--red);border-bottom:none;}
+
+/* Sliding window */
+.sw-container{display:flex;gap:4px;justify-content:center;align-items:center;}
+.sw-cell{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-weight:700;font-size:16px;transition:all .3s;}
+.sw-default{background:var(--bg2);color:var(--fg3);border:2px solid var(--bg3);}
+.sw-window{background:rgba(131,165,152,0.15);color:var(--blue);border:2px solid var(--blue);}
+.sw-max{background:rgba(250,189,47,0.2);color:var(--yellow);border:2px solid var(--yellow);box-shadow:0 0 12px rgba(250,189,47,0.2);}
+</style>
 </head>
 <body>
+<div class="progress"><div class="progress-fill" id="progFill"></div></div>
+
 <div class="navbar">
   <a href="../../index.html" class="logo">DSA Deep Dive</a>
   <nav>
@@ -16,14 +120,1035 @@
     <a href="#" class="active">Queues</a>
   </nav>
 </div>
-<div class="coming-soon">
-  <div class="icon">◄►</div>
-  <h1>Queues</h1>
-  <p>This deep dive is being crafted with care. It will include interactive visualizations, real-world analogies, code examples, and practice problems — all in simple words.</p>
-  <a href="../../index.html" class="back-btn">← Back to All Topics</a>
+
+<div class="topnav" id="topnav">
+  <a href="#what">What?</a>
+  <a href="#under-hood">Under the Hood</a>
+  <a href="#operations">Operations</a>
+  <a href="#types">Types</a>
+  <a href="#bfs">BFS</a>
+  <a href="#deque">Deque</a>
+  <a href="#sliding">Sliding Window Max</a>
+  <a href="#priority">Priority Queue</a>
+  <a href="#design">Design Problems</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#problems">Problems</a>
+  <a href="#quiz">Quiz</a>
 </div>
+
+<div class="page-container">
+
+<!-- ── HERO ── -->
+<div class="page-hero">
+  <h1>Queues</h1>
+  <p class="sub">First In, First Out. The fair line of data structures — whoever arrives first gets served first. Master queues and unlock BFS, scheduling, and beyond.</p>
+  <div class="hero-badge">12 sections · Interactive visualizations · Practice problems</div>
+</div>
+
+<!-- ══════════════════════════════════════════ 1. WHAT IS A QUEUE ═══ -->
+<div class="section" id="what">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">◄►</div>
+    <h2>What Is a Queue?</h2>
+  </div>
+
+  <div class="card">
+    <h3>The FIFO Principle</h3>
+    <p>A <strong>queue</strong> is a linear data structure that follows <strong>FIFO — First In, First Out</strong>. Think of any real-life line: the person who joins first gets served first.</p>
+    <ul>
+      <li><strong>Enqueue</strong> — add an item to the <em>rear</em> (back) of the queue</li>
+      <li><strong>Dequeue</strong> — remove an item from the <em>front</em> of the queue</li>
+      <li><strong>Peek / Front</strong> — look at the front item without removing it</li>
+    </ul>
+  </div>
+
+  <div class="analogy">
+    <strong>Real-world analogy:</strong> A queue is like a line at a coffee shop. You join at the back, wait your turn, and the barista serves whoever is at the front first. No cutting!
+  </div>
+
+  <div class="viz-box">
+    <div id="queueViz" class="q-container"></div>
+    <div class="controls">
+      <button onclick="qEnqueue()">Enqueue</button>
+      <button onclick="qDequeue()">Dequeue</button>
+      <button onclick="qPeek()">Peek</button>
+      <button onclick="qReset()">Reset</button>
+    </div>
+    <div class="status" id="queueStatus">Click Enqueue to add items</div>
+  </div>
+
+  <div class="card">
+    <h3>Stack vs Queue — The Key Difference</h3>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="val">LIFO</div>
+        <div class="lbl">Stack</div>
+      </div>
+      <div class="stat">
+        <div class="val">FIFO</div>
+        <div class="lbl">Queue</div>
+      </div>
+    </div>
+    <p>A stack is like a stack of plates — you remove the last one added. A queue is like a line — you remove the first one added. That single difference changes everything about when you use each.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 2. UNDER THE HOOD ═══ -->
+<div class="section" id="under-hood">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">⚙</div>
+    <h2>Under the Hood</h2>
+  </div>
+
+  <div class="card">
+    <h3>Array-Based Queue</h3>
+    <p>The simplest approach uses an array with two pointers: <code>front</code> and <code>rear</code>. But naive array queues waste space — after dequeuing, the front slots go unused. That's why we use a <strong>circular array</strong>.</p>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">ArrayQueue</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>(<span class="lit">capacity</span>) {</span>
+<span class="code-line">    <span class="kw">this</span>.data = <span class="kw">new</span> <span class="fn">Array</span>(<span class="lit">capacity</span>);</span>
+<span class="code-line">    <span class="kw">this</span>.front = <span class="num">0</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.rear = <span class="num">0</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.size = <span class="num">0</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.capacity = <span class="lit">capacity</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">enqueue</span>(<span class="lit">val</span>) {</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.size === <span class="kw">this</span>.capacity) <span class="kw">return</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.data[<span class="kw">this</span>.rear] = <span class="lit">val</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.rear = (<span class="kw">this</span>.rear + <span class="num">1</span>) % <span class="kw">this</span>.capacity; <span class="cm">// wrap around!</span></span>
+<span class="code-line">    <span class="kw">this</span>.size++;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">dequeue</span>() {</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.size === <span class="num">0</span>) <span class="kw">return</span> <span class="lit">undefined</span>;</span>
+<span class="code-line">    <span class="kw">const</span> val = <span class="kw">this</span>.data[<span class="kw">this</span>.front];</span>
+<span class="code-line">    <span class="kw">this</span>.front = (<span class="kw">this</span>.front + <span class="num">1</span>) % <span class="kw">this</span>.capacity;</span>
+<span class="code-line">    <span class="kw">this</span>.size--;</span>
+<span class="code-line">    <span class="kw">return</span> val;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="card">
+    <h3>Linked-List-Based Queue</h3>
+    <p>A linked list is actually a <strong>perfect fit</strong> for queues. Maintain a <code>head</code> pointer (front) and <code>tail</code> pointer (rear). Enqueue at tail, dequeue at head — both O(1) with no wasted space.</p>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">ListQueue</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>() {</span>
+<span class="code-line">    <span class="kw">this</span>.head = <span class="lit">null</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.tail = <span class="lit">null</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.size = <span class="num">0</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">enqueue</span>(<span class="lit">val</span>) {</span>
+<span class="code-line">    <span class="kw">const</span> node = { val, next: <span class="lit">null</span> };</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.tail) <span class="kw">this</span>.tail.next = node;</span>
+<span class="code-line">    <span class="kw">this</span>.tail = node;</span>
+<span class="code-line">    <span class="kw">if</span> (!<span class="kw">this</span>.head) <span class="kw">this</span>.head = node;</span>
+<span class="code-line">    <span class="kw">this</span>.size++;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">dequeue</span>() {</span>
+<span class="code-line">    <span class="kw">if</span> (!<span class="kw">this</span>.head) <span class="kw">return</span> <span class="lit">undefined</span>;</span>
+<span class="code-line">    <span class="kw">const</span> val = <span class="kw">this</span>.head.val;</span>
+<span class="code-line">    <span class="kw">this</span>.head = <span class="kw">this</span>.head.next;</span>
+<span class="code-line">    <span class="kw">if</span> (!<span class="kw">this</span>.head) <span class="kw">this</span>.tail = <span class="lit">null</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.size--;</span>
+<span class="code-line">    <span class="kw">return</span> val;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="tip">
+    <strong>In JS interviews:</strong> Just use an array with <code>push()</code> to enqueue and <code>shift()</code> to dequeue. It works but shift() is O(n). For real performance, use a linked list or circular buffer. Interviewers typically accept the simple array approach.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 3. OPERATIONS & BIG O ═══ -->
+<div class="section" id="operations">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(184,187,38,0.12);color:var(--green);">⚡</div>
+    <h2>Operations & Big O</h2>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Operation</th><th>Time</th><th>Note</th></tr>
+      <tr><td>Enqueue (push to rear)</td><td><span style="color:var(--green);">O(1)</span></td><td>Add to back</td></tr>
+      <tr><td>Dequeue (remove front)</td><td><span style="color:var(--green);">O(1)</span></td><td>Remove from front</td></tr>
+      <tr><td>Peek (front element)</td><td><span style="color:var(--green);">O(1)</span></td><td>Just look, don't remove</td></tr>
+      <tr><td>isEmpty</td><td><span style="color:var(--green);">O(1)</span></td><td>Check if size is 0</td></tr>
+      <tr><td>Search</td><td><span style="color:var(--red);">O(n)</span></td><td>Must scan through</td></tr>
+    </table>
+    <p style="margin-top:14px;">Space complexity is <strong>O(n)</strong> where n is the number of items in the queue.</p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="val" style="color:var(--green);">O(1)</div>
+      <div class="lbl">Enqueue</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--green);">O(1)</div>
+      <div class="lbl">Dequeue</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--green);">O(1)</div>
+      <div class="lbl">Peek</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--red);">O(n)</div>
+      <div class="lbl">Search</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 4. TYPES OF QUEUES ═══ -->
+<div class="section" id="types">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">◈</div>
+    <h2>Types of Queues</h2>
+  </div>
+
+  <div class="card">
+    <h3>1. Simple Queue (Regular Queue)</h3>
+    <p>Standard FIFO — enqueue at rear, dequeue at front. What we've been discussing.</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Circular Queue</h3>
+    <p>The rear wraps around to the front when it reaches the end of the array. Prevents wasted space. Used in buffering (like streaming audio/video), CPU scheduling, and traffic systems.</p>
+    <pre>
+<span class="code-line"><span class="cm">// The key insight: modulo arithmetic</span></span>
+<span class="code-line"><span class="kw">this</span>.rear = (<span class="kw">this</span>.rear + <span class="num">1</span>) % <span class="kw">this</span>.capacity;</span>
+<span class="code-line"><span class="kw">this</span>.front = (<span class="kw">this</span>.front + <span class="num">1</span>) % <span class="kw">this</span>.capacity;</span></pre>
+  </div>
+
+  <div class="card">
+    <h3>3. Deque (Double-Ended Queue)</h3>
+    <p>You can add and remove from <strong>both</strong> ends. This is the Swiss Army knife of queues. Python's <code>collections.deque</code> and JavaScript's approach with arrays give you this power.</p>
+    <ul>
+      <li><strong>addFront / addRear</strong> — insert at either end</li>
+      <li><strong>removeFront / removeRear</strong> — remove from either end</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>4. Priority Queue</h3>
+    <p>Items have priorities. The highest-priority item gets dequeued first, regardless of insertion order. Usually implemented with a <strong>heap</strong> (not a regular queue). We'll cover this in detail below.</p>
+  </div>
+
+  <div class="analogy">
+    <strong>Analogy for each type:</strong> Simple queue = coffee shop line. Circular queue = merry-go-round — when the last seat fills, the next person waits for the first seat to open. Deque = a card deck where you can draw from top or bottom. Priority queue = hospital ER — the sickest patient is treated first regardless of arrival time.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 5. BFS ═══ -->
+<div class="section" id="bfs">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🔍</div>
+    <h2>BFS — Queues in Action</h2>
+  </div>
+
+  <div class="card">
+    <h3>Breadth-First Search</h3>
+    <p>BFS is the #1 reason queues matter in DSA. BFS explores nodes <strong>level by level</strong> — it visits all neighbors before going deeper. The queue ensures we process nodes in the order we discover them.</p>
+    <pre>
+<span class="code-line"><span class="kw">function</span> <span class="fn">bfs</span>(<span class="lit">root</span>) {</span>
+<span class="code-line">  <span class="kw">if</span> (!root) <span class="kw">return</span> [];</span>
+<span class="code-line">  <span class="kw">const</span> result = [];</span>
+<span class="code-line">  <span class="kw">const</span> queue = [root]; <span class="cm">// start with root</span></span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="kw">while</span> (queue.length > <span class="num">0</span>) {</span>
+<span class="code-line">    <span class="kw">const</span> node = queue.<span class="fn">shift</span>(); <span class="cm">// dequeue from front</span></span>
+<span class="code-line">    result.<span class="fn">push</span>(node.val);</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">if</span> (node.left) queue.<span class="fn">push</span>(node.left);  <span class="cm">// enqueue children</span></span>
+<span class="code-line">    <span class="kw">if</span> (node.right) queue.<span class="fn">push</span>(node.right);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="kw">return</span> result;</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="viz-box">
+    <div id="bfsViz"></div>
+    <div style="margin-top:12px;">
+      <div style="font-size:12px;color:var(--fg4);margin-bottom:4px;">Queue:</div>
+      <div id="bfsQueue" style="font-family:'Fira Code',monospace;font-size:14px;color:var(--blue);min-height:20px;">[ ]</div>
+    </div>
+    <div style="margin-top:6px;">
+      <div style="font-size:12px;color:var(--fg4);margin-bottom:4px;">Visited:</div>
+      <div id="bfsVisited" style="font-family:'Fira Code',monospace;font-size:14px;color:var(--green);min-height:20px;">[ ]</div>
+    </div>
+    <div class="controls">
+      <button onclick="bfsStep()">Step</button>
+      <button onclick="bfsRun()">Auto Run</button>
+      <button onclick="bfsReset()">Reset</button>
+    </div>
+    <div class="status" id="bfsStatus">Click Step to walk through BFS level by level</div>
+  </div>
+
+  <div class="card">
+    <h3>BFS Level-Order Template</h3>
+    <p>When you need to process <strong>level by level</strong> (like finding the depth, or zigzag traversal), track the level size:</p>
+    <pre>
+<span class="code-line"><span class="kw">function</span> <span class="fn">levelOrder</span>(<span class="lit">root</span>) {</span>
+<span class="code-line">  <span class="kw">if</span> (!root) <span class="kw">return</span> [];</span>
+<span class="code-line">  <span class="kw">const</span> result = [], queue = [root];</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="kw">while</span> (queue.length) {</span>
+<span class="code-line">    <span class="kw">const</span> levelSize = queue.length; <span class="cm">// snapshot!</span></span>
+<span class="code-line">    <span class="kw">const</span> level = [];</span>
+<span class="code-line">    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; levelSize; i++) {</span>
+<span class="code-line">      <span class="kw">const</span> node = queue.<span class="fn">shift</span>();</span>
+<span class="code-line">      level.<span class="fn">push</span>(node.val);</span>
+<span class="code-line">      <span class="kw">if</span> (node.left) queue.<span class="fn">push</span>(node.left);</span>
+<span class="code-line">      <span class="kw">if</span> (node.right) queue.<span class="fn">push</span>(node.right);</span>
+<span class="code-line">    }</span>
+<span class="code-line">    result.<span class="fn">push</span>(level);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="kw">return</span> result; <span class="cm">// [[1], [2,3], [4,5,6,7]]</span></span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="tip">
+    <strong>BFS golden rule:</strong> If a problem says "shortest path in an unweighted graph" or "minimum moves" — think BFS. BFS always finds the shortest path first because it explores level by level.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 6. DEQUE DEEP DIVE ═══ -->
+<div class="section" id="deque">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">⟺</div>
+    <h2>Deque — Double-Ended Queue</h2>
+  </div>
+
+  <div class="card">
+    <h3>Why Deques Matter</h3>
+    <p>A deque lets you push/pop from <strong>both front and back</strong> in O(1). This makes it perfect for problems where you need to maintain a window of elements and efficiently remove from either end.</p>
+    <ul>
+      <li><strong>Sliding Window Maximum</strong> — the classic deque problem</li>
+      <li><strong>Palindrome checker</strong> — compare from both ends</li>
+      <li><strong>Work-stealing algorithms</strong> — threads steal from the back of other queues</li>
+    </ul>
+  </div>
+
+  <div class="viz-box">
+    <div id="dequeViz" class="deque-container"></div>
+    <div class="controls">
+      <button onclick="dqAddFront()">Add Front</button>
+      <button onclick="dqAddRear()">Add Rear</button>
+      <button onclick="dqRemFront()">Remove Front</button>
+      <button onclick="dqRemRear()">Remove Rear</button>
+      <button onclick="dqReset()">Reset</button>
+    </div>
+    <div class="status" id="dequeStatus">A deque allows operations on both ends</div>
+  </div>
+
+  <div class="card">
+    <h3>Deque Operations</h3>
+    <table>
+      <tr><th>Operation</th><th>Time</th><th>Description</th></tr>
+      <tr><td>addFront</td><td><span style="color:var(--green);">O(1)</span></td><td>Insert at front</td></tr>
+      <tr><td>addRear</td><td><span style="color:var(--green);">O(1)</span></td><td>Insert at rear</td></tr>
+      <tr><td>removeFront</td><td><span style="color:var(--green);">O(1)</span></td><td>Remove from front</td></tr>
+      <tr><td>removeRear</td><td><span style="color:var(--green);">O(1)</span></td><td>Remove from rear</td></tr>
+      <tr><td>peekFront / peekRear</td><td><span style="color:var(--green);">O(1)</span></td><td>Look at either end</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 7. SLIDING WINDOW MAX ═══ -->
+<div class="section" id="sliding">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">▭</div>
+    <h2>Sliding Window Maximum</h2>
+  </div>
+
+  <div class="card">
+    <h3>The Problem</h3>
+    <p>Given an array and a window size <code>k</code>, find the maximum element in every window of size k as it slides from left to right. This is <strong>THE</strong> classic deque interview problem.</p>
+    <p style="margin-top:10px;">Brute force: O(n×k). With a <strong>monotonic deque</strong>: O(n).</p>
+  </div>
+
+  <div class="card">
+    <h3>The Trick: Monotonic Decreasing Deque</h3>
+    <p>Maintain a deque of <strong>indices</strong> where the values are in decreasing order. The front of the deque always holds the index of the current window's maximum.</p>
+    <ul>
+      <li>Before adding a new element, remove all smaller elements from the <strong>rear</strong></li>
+      <li>Remove elements from the <strong>front</strong> if they're outside the window</li>
+      <li>The front always gives you the maximum</li>
+    </ul>
+    <pre>
+<span class="code-line"><span class="kw">function</span> <span class="fn">maxSlidingWindow</span>(<span class="lit">nums</span>, <span class="lit">k</span>) {</span>
+<span class="code-line">  <span class="kw">const</span> deque = []; <span class="cm">// stores indices</span></span>
+<span class="code-line">  <span class="kw">const</span> result = [];</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; nums.length; i++) {</span>
+<span class="code-line">    <span class="cm">// Remove indices outside the window</span></span>
+<span class="code-line">    <span class="kw">while</span> (deque.length && deque[<span class="num">0</span>] &lt;= i - k)</span>
+<span class="code-line">      deque.<span class="fn">shift</span>();</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="cm">// Remove smaller values from rear</span></span>
+<span class="code-line">    <span class="kw">while</span> (deque.length && nums[deque[deque.length-<span class="num">1</span>]] &lt;= nums[i])</span>
+<span class="code-line">      deque.<span class="fn">pop</span>();</span>
+<span class="code-line"></span>
+<span class="code-line">    deque.<span class="fn">push</span>(i);</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">if</span> (i >= k - <span class="num">1</span>)</span>
+<span class="code-line">      result.<span class="fn">push</span>(nums[deque[<span class="num">0</span>]]); <span class="cm">// front = max</span></span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="kw">return</span> result;</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="viz-box">
+    <div style="font-size:13px;color:var(--fg4);margin-bottom:8px;">Array: [1, 3, -1, -3, 5, 3, 6, 7] &nbsp; k = 3</div>
+    <div id="swViz" class="sw-container"></div>
+    <div style="margin-top:12px;">
+      <div style="font-size:12px;color:var(--fg4);margin-bottom:4px;">Deque (indices → values):</div>
+      <div id="swDeque" style="font-family:'Fira Code',monospace;font-size:14px;color:var(--blue);min-height:20px;">[ ]</div>
+    </div>
+    <div style="margin-top:6px;">
+      <div style="font-size:12px;color:var(--fg4);margin-bottom:4px;">Result:</div>
+      <div id="swResult" style="font-family:'Fira Code',monospace;font-size:14px;color:var(--green);min-height:20px;">[ ]</div>
+    </div>
+    <div class="controls">
+      <button onclick="swStep()">Step</button>
+      <button onclick="swRun()">Auto Run</button>
+      <button onclick="swReset()">Reset</button>
+    </div>
+    <div class="status" id="swStatus">Watch the monotonic deque in action</div>
+  </div>
+
+  <div class="tip">
+    <strong>Key insight:</strong> The deque acts as a "useful elements" list. If a new element is bigger than something already in the deque, that older element can never be the maximum — so remove it. This keeps the deque monotonically decreasing.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 8. PRIORITY QUEUE ═══ -->
+<div class="section" id="priority">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(251,73,52,0.12);color:var(--red);">⛰</div>
+    <h2>Priority Queue</h2>
+  </div>
+
+  <div class="card">
+    <h3>What Is a Priority Queue?</h3>
+    <p>A priority queue is an abstract data type where each element has a priority. Instead of FIFO, the element with the <strong>highest priority</strong> is dequeued first. It's typically implemented using a <strong>binary heap</strong>.</p>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="val" style="color:var(--green);">O(1)</div>
+        <div class="lbl">Peek Min/Max</div>
+      </div>
+      <div class="stat">
+        <div class="val" style="color:var(--yellow);">O(log n)</div>
+        <div class="lbl">Insert</div>
+      </div>
+      <div class="stat">
+        <div class="val" style="color:var(--yellow);">O(log n)</div>
+        <div class="lbl">Extract Min/Max</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="viz-box">
+    <div style="font-size:13px;color:var(--fg4);margin-bottom:12px;">Min Priority Queue</div>
+    <div id="pqViz" class="pq-container"></div>
+    <div class="controls">
+      <button onclick="pqInsert()">Insert Random</button>
+      <button onclick="pqExtract()">Extract Min</button>
+      <button onclick="pqReset()">Reset</button>
+    </div>
+    <div class="status" id="pqStatus">The shortest bar is always extracted first</div>
+  </div>
+
+  <div class="card">
+    <h3>When to Use Priority Queues</h3>
+    <ul>
+      <li><strong>Kth Largest/Smallest</strong> — maintain a min-heap of size k</li>
+      <li><strong>Merge K Sorted Lists</strong> — push heads of all lists into min-heap</li>
+      <li><strong>Dijkstra's Algorithm</strong> — always process the nearest unvisited node</li>
+      <li><strong>Task Scheduling</strong> — process highest priority tasks first</li>
+      <li><strong>Median in a Stream</strong> — use two heaps (max-heap + min-heap)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Min Heap Implementation (Simplified)</h3>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">MinHeap</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>() { <span class="kw">this</span>.heap = []; }</span>
+<span class="code-line">  <span class="fn">push</span>(<span class="lit">val</span>) {</span>
+<span class="code-line">    <span class="kw">this</span>.heap.<span class="fn">push</span>(val);</span>
+<span class="code-line">    <span class="kw">this</span>.<span class="fn">_bubbleUp</span>(<span class="kw">this</span>.heap.length - <span class="num">1</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">pop</span>() {</span>
+<span class="code-line">    <span class="kw">const</span> min = <span class="kw">this</span>.heap[<span class="num">0</span>];</span>
+<span class="code-line">    <span class="kw">const</span> last = <span class="kw">this</span>.heap.<span class="fn">pop</span>();</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.heap.length) {</span>
+<span class="code-line">      <span class="kw">this</span>.heap[<span class="num">0</span>] = last;</span>
+<span class="code-line">      <span class="kw">this</span>.<span class="fn">_sinkDown</span>(<span class="num">0</span>);</span>
+<span class="code-line">    }</span>
+<span class="code-line">    <span class="kw">return</span> min;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">_bubbleUp</span>(<span class="lit">i</span>) {</span>
+<span class="code-line">    <span class="kw">while</span> (i > <span class="num">0</span>) {</span>
+<span class="code-line">      <span class="kw">const</span> parent = (i - <span class="num">1</span>) >> <span class="num">1</span>;</span>
+<span class="code-line">      <span class="kw">if</span> (<span class="kw">this</span>.heap[parent] &lt;= <span class="kw">this</span>.heap[i]) <span class="kw">break</span>;</span>
+<span class="code-line">      [<span class="kw">this</span>.heap[parent], <span class="kw">this</span>.heap[i]] =</span>
+<span class="code-line">        [<span class="kw">this</span>.heap[i], <span class="kw">this</span>.heap[parent]];</span>
+<span class="code-line">      i = parent;</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">_sinkDown</span>(<span class="lit">i</span>) {</span>
+<span class="code-line">    <span class="kw">const</span> n = <span class="kw">this</span>.heap.length;</span>
+<span class="code-line">    <span class="kw">while</span> (<span class="lit">true</span>) {</span>
+<span class="code-line">      <span class="kw">let</span> smallest = i;</span>
+<span class="code-line">      <span class="kw">const</span> l = <span class="num">2</span> * i + <span class="num">1</span>, r = <span class="num">2</span> * i + <span class="num">2</span>;</span>
+<span class="code-line">      <span class="kw">if</span> (l &lt; n && <span class="kw">this</span>.heap[l] &lt; <span class="kw">this</span>.heap[smallest]) smallest = l;</span>
+<span class="code-line">      <span class="kw">if</span> (r &lt; n && <span class="kw">this</span>.heap[r] &lt; <span class="kw">this</span>.heap[smallest]) smallest = r;</span>
+<span class="code-line">      <span class="kw">if</span> (smallest === i) <span class="kw">break</span>;</span>
+<span class="code-line">      [<span class="kw">this</span>.heap[smallest], <span class="kw">this</span>.heap[i]] =</span>
+<span class="code-line">        [<span class="kw">this</span>.heap[i], <span class="kw">this</span>.heap[smallest]];</span>
+<span class="code-line">      i = smallest;</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="analogy">
+    <strong>Analogy:</strong> A priority queue is like an ER triage system. A patient with a broken arm (priority 5) might arrive before a heart attack patient (priority 1), but the heart attack gets treated first. The "queue" isn't really a line — it's sorted by urgency.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 9. DESIGN PROBLEMS ═══ -->
+<div class="section" id="design">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🔧</div>
+    <h2>Classic Design Problems</h2>
+  </div>
+
+  <div class="card">
+    <h3>Implement Queue Using Two Stacks</h3>
+    <p>A classic interview question! Use two stacks: one for enqueue (<code>inStack</code>), one for dequeue (<code>outStack</code>). When dequeue is called and outStack is empty, pour all elements from inStack into outStack — this reverses the order, giving us FIFO behavior.</p>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">MyQueue</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>() {</span>
+<span class="code-line">    <span class="kw">this</span>.inStack = [];  <span class="cm">// for push</span></span>
+<span class="code-line">    <span class="kw">this</span>.outStack = []; <span class="cm">// for pop</span></span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">push</span>(<span class="lit">x</span>) {</span>
+<span class="code-line">    <span class="kw">this</span>.inStack.<span class="fn">push</span>(x);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">pop</span>() {</span>
+<span class="code-line">    <span class="kw">this</span>.<span class="fn">_transfer</span>();</span>
+<span class="code-line">    <span class="kw">return</span> <span class="kw">this</span>.outStack.<span class="fn">pop</span>();</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">peek</span>() {</span>
+<span class="code-line">    <span class="kw">this</span>.<span class="fn">_transfer</span>();</span>
+<span class="code-line">    <span class="kw">return</span> <span class="kw">this</span>.outStack[<span class="kw">this</span>.outStack.length - <span class="num">1</span>];</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">_transfer</span>() {</span>
+<span class="code-line">    <span class="kw">if</span> (!<span class="kw">this</span>.outStack.length) {</span>
+<span class="code-line">      <span class="kw">while</span> (<span class="kw">this</span>.inStack.length)</span>
+<span class="code-line">        <span class="kw">this</span>.outStack.<span class="fn">push</span>(<span class="kw">this</span>.inStack.<span class="fn">pop</span>());</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">empty</span>() {</span>
+<span class="code-line">    <span class="kw">return</span> !<span class="kw">this</span>.inStack.length && !<span class="kw">this</span>.outStack.length;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></pre>
+    <div class="tip">
+      <strong>Amortized O(1):</strong> Each element is moved from inStack to outStack at most once. So even though a single pop might be O(n), across n operations each element is touched only twice total → amortized O(1) per operation.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Implement Stack Using Two Queues</h3>
+    <p>The reverse problem! Push is expensive: after adding to q2, move everything from q1 to q2, then swap q1 and q2.</p>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">MyStack</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>() {</span>
+<span class="code-line">    <span class="kw">this</span>.q1 = [];</span>
+<span class="code-line">    <span class="kw">this</span>.q2 = [];</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">push</span>(<span class="lit">x</span>) {</span>
+<span class="code-line">    <span class="kw">this</span>.q2.<span class="fn">push</span>(x);</span>
+<span class="code-line">    <span class="kw">while</span> (<span class="kw">this</span>.q1.length)</span>
+<span class="code-line">      <span class="kw">this</span>.q2.<span class="fn">push</span>(<span class="kw">this</span>.q1.<span class="fn">shift</span>());</span>
+<span class="code-line">    [<span class="kw">this</span>.q1, <span class="kw">this</span>.q2] = [<span class="kw">this</span>.q2, <span class="kw">this</span>.q1];</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">pop</span>()  { <span class="kw">return</span> <span class="kw">this</span>.q1.<span class="fn">shift</span>(); }</span>
+<span class="code-line">  <span class="fn">top</span>()  { <span class="kw">return</span> <span class="kw">this</span>.q1[<span class="num">0</span>]; }</span>
+<span class="code-line">  <span class="fn">empty</span>(){ <span class="kw">return</span> !<span class="kw">this</span>.q1.length; }</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="card">
+    <h3>Design Circular Queue (LeetCode 622)</h3>
+    <p>Implement a fixed-size circular queue with: <code>enQueue</code>, <code>deQueue</code>, <code>Front</code>, <code>Rear</code>, <code>isEmpty</code>, <code>isFull</code>. The key insight: use modulo arithmetic to wrap the rear pointer around.</p>
+    <pre>
+<span class="code-line"><span class="kw">class</span> <span class="fn">MyCircularQueue</span> {</span>
+<span class="code-line">  <span class="fn">constructor</span>(<span class="lit">k</span>) {</span>
+<span class="code-line">    <span class="kw">this</span>.data = <span class="kw">new</span> <span class="fn">Array</span>(k);</span>
+<span class="code-line">    <span class="kw">this</span>.head = <span class="num">0</span>; <span class="kw">this</span>.count = <span class="num">0</span>; <span class="kw">this</span>.cap = k;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">enQueue</span>(<span class="lit">val</span>) {</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fn">isFull</span>()) <span class="kw">return</span> <span class="lit">false</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.data[(<span class="kw">this</span>.head + <span class="kw">this</span>.count) % <span class="kw">this</span>.cap] = val;</span>
+<span class="code-line">    <span class="kw">this</span>.count++;</span>
+<span class="code-line">    <span class="kw">return</span> <span class="lit">true</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">deQueue</span>() {</span>
+<span class="code-line">    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="lit">false</span>;</span>
+<span class="code-line">    <span class="kw">this</span>.head = (<span class="kw">this</span>.head + <span class="num">1</span>) % <span class="kw">this</span>.cap;</span>
+<span class="code-line">    <span class="kw">this</span>.count--;</span>
+<span class="code-line">    <span class="kw">return</span> <span class="lit">true</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="fn">Front</span>()   { <span class="kw">return</span> <span class="kw">this</span>.<span class="fn">isEmpty</span>() ? -<span class="num">1</span> : <span class="kw">this</span>.data[<span class="kw">this</span>.head]; }</span>
+<span class="code-line">  <span class="fn">Rear</span>()    { <span class="kw">return</span> <span class="kw">this</span>.<span class="fn">isEmpty</span>() ? -<span class="num">1</span> : <span class="kw">this</span>.data[(<span class="kw">this</span>.head+<span class="kw">this</span>.count-<span class="num">1</span>)%<span class="kw">this</span>.cap]; }</span>
+<span class="code-line">  <span class="fn">isEmpty</span>() { <span class="kw">return</span> <span class="kw">this</span>.count === <span class="num">0</span>; }</span>
+<span class="code-line">  <span class="fn">isFull</span>()  { <span class="kw">return</span> <span class="kw">this</span>.count === <span class="kw">this</span>.cap; }</span>
+<span class="code-line">}</span></pre>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 10. TRICKS ═══ -->
+<div class="section" id="tricks">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">💡</div>
+    <h2>Queue Tricks & Patterns</h2>
+  </div>
+
+  <div class="card">
+    <h3>1. Multi-Source BFS</h3>
+    <p>Instead of starting BFS from one node, start from <strong>multiple sources at once</strong>. Push all starting nodes into the queue initially. Used in "Rotting Oranges", "Walls and Gates", "01 Matrix".</p>
+    <pre>
+<span class="code-line"><span class="cm">// Push ALL rotten oranges into queue first</span></span>
+<span class="code-line"><span class="kw">for</span> (<span class="kw">let</span> r = <span class="num">0</span>; r &lt; rows; r++)</span>
+<span class="code-line">  <span class="kw">for</span> (<span class="kw">let</span> c = <span class="num">0</span>; c &lt; cols; c++)</span>
+<span class="code-line">    <span class="kw">if</span> (grid[r][c] === <span class="num">2</span>) queue.<span class="fn">push</span>([r, c]);</span>
+<span class="code-line"><span class="cm">// Then BFS spreads from all sources simultaneously</span></span></pre>
+  </div>
+
+  <div class="card">
+    <h3>2. BFS Grid Template</h3>
+    <p>The 4-directional BFS pattern you'll use constantly for grid problems:</p>
+    <pre>
+<span class="code-line"><span class="kw">const</span> dirs = [[<span class="num">0</span>,<span class="num">1</span>],[<span class="num">0</span>,-<span class="num">1</span>],[<span class="num">1</span>,<span class="num">0</span>],[-<span class="num">1</span>,<span class="num">0</span>]];</span>
+<span class="code-line"><span class="kw">const</span> queue = [[startR, startC]];</span>
+<span class="code-line">visited[startR][startC] = <span class="lit">true</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="kw">while</span> (queue.length) {</span>
+<span class="code-line">  <span class="kw">const</span> [r, c] = queue.<span class="fn">shift</span>();</span>
+<span class="code-line">  <span class="kw">for</span> (<span class="kw">const</span> [dr, dc] <span class="kw">of</span> dirs) {</span>
+<span class="code-line">    <span class="kw">const</span> nr = r + dr, nc = c + dc;</span>
+<span class="code-line">    <span class="kw">if</span> (nr >= <span class="num">0</span> && nr &lt; rows && nc >= <span class="num">0</span> && nc &lt; cols</span>
+<span class="code-line">        && !visited[nr][nc]) {</span>
+<span class="code-line">      visited[nr][nc] = <span class="lit">true</span>;</span>
+<span class="code-line">      queue.<span class="fn">push</span>([nr, nc]);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="card">
+    <h3>3. Level Tracking</h3>
+    <p>When you need to know which "level" or "step" you're at (like counting BFS layers), use the <strong>snapshot technique</strong>: save <code>queue.length</code> before processing the level.</p>
+  </div>
+
+  <div class="card">
+    <h3>4. Deque for Monotonic Problems</h3>
+    <p>Whenever you see "maximum/minimum in a sliding window" or "first greater/smaller in a range", think <strong>monotonic deque</strong>. Keep the deque sorted by removing elements that break the monotonic property.</p>
+  </div>
+
+  <div class="card">
+    <h3>5. Task Scheduling Pattern</h3>
+    <p>Many scheduling problems use a queue + cooldown approach. Process tasks, put them in a cooldown queue, and re-add them when they're ready.</p>
+    <pre>
+<span class="code-line"><span class="cm">// Task Scheduler (LeetCode 621) pattern</span></span>
+<span class="code-line"><span class="cm">// Use a max-heap for highest-freq tasks</span></span>
+<span class="code-line"><span class="cm">// Use a queue for cooling-down tasks: [count, readyTime]</span></span>
+<span class="code-line"><span class="kw">const</span> cooldown = []; <span class="cm">// queue of [remaining, readyAt]</span></span>
+<span class="code-line"><span class="kw">while</span> (heap.size || cooldown.length) {</span>
+<span class="code-line">  time++;</span>
+<span class="code-line">  <span class="kw">if</span> (heap.size) {</span>
+<span class="code-line">    <span class="kw">const</span> count = heap.<span class="fn">pop</span>() - <span class="num">1</span>;</span>
+<span class="code-line">    <span class="kw">if</span> (count) cooldown.<span class="fn">push</span>([count, time + n]);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="kw">if</span> (cooldown.length && cooldown[<span class="num">0</span>][<span class="num">1</span>] === time)</span>
+<span class="code-line">    heap.<span class="fn">push</span>(cooldown.<span class="fn">shift</span>()[<span class="num">0</span>]);</span>
+<span class="code-line">}</span></pre>
+  </div>
+
+  <div class="tip">
+    <strong>Pattern cheat sheet:</strong> See "shortest path"? → BFS. See "level by level"? → BFS with level tracking. See "sliding window max/min"? → Monotonic deque. See "implement X using Y"? → Two stacks ↔ queue trick. See "schedule tasks"? → Queue + heap.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 11. PROBLEMS ═══ -->
+<div class="section" id="problems">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">📋</div>
+    <h2>Top 15 Queue Problems</h2>
+  </div>
+
+  <div class="card" style="overflow-x:auto;">
+    <table>
+      <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Key Pattern</th></tr>
+      <tr><td>232</td><td>Implement Queue using Stacks</td><td><span class="tag-easy">Easy</span></td><td>Two stacks</td></tr>
+      <tr><td>225</td><td>Implement Stack using Queues</td><td><span class="tag-easy">Easy</span></td><td>Two queues</td></tr>
+      <tr><td>622</td><td>Design Circular Queue</td><td><span class="tag-med">Medium</span></td><td>Modulo arithmetic</td></tr>
+      <tr><td>641</td><td>Design Circular Deque</td><td><span class="tag-med">Medium</span></td><td>Doubly-linked / circular</td></tr>
+      <tr><td>102</td><td>Binary Tree Level Order Traversal</td><td><span class="tag-med">Medium</span></td><td>BFS level tracking</td></tr>
+      <tr><td>103</td><td>Zigzag Level Order Traversal</td><td><span class="tag-med">Medium</span></td><td>BFS + alternating</td></tr>
+      <tr><td>199</td><td>Binary Tree Right Side View</td><td><span class="tag-med">Medium</span></td><td>BFS, take last of level</td></tr>
+      <tr><td>994</td><td>Rotting Oranges</td><td><span class="tag-med">Medium</span></td><td>Multi-source BFS</td></tr>
+      <tr><td>542</td><td>01 Matrix</td><td><span class="tag-med">Medium</span></td><td>Multi-source BFS</td></tr>
+      <tr><td>286</td><td>Walls and Gates</td><td><span class="tag-med">Medium</span></td><td>Multi-source BFS</td></tr>
+      <tr><td>239</td><td>Sliding Window Maximum</td><td><span class="tag-hard">Hard</span></td><td>Monotonic deque</td></tr>
+      <tr><td>621</td><td>Task Scheduler</td><td><span class="tag-med">Medium</span></td><td>Queue + heap</td></tr>
+      <tr><td>346</td><td>Moving Average from Data Stream</td><td><span class="tag-easy">Easy</span></td><td>Fixed-size queue</td></tr>
+      <tr><td>933</td><td>Number of Recent Calls</td><td><span class="tag-easy">Easy</span></td><td>Queue with window</td></tr>
+      <tr><td>862</td><td>Shortest Subarray with Sum at Least K</td><td><span class="tag-hard">Hard</span></td><td>Monotonic deque + prefix sum</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ 12. QUIZ ═══ -->
+<div class="section" id="quiz">
+  <div class="section-label">
+    <div class="icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">✓</div>
+    <h2>Quiz — Test Yourself</h2>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">1. What does FIFO stand for and how is it different from LIFO?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">FIFO = First In, First Out. The first element added is the first one removed (like a line). LIFO = Last In, First Out (a stack). The key difference: a queue removes from the front, a stack removes from the top.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">2. What is the time complexity of enqueue, dequeue, and peek?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">All three are O(1). Enqueue adds to the rear, dequeue removes from the front, peek looks at the front — all constant time with proper implementation.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">3. Why is a circular queue better than a simple array queue?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">In a simple array queue, dequeued slots become wasted space. A circular queue reuses those slots by wrapping the rear pointer around using modulo arithmetic: <code>rear = (rear + 1) % capacity</code>. This gives O(1) operations without wasting memory.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">4. How does "Implement Queue using Two Stacks" achieve amortized O(1)?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">Each element is pushed once to inStack and popped+pushed once to outStack. That's 3 operations per element total. Across n operations, the total work is O(n), giving amortized O(1) per operation. The transfer from inStack to outStack only happens when outStack is empty.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">5. Why is BFS guaranteed to find the shortest path in an unweighted graph?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">BFS explores nodes level by level. It processes all nodes at distance d before any node at distance d+1. So the first time BFS reaches a node, it has found the shortest path to that node. The queue ensures this level-by-level ordering.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">6. What is a monotonic deque and when would you use it?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">A monotonic deque is a deque where elements are maintained in sorted order (either increasing or decreasing). You use it for sliding window max/min problems. Before adding a new element, remove all elements from the rear that violate the monotonic property. The front always holds the current window's extreme value.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">7. In the Sliding Window Maximum problem, why do we store indices instead of values in the deque?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">We need to know when an element leaves the window. By storing indices, we can check if the front element's index is outside the current window (i.e., index &le; i - k) and remove it. If we only stored values, we couldn't tell which ones are expired.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">8. What is multi-source BFS?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">Multi-source BFS starts from multiple nodes simultaneously by pushing all source nodes into the queue before starting. It's used when you need to find distances from any of several sources (like "Rotting Oranges" where all rotten oranges spread simultaneously). Same BFS, just multiple starting points.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">9. What's the time complexity of a priority queue's insert and extract operations?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">Both insert and extract-min/max are O(log n) because they need to maintain the heap property by bubbling up or sinking down through a binary heap of height log n. Peeking at the min/max is O(1) since it's always at the root.</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q">10. When you see "shortest path" or "minimum steps" in a problem, what should you think of?</div>
+    <button onclick="toggleA(this)">Show Answer</button>
+    <div class="a">BFS! In an unweighted graph (or grid where each step costs 1), BFS finds the shortest path. Use a queue, process level by level, and the first time you reach the target is the shortest path. If edges have different weights, use Dijkstra's (priority queue) instead.</div>
+  </div>
+</div>
+
+</div><!-- end page-container -->
+
 <div class="footer">
   <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
 </div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+/* ── Progress bar ── */
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('scrollTop').style.display=pct>20?'block':'none';
+});
+
+/* ── Top nav active state ── */
+const sections=document.querySelectorAll('.section');
+const navLinks=document.querySelectorAll('.topnav a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-180)cur=s.id;});
+  navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur);});
+});
+
+/* ══════════════════ QUEUE VISUALIZATION ══════════════════ */
+let qData=[], qNextVal=1, qAnimating=false;
+const qColors=['var(--blue)','var(--purple)','var(--aqua)','var(--green)','var(--yellow)','var(--orange)','var(--red)'];
+function renderQueue(){
+  const c=document.getElementById('queueViz');
+  if(!qData.length){c.innerHTML='<span style="color:var(--fg4);font-size:14px;">Empty queue</span>';return;}
+  let h='';
+  qData.forEach((v,i)=>{
+    const col=qColors[v%qColors.length];
+    let cls='q-default';
+    let label='';
+    if(i===0 && qData.length>1){cls='q-front';label='<span class="q-label" style="color:var(--yellow);">FRONT</span>';}
+    else if(i===qData.length-1 && qData.length>1){cls='q-rear';label='<span class="q-label" style="color:var(--purple);">REAR</span>';}
+    else if(qData.length===1){cls='q-active';label='<span class="q-label" style="color:var(--blue);">FRONT/REAR</span>';}
+    if(i>0)h+='<span class="q-arrow">→</span>';
+    h+=`<div class="q-node ${cls}" style="border-color:${col};">${label}${v}</div>`;
+  });
+  c.innerHTML=h;
+}
+function qEnqueue(){
+  if(qAnimating||qData.length>=7)return;
+  const v=qNextVal++;
+  qData.push(v);
+  renderQueue();
+  const nodes=document.querySelectorAll('#queueViz .q-node');
+  const last=nodes[nodes.length-1];
+  if(last){last.style.animation='queueIn .4s ease-out';}
+  document.getElementById('queueStatus').textContent=`Enqueued ${v} at the rear`;
+}
+function qDequeue(){
+  if(qAnimating||!qData.length)return;
+  const v=qData.shift();
+  renderQueue();
+  document.getElementById('queueStatus').textContent=`Dequeued ${v} from the front`;
+}
+function qPeek(){
+  if(!qData.length){document.getElementById('queueStatus').textContent='Queue is empty!';return;}
+  const nodes=document.querySelectorAll('#queueViz .q-node');
+  if(nodes[0]){
+    nodes[0].style.boxShadow='0 0 20px rgba(250,189,47,0.5)';
+    setTimeout(()=>{nodes[0].style.boxShadow='';},800);
+  }
+  document.getElementById('queueStatus').textContent=`Front element is ${qData[0]}`;
+}
+function qReset(){qData=[];qNextVal=1;renderQueue();document.getElementById('queueStatus').textContent='Queue reset. Click Enqueue to add items.';}
+renderQueue();
+
+/* ══════════════════ BFS VISUALIZATION ══════════════════ */
+const bfsTree=[1,2,3,4,5,6,7];
+let bfsQ=[], bfsVis=[], bfsIdx=0, bfsRunning=false;
+function renderBFS(){
+  const c=document.getElementById('bfsViz');
+  // Build tree levels: [0], [1,2], [3,4,5,6]
+  const levels=[[0],[1,2],[3,4,5,6]];
+  let h='<div class="bfs-tree">';
+  levels.forEach(level=>{
+    h+='<div class="bfs-row">';
+    level.forEach(idx=>{
+      let cls='bfs-unvisited';
+      if(bfsVis.includes(idx))cls='bfs-visited';
+      if(bfsQ.includes(idx)&&!bfsVis.includes(idx))cls='bfs-queued';
+      if(bfsQ.length&&bfsQ[0]===idx&&!bfsVis.includes(idx))cls='bfs-current';
+      h+=`<div class="bfs-node ${cls}">${bfsTree[idx]}</div>`;
+    });
+    h+='</div>';
+  });
+  h+='</div>';
+  c.innerHTML=h;
+  document.getElementById('bfsQueue').textContent='[ '+bfsQ.map(i=>bfsTree[i]).join(', ')+' ]';
+  document.getElementById('bfsVisited').textContent='[ '+bfsVis.map(i=>bfsTree[i]).join(', ')+' ]';
+}
+function bfsStep(){
+  if(!bfsQ.length&&!bfsVis.length){
+    bfsQ=[0];
+    renderBFS();
+    document.getElementById('bfsStatus').textContent='Enqueued root node 1';
+    return;
+  }
+  if(!bfsQ.length){
+    document.getElementById('bfsStatus').textContent='BFS complete! All nodes visited.';
+    return;
+  }
+  const idx=bfsQ.shift();
+  bfsVis.push(idx);
+  const left=2*idx+1, right=2*idx+2;
+  let added=[];
+  if(left<bfsTree.length){bfsQ.push(left);added.push(bfsTree[left]);}
+  if(right<bfsTree.length){bfsQ.push(right);added.push(bfsTree[right]);}
+  renderBFS();
+  let msg=`Visited ${bfsTree[idx]}`;
+  if(added.length)msg+=` → enqueued children: ${added.join(', ')}`;
+  document.getElementById('bfsStatus').textContent=msg;
+}
+function bfsRun(){
+  if(bfsRunning)return;
+  bfsRunning=true;
+  if(!bfsQ.length&&!bfsVis.length){bfsQ=[0];renderBFS();}
+  const iv=setInterval(()=>{
+    if(!bfsQ.length){clearInterval(iv);bfsRunning=false;document.getElementById('bfsStatus').textContent='BFS complete!';return;}
+    bfsStep();
+  },700);
+}
+function bfsReset(){bfsQ=[];bfsVis=[];bfsRunning=false;renderBFS();document.getElementById('bfsStatus').textContent='Click Step to walk through BFS level by level';}
+renderBFS();
+
+/* ══════════════════ DEQUE VISUALIZATION ══════════════════ */
+let dqData=[3,7,1], dqNext=10;
+function renderDeque(){
+  const c=document.getElementById('dequeViz');
+  if(!dqData.length){c.innerHTML='<span style="color:var(--fg4);font-size:14px;">Empty deque</span>';return;}
+  let h='<span style="color:var(--blue);font-size:14px;font-weight:700;margin-right:8px;">Front ◄</span>';
+  dqData.forEach((v,i)=>{
+    const col=qColors[v%qColors.length];
+    let cls='deque-default';
+    if(i===0||i===dqData.length-1)cls='deque-highlight';
+    if(i>0)h+='<span class="deque-arrow">⟷</span>';
+    h+=`<div class="deque-node ${cls}" style="border-color:${col};">${v}</div>`;
+  });
+  h+='<span style="color:var(--purple);font-size:14px;font-weight:700;margin-left:8px;">► Rear</span>';
+  c.innerHTML=h;
+}
+function dqAddFront(){
+  if(dqData.length>=8)return;
+  const v=Math.floor(Math.random()*20)+1;
+  dqData.unshift(v);
+  renderDeque();
+  document.getElementById('dequeStatus').textContent=`Added ${v} to front`;
+}
+function dqAddRear(){
+  if(dqData.length>=8)return;
+  const v=Math.floor(Math.random()*20)+1;
+  dqData.push(v);
+  renderDeque();
+  document.getElementById('dequeStatus').textContent=`Added ${v} to rear`;
+}
+function dqRemFront(){
+  if(!dqData.length)return;
+  const v=dqData.shift();
+  renderDeque();
+  document.getElementById('dequeStatus').textContent=`Removed ${v} from front`;
+}
+function dqRemRear(){
+  if(!dqData.length)return;
+  const v=dqData.pop();
+  renderDeque();
+  document.getElementById('dequeStatus').textContent=`Removed ${v} from rear`;
+}
+function dqReset(){dqData=[3,7,1];renderDeque();document.getElementById('dequeStatus').textContent='A deque allows operations on both ends';}
+renderDeque();
+
+/* ══════════════════ SLIDING WINDOW MAX ══════════════════ */
+const swArr=[1,3,-1,-3,5,3,6,7], swK=3;
+let swI=0, swDeque=[], swResult=[], swRunning=false;
+function renderSW(){
+  const c=document.getElementById('swViz');
+  let h='';
+  swArr.forEach((v,i)=>{
+    let cls='sw-default';
+    if(i>=swI-swK+1 && i<=swI-1 || i===swI) {
+      // not yet processed but in conceptual range
+    }
+    // Window = [swI-swK+1 .. swI] but only if swI >= swK-1
+    const wStart = Math.max(0, swI - swK + 1);
+    if(swI > 0 && i >= wStart && i < swI) cls='sw-window';
+    if(swDeque.length && i === swDeque[0] && swI > 0) cls='sw-max';
+    h+=`<div class="sw-cell ${cls}">${v}</div>`;
+  });
+  c.innerHTML=h;
+  document.getElementById('swDeque').textContent='[ '+swDeque.map(i=>`${i}→${swArr[i]}`).join(', ')+' ]';
+  document.getElementById('swResult').textContent='[ '+swResult.join(', ')+' ]';
+}
+function swStep(){
+  if(swI>=swArr.length){
+    document.getElementById('swStatus').textContent='Done! Result: ['+swResult.join(', ')+']';
+    return;
+  }
+  // Remove indices outside window
+  while(swDeque.length && swDeque[0]<=swI-swK) swDeque.shift();
+  // Remove smaller from rear
+  while(swDeque.length && swArr[swDeque[swDeque.length-1]]<=swArr[swI]) swDeque.pop();
+  swDeque.push(swI);
+  let msg=`i=${swI}, val=${swArr[swI]} → deque: [${swDeque.map(j=>swArr[j]).join(',')}]`;
+  if(swI>=swK-1){
+    swResult.push(swArr[swDeque[0]]);
+    msg+=` → window max = ${swArr[swDeque[0]]}`;
+  }
+  swI++;
+  renderSW();
+  document.getElementById('swStatus').textContent=msg;
+}
+function swRun(){
+  if(swRunning)return;
+  swRunning=true;
+  const iv=setInterval(()=>{
+    if(swI>=swArr.length){clearInterval(iv);swRunning=false;return;}
+    swStep();
+  },800);
+}
+function swReset(){swI=0;swDeque=[];swResult=[];swRunning=false;renderSW();document.getElementById('swStatus').textContent='Watch the monotonic deque in action';}
+renderSW();
+
+/* ══════════════════ PRIORITY QUEUE VIZ ══════════════════ */
+let pqData=[5,2,8,1,4];
+function renderPQ(){
+  const c=document.getElementById('pqViz');
+  if(!pqData.length){c.innerHTML='<span style="color:var(--fg4);font-size:14px;">Empty priority queue</span>';return;}
+  const maxVal=Math.max(...pqData,1);
+  const minVal=Math.min(...pqData);
+  let h='';
+  pqData.forEach(v=>{
+    const height=30+(v/maxVal)*80;
+    let cls='pq-default';
+    if(v===minVal)cls='pq-min';
+    h+=`<div class="pq-bar ${cls}" style="height:${height}px;">${v}</div>`;
+  });
+  c.innerHTML=h;
+}
+function pqInsert(){
+  if(pqData.length>=10)return;
+  const v=Math.floor(Math.random()*20)+1;
+  pqData.push(v);
+  pqData.sort((a,b)=>a-b); // simulate heap ordering visually
+  renderPQ();
+  document.getElementById('pqStatus').textContent=`Inserted ${v} — heap rebalanced`;
+}
+function pqExtract(){
+  if(!pqData.length)return;
+  pqData.sort((a,b)=>a-b);
+  const min=pqData.shift();
+  renderPQ();
+  document.getElementById('pqStatus').textContent=`Extracted min = ${min}`;
+}
+function pqReset(){pqData=[5,2,8,1,4];renderPQ();document.getElementById('pqStatus').textContent='The shortest bar is always extracted first';}
+renderPQ();
+
+/* ══════════════════ QUIZ ══════════════════ */
+function toggleA(btn){
+  const a=btn.nextElementSibling;
+  const show=a.style.display!=='block';
+  a.style.display=show?'block':'none';
+  btn.textContent=show?'Hide Answer':'Show Answer';
+}
+</script>
 </body>
 </html>

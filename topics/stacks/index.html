@@ -7,23 +7,676 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../styles.css">
+<style>
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--bg1);z-index:999;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--aqua),var(--yellow));transition:width .15s;}
+.topnav{position:sticky;top:60px;z-index:90;background:rgba(40,40,40,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bg2);padding:10px 0;overflow-x:auto;white-space:nowrap;text-align:center;}
+.topnav a{display:inline-block;padding:6px 14px;margin:0 2px;border-radius:8px;color:var(--fg4);text-decoration:none;font-size:13px;font-weight:600;transition:.2s;}
+.topnav a:hover,.topnav a.active{background:var(--bg2);color:var(--green);}
+.page-container{max-width:920px;margin:0 auto;padding:0 24px 120px;}
+.page-hero{text-align:center;padding:50px 20px 40px;}
+.page-hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--green),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2;}
+.page-hero .sub{color:var(--fg3);font-size:18px;max-width:600px;margin:0 auto;}
+.hero-badge{display:inline-block;margin-top:18px;padding:6px 18px;border-radius:20px;background:rgba(184,187,38,0.1);border:1px solid rgba(184,187,38,0.2);color:var(--green);font-size:13px;font-weight:600;}
+.section{margin-top:70px;scroll-margin-top:130px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.section-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;}
+.section-label h2{font-size:28px;font-weight:800;}
+.card{background:var(--bg1);border:1px solid var(--bg2);border-radius:14px;padding:30px;margin-bottom:22px;}
+.card h3{font-size:19px;margin-bottom:14px;color:var(--green);display:flex;align-items:center;gap:10px;}
+.card p,.card li{color:var(--fg3);margin-bottom:10px;}
+.card strong{color:var(--fg);}
+.card ul{padding-left:20px;}
+.viz-box{background:var(--bg);border:1px solid var(--bg2);border-radius:12px;padding:26px;margin:16px 0;position:relative;overflow:hidden;}
+.viz-tag{position:absolute;top:10px;right:14px;font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.btn{padding:8px 20px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.2s;user-select:none;}
+.btn:hover{background:var(--green);color:var(--bg);border-color:var(--green);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+pre{background:var(--bg);border:1px solid var(--bg2);border-radius:10px;padding:20px 24px;margin:14px 0;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:'Fira Code','Consolas',monospace;color:var(--fg2);}
+.code-line{transition:background .3s;padding:2px 4px;border-radius:4px;}
+.code-line.lit{background:rgba(184,187,38,0.08);}
+pre code{background:none;padding:0;}
+.tip{background:rgba(131,165,152,0.08);border:1px solid rgba(131,165,152,0.2);border-radius:12px;padding:18px 22px;margin:16px 0;font-size:14px;}
+.warn-tip{background:rgba(254,128,25,0.08);border-color:rgba(254,128,25,0.2);}
+.red-tip{background:rgba(251,73,52,0.08);border-color:rgba(251,73,52,0.2);}
+.analogy{background:linear-gradient(135deg,rgba(184,187,38,0.06),rgba(142,192,124,0.06));border:1px solid rgba(184,187,38,0.15);border-radius:14px;padding:22px 26px;margin:18px 0;}
+.analogy .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);font-weight:700;margin-bottom:8px;}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.stat{flex:1;min-width:100px;background:var(--bg2);border-radius:12px;padding:14px 18px;text-align:center;}
+.stat .num{font-size:26px;font-weight:800;color:var(--green);}
+.stat .label{font-size:12px;color:var(--fg4);margin-top:2px;}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-weight:700;color:var(--green);border-bottom:2px solid var(--bg3);}
+td{padding:10px 16px;border-bottom:1px solid var(--bg2);color:var(--fg3);}
+tr:hover td{background:rgba(184,187,38,0.04);}
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.b-fast{background:rgba(184,187,38,0.15);color:var(--green);}
+.b-ok{background:rgba(250,189,47,0.15);color:var(--yellow);}
+.b-slow{background:rgba(251,73,52,0.15);color:var(--red);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pattern-card{background:var(--bg2);border-radius:12px;padding:22px;margin-bottom:14px;border-left:4px solid var(--green);}
+.pattern-card h4{font-weight:700;margin-bottom:6px;font-size:16px;}
+.pattern-card p{color:var(--fg3);font-size:14px;margin-bottom:0;}
+
+/* Stack viz */
+.stack-area{display:flex;flex-direction:column-reverse;align-items:center;min-height:240px;justify-content:flex-start;gap:4px;padding:10px 0;}
+.stack-block{width:120px;padding:12px 0;border-radius:8px;text-align:center;font-weight:700;font-size:16px;transition:all .3s;animation:stackIn .3s;}
+@keyframes stackIn{from{opacity:0;transform:translateY(-20px) scale(.9);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes stackOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-30px) scale(.8);}}
+.stack-base{width:160px;height:6px;border-radius:3px;background:var(--bg3);margin-top:4px;}
+.stack-label{font-size:11px;font-weight:700;letter-spacing:1px;margin-top:2px;}
+
+/* Paren viz */
+.paren-char{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;font-weight:700;font-size:18px;font-family:'Fira Code',monospace;margin:2px;transition:all .3s;}
+.pc-default{background:var(--bg2);color:var(--fg);}
+.pc-active{background:var(--green);color:var(--bg);}
+.pc-matched{background:var(--aqua);color:var(--bg);}
+.pc-error{background:var(--red);color:var(--bg);}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bounce-right{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+.arrow-bounce{display:inline-block;animation:bounce-right 1s infinite;}
+
+.scroll-top{position:fixed;bottom:28px;right:28px;width:46px;height:46px;border-radius:50%;background:var(--green);color:var(--bg);border:none;cursor:pointer;font-size:22px;display:none;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(184,187,38,0.25);font-family:inherit;}
+.scroll-top.show{display:flex;}
+@media(max-width:700px){.page-hero h1{font-size:32px;}.card{padding:20px;}.stat-row{flex-direction:column;}.two-col{grid-template-columns:1fr;}.stack-block{width:90px;font-size:14px;}}
+</style>
 </head>
 <body>
 <div class="navbar">
   <a href="../../index.html" class="logo">DSA Deep Dive</a>
-  <nav>
-    <a href="../../index.html">Home</a>
-    <a href="#" class="active">Stacks</a>
-  </nav>
+  <nav><a href="../../index.html">Home</a><a href="#" class="active">Stacks</a></nav>
 </div>
-<div class="coming-soon">
-  <div class="icon">▐</div>
-  <h1>Stacks</h1>
-  <p>This deep dive is being crafted with care. It will include interactive visualizations, real-world analogies, code examples, and practice problems — all in simple words.</p>
-  <a href="../../index.html" class="back-btn">← Back to All Topics</a>
+<div class="progress"><div class="progress-fill" id="prog"></div></div>
+<nav class="topnav" id="topnav">
+  <a href="#what">What</a>
+  <a href="#under-hood">Under the Hood</a>
+  <a href="#ops">Operations</a>
+  <a href="#parentheses">Parentheses</a>
+  <a href="#monotonic">Monotonic Stack</a>
+  <a href="#min-stack">Min Stack</a>
+  <a href="#eval">Evaluate</a>
+  <a href="#recursion">Call Stack</a>
+  <a href="#decode">Decode String</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#problems">Top Problems</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<div class="page-container">
+
+<div class="page-hero">
+  <h1>Stacks — The Complete Deep Dive</h1>
+  <p class="sub">LIFO, parentheses matching, monotonic stacks, expression evaluation — everything you need to master stacks. Interactive visuals, real code, simple words.</p>
+  <div class="hero-badge">DSA Chapter — The LIFO Powerhouse</div>
 </div>
-<div class="footer">
-  <p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p>
+
+<!-- ══════════ WHAT ══════════ -->
+<div class="section" id="what">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(184,187,38,0.12);color:var(--green);">▤</div>
+    <h2>What Is a Stack?</h2>
+  </div>
+  <div class="card">
+    <h3>The One-Sentence Answer</h3>
+    <p>A stack is a <strong>Last-In, First-Out (LIFO)</strong> data structure — the last item you put in is the first one that comes out.</p>
+    <div class="analogy">
+      <div class="label">Real-World Analogy</div>
+      <p><strong>A stack of plates.</strong> You add plates on top. You take plates from the top. You can't pull from the middle or bottom without everything crashing.</p>
+      <p>Also: <strong>Ctrl+Z (Undo)</strong> — your actions stack up, and undo peels off the most recent one first. <strong>Browser back button</strong> — pages stack up, back pops the latest.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive: Push & Pop</h3>
+    <p>Watch items stack up and come off the top:</p>
+    <div class="viz-box">
+      <div class="viz-tag">LIFO — Last In, First Out</div>
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:40px;">
+        <div>
+          <div class="stack-area" id="stackViz"></div>
+          <div class="stack-base"></div>
+          <div class="stack-label" style="text-align:center;color:var(--fg4);">THE STACK</div>
+        </div>
+        <div style="min-width:140px;">
+          <div style="color:var(--fg4);font-size:13px;margin-bottom:6px;">Last action:</div>
+          <div id="stackMsg" style="font-size:14px;font-weight:600;min-height:40px;">Click Push or Pop</div>
+          <div class="stat-row" style="flex-direction:column;gap:8px;margin-top:14px;">
+            <div class="stat"><div class="num" id="stackSize">0</div><div class="label">Size</div></div>
+            <div class="stat"><div class="num" id="stackTop">-</div><div class="label">Top</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="stackPush()">Push <span class="arrow-bounce">↓</span></button>
+      <button class="btn" onclick="stackPop()">Pop <span class="arrow-bounce">↑</span></button>
+      <button class="btn" onclick="stackReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why Stacks Matter</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="num">~10%</div><div class="label">of interview Qs</div></div>
+      <div class="stat"><div class="num">O(1)</div><div class="label">push & pop</div></div>
+      <div class="stat"><div class="num">5+</div><div class="label">key patterns</div></div>
+      <div class="stat"><div class="num">#1</div><div class="label">for undo/parsing</div></div>
+    </div>
+    <p>Stacks power <strong>function calls</strong> (the call stack), <strong>undo/redo</strong>, <strong>browser history</strong>, <strong>expression parsing</strong>, <strong>DFS</strong>, and <strong>backtracking</strong>.</p>
+  </div>
 </div>
+
+<!-- ══════════ UNDER THE HOOD ══════════ -->
+<div class="section" id="under-hood">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">🧠</div>
+    <h2>Under the Hood — Implementation</h2>
+  </div>
+  <div class="card">
+    <h3>Array-Based Stack (Most Common)</h3>
+    <pre><code><span class="code-line lit">class Stack {</span>
+<span class="code-line lit">  constructor() {</span>
+<span class="code-line lit">    this.items = [];</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  push(val) { this.items.push(val); }</span>
+<span class="code-line lit">  pop()     { return this.items.pop(); }</span>
+<span class="code-line lit">  peek()    { return this.items[this.items.length - 1]; }</span>
+<span class="code-line lit">  isEmpty() { return this.items.length === 0; }</span>
+<span class="code-line lit">  size()    { return this.items.length; }</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>In JavaScript interviews:</strong> Just use a plain array with <code>.push()</code> and <code>.pop()</code>. No need for a class. Arrays ARE stacks in JS.</div>
+  </div>
+  <div class="card">
+    <h3>Linked-List-Based Stack</h3>
+    <pre><code><span class="code-line lit">class LLStack {</span>
+<span class="code-line lit">  constructor() { this.head = null; this.count = 0; }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  push(val) {</span>
+<span class="code-line lit">    const node = { val, next: this.head };</span>
+<span class="code-line lit">    this.head = node;</span>
+<span class="code-line lit">    this.count++;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  pop() {</span>
+<span class="code-line lit">    if (!this.head) return undefined;</span>
+<span class="code-line lit">    const val = this.head.val;</span>
+<span class="code-line lit">    this.head = this.head.next;</span>
+<span class="code-line lit">    this.count--;</span>
+<span class="code-line lit">    return val;</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  peek() { return this.head?.val; }</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>When to use linked-list stack?</strong> When you need guaranteed O(1) (no amortized resizing). In practice, array-based is almost always better due to cache locality.</div>
+  </div>
+</div>
+
+<!-- ══════════ OPERATIONS ══════════ -->
+<div class="section" id="ops">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">⚡</div>
+    <h2>Operations & Big O</h2>
+  </div>
+  <div class="card">
+    <h3>The Complete Cheat Sheet</h3>
+    <table>
+      <thead><tr><th>Operation</th><th>Time</th><th>How?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>push(val)</strong></td><td><span class="badge b-fast">O(1)</span></td><td>Add to top</td></tr>
+        <tr><td><strong>pop()</strong></td><td><span class="badge b-fast">O(1)</span></td><td>Remove from top</td></tr>
+        <tr><td><strong>peek() / top()</strong></td><td><span class="badge b-fast">O(1)</span></td><td>Look at top without removing</td></tr>
+        <tr><td><strong>isEmpty()</strong></td><td><span class="badge b-fast">O(1)</span></td><td>Check if stack is empty</td></tr>
+        <tr><td><strong>search(val)</strong></td><td><span class="badge b-slow">O(n)</span></td><td>Must pop/check one by one</td></tr>
+        <tr><td><strong>size()</strong></td><td><span class="badge b-fast">O(1)</span></td><td>Track with counter or .length</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>Key rule:</strong> You can ONLY access the top element. No peeking at the middle or bottom. That's the LIFO contract.</div>
+  </div>
+</div>
+
+<!-- ══════════ VALID PARENTHESES ══════════ -->
+<div class="section" id="parentheses">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">( )</div>
+    <h2>Pattern: Valid Parentheses</h2>
+  </div>
+  <div class="card">
+    <h3>The Classic Interview Problem</h3>
+    <p>Given a string with <code>( ) [ ] { }</code>, determine if it's <strong>valid</strong> — every open bracket has a matching close bracket in the correct order.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Nesting Russian dolls.</strong> The last doll you opened must be the first one you close. You can't close the big doll before closing the small one inside it.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Watch the Stack Validate</h3>
+    <div class="viz-box">
+      <div class="viz-tag">Valid Parentheses — O(n)</div>
+      <div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;" id="parenStr"></div>
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:30px;">
+        <div>
+          <div class="stack-area" id="parenStack" style="min-height:160px;"></div>
+          <div class="stack-base" style="width:100px;"></div>
+          <div class="stack-label" style="text-align:center;color:var(--fg4);">STACK</div>
+        </div>
+        <div style="min-width:160px;">
+          <div id="parenMsg" style="font-size:14px;color:var(--fg4);min-height:40px;">Choose a string to validate</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="parenRun('({[]})')">({[]})</button>
+      <button class="btn" onclick="parenRun('([)]')">([)]</button>
+      <button class="btn" onclick="parenRun('{[()]}()')"> {[()]}()</button>
+      <button class="btn" onclick="parenRun('((((')">((((</button>
+      <button class="btn" onclick="parenStep()">Next Step <span class="arrow-bounce">→</span></button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Code: Valid Parentheses</h3>
+    <pre><code><span class="code-line lit">function isValid(s) {</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line lit">  const map = { ')': '(', ']': '[', '}': '{' };</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (const char of s) {</span>
+<span class="code-line lit">    if (char === '(' || char === '[' || char === '{') {</span>
+<span class="code-line lit">      stack.push(char);            // opening → push</span>
+<span class="code-line lit">    } else {</span>
+<span class="code-line lit">      if (stack.pop() !== map[char]) // closing → must match top</span>
+<span class="code-line lit">        return false;</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return stack.length === 0; // must be empty at end</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Why stack?</strong> The LAST opening bracket must match the FIRST closing bracket — that's exactly LIFO. If you see <code>(</code> then <code>[</code>, the <code>[</code> must close before <code>(</code>.</div>
+  </div>
+</div>
+
+<!-- ══════════ MONOTONIC STACK ══════════ -->
+<div class="section" id="monotonic">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(251,73,52,0.12);color:var(--red);">📊</div>
+    <h2>Pattern: Monotonic Stack</h2>
+  </div>
+  <div class="card">
+    <h3>What Is It?</h3>
+    <p>A stack that maintains <strong>increasing or decreasing order</strong>. Before pushing, pop anything that violates the order. This lets you efficiently find the "next greater" or "next smaller" element.</p>
+    <div class="analogy">
+      <div class="label">Real-World</div>
+      <p><strong>Standing in a line looking forward.</strong> A short person can see the next taller person ahead. Everyone between them (shorter people) is irrelevant. A monotonic stack removes those irrelevant elements.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Interactive: Next Greater Element</h3>
+    <p>For each element, find the next element that is <strong>greater</strong>:</p>
+    <div class="viz-box">
+      <div class="viz-tag">Monotonic Stack — O(n)</div>
+      <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding-bottom:24px;" id="monoArr"></div>
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:30px;">
+        <div>
+          <div class="stack-area" id="monoStack" style="min-height:140px;"></div>
+          <div class="stack-base" style="width:100px;"></div>
+          <div class="stack-label" style="text-align:center;color:var(--fg4);">STACK (indices)</div>
+        </div>
+        <div style="min-width:180px;">
+          <div style="color:var(--fg4);font-size:13px;margin-bottom:4px;">Result:</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;" id="monoResult"></div>
+          <div id="monoMsg" style="font-size:14px;color:var(--fg4);margin-top:10px;min-height:40px;">Click "Run" to watch</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="monoStep()">Next Step <span class="arrow-bounce">→</span></button>
+      <button class="btn" onclick="monoAuto()">Auto Play</button>
+      <button class="btn" onclick="monoReset()">Reset</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Code: Next Greater Element</h3>
+    <pre><code><span class="code-line lit">function nextGreaterElement(nums) {</span>
+<span class="code-line lit">  const result = new Array(nums.length).fill(-1);</span>
+<span class="code-line lit">  const stack = []; // stores INDICES</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let i = 0; i < nums.length; i++) {</span>
+<span class="code-line lit">    // Pop while current is greater than stack top</span>
+<span class="code-line lit">    while (stack.length && nums[i] > nums[stack[stack.length - 1]]) {</span>
+<span class="code-line lit">      result[stack.pop()] = nums[i]; // found the answer!</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    stack.push(i);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return result; // remaining in stack → -1 (no greater)</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+  <div class="card">
+    <h3>Code: Daily Temperatures</h3>
+    <pre><code><span class="code-line">// How many days until a warmer temperature?</span>
+<span class="code-line lit">function dailyTemperatures(temps) {</span>
+<span class="code-line lit">  const result = new Array(temps.length).fill(0);</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (let i = 0; i < temps.length; i++) {</span>
+<span class="code-line lit">    while (stack.length && temps[i] > temps[stack[stack.length - 1]]) {</span>
+<span class="code-line lit">      const idx = stack.pop();</span>
+<span class="code-line lit">      result[idx] = i - idx; // days between</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    stack.push(i);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="pattern-card" style="border-left-color:var(--red);">
+      <h4 style="color:var(--red);">When to Use Monotonic Stack?</h4>
+      <p>Keywords: "next greater", "next smaller", "previous greater", "daily temperatures", "stock span", "largest rectangle", "trapping rain water".</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MIN STACK ══════════ -->
+<div class="section" id="min-stack">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(211,134,155,0.12);color:var(--purple);">⬇</div>
+    <h2>Pattern: Min Stack</h2>
+  </div>
+  <div class="card">
+    <h3>Design a Stack with O(1) getMin()</h3>
+    <p>Support <code>push</code>, <code>pop</code>, <code>top</code>, AND <code>getMin()</code> — all in O(1) time.</p>
+    <pre><code><span class="code-line lit">class MinStack {</span>
+<span class="code-line lit">  constructor() {</span>
+<span class="code-line lit">    this.stack = [];    // stores [value, currentMin]</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  push(val) {</span>
+<span class="code-line lit">    const min = this.stack.length === 0</span>
+<span class="code-line lit">      ? val</span>
+<span class="code-line lit">      : Math.min(val, this.getMin());</span>
+<span class="code-line lit">    this.stack.push([val, min]); // store PAIR</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  pop()    { this.stack.pop(); }</span>
+<span class="code-line lit">  top()    { return this.stack[this.stack.length - 1][0]; }</span>
+<span class="code-line lit">  getMin() { return this.stack[this.stack.length - 1][1]; }</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>The trick:</strong> Each entry stores <code>[value, minSoFar]</code>. When you pop, the min info pops with it. The current min is always at the top.</div>
+  </div>
+</div>
+
+<!-- ══════════ EVALUATE EXPRESSION ══════════ -->
+<div class="section" id="eval">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">🧮</div>
+    <h2>Pattern: Evaluate Expression</h2>
+  </div>
+  <div class="card">
+    <h3>Reverse Polish Notation (Postfix)</h3>
+    <p>Evaluate <code>["2","1","+","3","*"]</code> → <code>(2+1)*3 = 9</code></p>
+    <pre><code><span class="code-line lit">function evalRPN(tokens) {</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (const token of tokens) {</span>
+<span class="code-line lit">    if ('+-*/'.includes(token)) {</span>
+<span class="code-line lit">      const b = stack.pop(), a = stack.pop();</span>
+<span class="code-line lit">      if (token === '+') stack.push(a + b);</span>
+<span class="code-line lit">      if (token === '-') stack.push(a - b);</span>
+<span class="code-line lit">      if (token === '*') stack.push(a * b);</span>
+<span class="code-line lit">      if (token === '/') stack.push(Math.trunc(a / b));</span>
+<span class="code-line lit">    } else {</span>
+<span class="code-line lit">      stack.push(Number(token)); // number → push</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return stack[0];</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Rule:</strong> Numbers → push. Operators → pop two, compute, push result. Simple!</div>
+  </div>
+  <div class="card">
+    <h3>Basic Calculator (Infix with Parentheses)</h3>
+    <pre><code><span class="code-line lit">function calculate(s) {</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line lit">  let num = 0, sign = 1, result = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (const ch of s) {</span>
+<span class="code-line lit">    if (ch >= '0' && ch <= '9') {</span>
+<span class="code-line lit">      num = num * 10 + Number(ch);</span>
+<span class="code-line lit">    } else if (ch === '+' || ch === '-') {</span>
+<span class="code-line lit">      result += sign * num;</span>
+<span class="code-line lit">      num = 0;</span>
+<span class="code-line lit">      sign = ch === '+' ? 1 : -1;</span>
+<span class="code-line lit">    } else if (ch === '(') {</span>
+<span class="code-line lit">      stack.push(result); stack.push(sign);</span>
+<span class="code-line lit">      result = 0; sign = 1;</span>
+<span class="code-line lit">    } else if (ch === ')') {</span>
+<span class="code-line lit">      result += sign * num; num = 0;</span>
+<span class="code-line lit">      result *= stack.pop(); // sign before paren</span>
+<span class="code-line lit">      result += stack.pop(); // result before paren</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result + sign * num;</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ══════════ CALL STACK ══════════ -->
+<div class="section" id="recursion">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(131,165,152,0.12);color:var(--blue);">📚</div>
+    <h2>The Call Stack & DFS</h2>
+  </div>
+  <div class="card">
+    <h3>Every Function Call Is a Stack Push</h3>
+    <p>When you call a function, it's <strong>pushed onto the call stack</strong>. When it returns, it's <strong>popped</strong>. That's why recursion works — and why too much recursion causes Stack Overflow!</p>
+    <pre><code><span class="code-line">// The call stack IS a stack</span>
+<span class="code-line lit">function factorial(n) {</span>
+<span class="code-line lit">  if (n <= 1) return 1;   // base case → start popping</span>
+<span class="code-line lit">  return n * factorial(n - 1); // push new call</span>
+<span class="code-line lit">}</span>
+<span class="code-line">// factorial(4) pushes: [4] → [4,3] → [4,3,2] → [4,3,2,1]</span>
+<span class="code-line">// then pops:           [4,3,2] → [4,3] → [4] → result</span></code></pre>
+  </div>
+  <div class="card">
+    <h3>DFS with Explicit Stack</h3>
+    <pre><code><span class="code-line">// Convert recursive DFS → iterative with stack</span>
+<span class="code-line lit">function dfsIterative(root) {</span>
+<span class="code-line lit">  if (!root) return [];</span>
+<span class="code-line lit">  const stack = [root];</span>
+<span class="code-line lit">  const result = [];</span>
+<span class="code-line"></span>
+<span class="code-line lit">  while (stack.length) {</span>
+<span class="code-line lit">    const node = stack.pop();</span>
+<span class="code-line lit">    result.push(node.val);</span>
+<span class="code-line lit">    if (node.right) stack.push(node.right); // right first</span>
+<span class="code-line lit">    if (node.left)  stack.push(node.left);  // so left pops first</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return result;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>DFS = Stack. BFS = Queue.</strong> This is the fundamental rule. Recursive DFS uses the call stack implicitly. Iterative DFS uses an explicit stack. BFS uses a queue.</div>
+  </div>
+</div>
+
+<!-- ══════════ DECODE STRING ══════════ -->
+<div class="section" id="decode">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(250,189,47,0.12);color:var(--yellow);">🔓</div>
+    <h2>Pattern: Decode String</h2>
+  </div>
+  <div class="card">
+    <h3>The Problem</h3>
+    <p><code>3[a2[bc]]</code> → <code>abcbcabcbcabcbc</code>. Nested encoding — a perfect stack problem.</p>
+    <pre><code><span class="code-line lit">function decodeString(s) {</span>
+<span class="code-line lit">  const countStack = [];</span>
+<span class="code-line lit">  const strStack = [];</span>
+<span class="code-line lit">  let current = '';</span>
+<span class="code-line lit">  let k = 0;</span>
+<span class="code-line"></span>
+<span class="code-line lit">  for (const ch of s) {</span>
+<span class="code-line lit">    if (ch >= '0' && ch <= '9') {</span>
+<span class="code-line lit">      k = k * 10 + Number(ch);</span>
+<span class="code-line lit">    } else if (ch === '[') {</span>
+<span class="code-line lit">      countStack.push(k);</span>
+<span class="code-line lit">      strStack.push(current);</span>
+<span class="code-line lit">      current = ''; k = 0;</span>
+<span class="code-line lit">    } else if (ch === ']') {</span>
+<span class="code-line lit">      const repeat = countStack.pop();</span>
+<span class="code-line lit">      current = strStack.pop() + current.repeat(repeat);</span>
+<span class="code-line lit">    } else {</span>
+<span class="code-line lit">      current += ch;</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">  }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  return current;</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Two stacks:</strong> One for counts, one for the string built so far. When you hit <code>[</code>, save context. When you hit <code>]</code>, restore context and repeat.</div>
+  </div>
+</div>
+
+<!-- ══════════ TRICKS ══════════ -->
+<div class="section" id="tricks">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(142,192,124,0.12);color:var(--aqua);">🛠️</div>
+    <h2>Tricks & Techniques</h2>
+  </div>
+  <div class="card">
+    <h3>Trick: Two Stacks → Queue</h3>
+    <pre><code><span class="code-line lit">class QueueFromStacks {</span>
+<span class="code-line lit">  constructor() { this.inStack = []; this.outStack = []; }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  enqueue(val) { this.inStack.push(val); }</span>
+<span class="code-line"></span>
+<span class="code-line lit">  dequeue() {</span>
+<span class="code-line lit">    if (!this.outStack.length)</span>
+<span class="code-line lit">      while (this.inStack.length)</span>
+<span class="code-line lit">        this.outStack.push(this.inStack.pop()); // reverse!</span>
+<span class="code-line lit">    return this.outStack.pop();</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">}</span></code></pre>
+    <div class="tip"><strong>Amortized O(1):</strong> Each element gets pushed and popped twice total (once per stack). Amortized = O(1) per operation.</div>
+  </div>
+  <div class="card">
+    <h3>Trick: Remove Adjacent Duplicates</h3>
+    <pre><code><span class="code-line lit">function removeDuplicates(s) {</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line lit">  for (const ch of s) {</span>
+<span class="code-line lit">    if (stack.length && stack[stack.length - 1] === ch)</span>
+<span class="code-line lit">      stack.pop();   // matching adjacent → remove</span>
+<span class="code-line lit">    else</span>
+<span class="code-line lit">      stack.push(ch);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return stack.join('');</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+  <div class="card">
+    <h3>Trick: Asteroid Collision</h3>
+    <pre><code><span class="code-line lit">function asteroidCollision(asteroids) {</span>
+<span class="code-line lit">  const stack = [];</span>
+<span class="code-line lit">  for (const a of asteroids) {</span>
+<span class="code-line lit">    let alive = true;</span>
+<span class="code-line lit">    while (alive && a < 0 && stack.length && stack[stack.length-1] > 0) {</span>
+<span class="code-line lit">      const top = stack[stack.length - 1];</span>
+<span class="code-line lit">      if (top < -a) { stack.pop(); }       // top smaller, destroyed</span>
+<span class="code-line lit">      else if (top === -a) { stack.pop(); alive = false; } // both gone</span>
+<span class="code-line lit">      else { alive = false; }               // current destroyed</span>
+<span class="code-line lit">    }</span>
+<span class="code-line lit">    if (alive) stack.push(a);</span>
+<span class="code-line lit">  }</span>
+<span class="code-line lit">  return stack;</span>
+<span class="code-line lit">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ══════════ TOP PROBLEMS ══════════ -->
+<div class="section" id="problems">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">💎</div>
+    <h2>Top 15 Stack Interview Problems</h2>
+  </div>
+  <div class="card">
+    <h3>Must-Solve Problems</h3>
+    <table>
+      <thead><tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Valid Parentheses</strong></td><td>Matching</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>2</td><td><strong>Min Stack</strong></td><td>Design</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>3</td><td><strong>Evaluate RPN</strong></td><td>Expression</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>4</td><td><strong>Daily Temperatures</strong></td><td>Monotonic Stack</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>5</td><td><strong>Next Greater Element I</strong></td><td>Monotonic Stack</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>6</td><td><strong>Decode String</strong></td><td>Nested Stack</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>7</td><td><strong>Remove Adjacent Dups</strong></td><td>Stack Cleanup</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>8</td><td><strong>Asteroid Collision</strong></td><td>Simulation</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>9</td><td><strong>Implement Queue using Stacks</strong></td><td>Design</td><td><span class="badge b-fast">Easy</span></td></tr>
+        <tr><td>10</td><td><strong>Car Fleet</strong></td><td>Monotonic</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>11</td><td><strong>Online Stock Span</strong></td><td>Monotonic</td><td><span class="badge b-ok">Medium</span></td></tr>
+        <tr><td>12</td><td><strong>Basic Calculator</strong></td><td>Expression</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>13</td><td><strong>Largest Rectangle in Histogram</strong></td><td>Monotonic</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>14</td><td><strong>Trapping Rain Water</strong></td><td>Monotonic</td><td><span class="badge b-slow">Hard</span></td></tr>
+        <tr><td>15</td><td><strong>Score of Parentheses</strong></td><td>Nested Stack</td><td><span class="badge b-ok">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section" id="quiz">
+  <div class="section-label">
+    <div class="section-icon" style="background:rgba(254,128,25,0.12);color:var(--orange);">🧪</div>
+    <h2>Quiz: Test Your Stack Knowledge</h2>
+  </div>
+  <div class="card"><div id="quizArea"></div></div>
+  <div class="card" style="text-align:center;padding:40px;">
+    <h3 style="justify-content:center;font-size:24px;color:var(--green);">Stacks — Mastered! ▤</h3>
+    <p style="font-size:16px;max-width:520px;margin:12px auto 0;color:var(--fg3);">LIFO, parentheses, monotonic stacks, expression evaluation — you've stacked up serious knowledge.</p>
+    <p style="color:var(--green);font-weight:700;font-size:18px;margin-top:16px;">You're crushing it, Xasanov! Stack on stack on stack! 🔥</p>
+    <div style="margin-top:20px;"><a href="../../index.html" class="btn" style="display:inline-block;text-decoration:none;">← Back to All Topics</a></div>
+  </div>
+</div>
+</div>
+<div class="footer"><p>Made with <span class="heart">♥</span> for Xasanov's DSA journey</p></div>
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ═══ Progress & Nav ═══
+window.addEventListener('scroll',function(){var h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('prog').style.width=(window.scrollY/h*100)+'%';document.getElementById('scrollTop').classList.toggle('show',window.scrollY>500);document.querySelectorAll('.section').forEach(function(s){var a=document.querySelector('.topnav a[href="#'+s.id+'"]');if(!a)return;var r=s.getBoundingClientRect();a.classList.toggle('active',r.top<180&&r.bottom>180);});});
+
+// ═══ Push/Pop Stack Viz ═══
+var stkArr=[],stkColors=['var(--green)','var(--yellow)','var(--orange)','var(--aqua)','var(--blue)','var(--purple)','var(--red)'],stkNext=0;
+function stkRender(){var c=document.getElementById('stackViz');c.innerHTML='';stkArr.slice().reverse().forEach(function(v){c.innerHTML+='<div class="stack-block" style="background:'+v.color+';color:var(--bg);">'+v.val+'</div>';});document.getElementById('stackSize').textContent=stkArr.length;document.getElementById('stackTop').textContent=stkArr.length?stkArr[stkArr.length-1].val:'-';}
+function stackPush(){if(stkArr.length>=7)return;stkNext++;stkArr.push({val:stkNext*10,color:stkColors[(stkNext-1)%stkColors.length]});stkRender();document.getElementById('stackMsg').innerHTML='<span style="color:var(--green);">Pushed '+stkNext*10+' onto top</span>';}
+function stackPop(){if(!stkArr.length){document.getElementById('stackMsg').innerHTML='<span style="color:var(--red);">Stack is empty!</span>';return;}var v=stkArr.pop();stkRender();document.getElementById('stackMsg').innerHTML='<span style="color:var(--orange);">Popped '+v.val+' from top</span>';}
+function stackReset(){stkArr=[];stkNext=0;stkRender();document.getElementById('stackMsg').textContent='Click Push or Pop';}
+stackReset();
+
+// ═══ Valid Parentheses ═══
+var parenStr2,parenIdx,parenStk,parenTimer,parenDone5;
+function parenRender(){var c=document.getElementById('parenStr');c.innerHTML='';parenStr2.split('').forEach(function(ch,i){var cls='pc-default';if(i<parenIdx)cls='pc-matched';if(i===parenIdx)cls='pc-active';c.innerHTML+='<span class="paren-char '+cls+'">'+ch+'</span>';});var s=document.getElementById('parenStack');s.innerHTML='';parenStk.slice().reverse().forEach(function(ch){s.innerHTML+='<div class="stack-block" style="background:var(--aqua);color:var(--bg);width:80px;padding:8px;">'+ch+'</div>';});}
+function parenRun(str){clearInterval(parenTimer);parenStr2=str;parenIdx=-1;parenStk=[];parenDone5=false;parenRender();document.getElementById('parenMsg').textContent='Click "Next Step" to validate';}
+function parenStep(){if(!parenStr2||parenDone5)return;parenIdx++;if(parenIdx>=parenStr2.length){parenDone5=true;if(parenStk.length===0){document.getElementById('parenMsg').innerHTML='<span style="color:var(--green);font-weight:700;">VALID! Stack is empty — all brackets matched.</span>';}else{document.getElementById('parenMsg').innerHTML='<span style="color:var(--red);font-weight:700;">INVALID! Stack not empty — unmatched opening brackets.</span>';}parenRender();return;}
+var ch=parenStr2[parenIdx];var map={')':'(',']':'[','}':'{'};if(ch==='('||ch==='['||ch==='{'){parenStk.push(ch);document.getElementById('parenMsg').textContent='Push "'+ch+'" onto stack';}else{if(parenStk.length&&parenStk[parenStk.length-1]===map[ch]){parenStk.pop();document.getElementById('parenMsg').innerHTML='<span style="color:var(--green);">Match! Pop "'+map[ch]+'" — it matches "'+ch+'"</span>';}else{parenDone5=true;document.getElementById('parenMsg').innerHTML='<span style="color:var(--red);font-weight:700;">INVALID! "'+ch+'" doesn\'t match top of stack.</span>';}}parenRender();}
+parenRun('({[]})');
+
+// ═══ Monotonic Stack — Next Greater Element ═══
+var monoArr2=[4,2,6,1,3,7,5],monoRes,monoStk2,monoIdx2,monoDone6,monoTimer2;
+function monoRender(){var c=document.getElementById('monoArr');c.innerHTML='';monoArr2.forEach(function(v,i){var cls='background:var(--bg2);color:var(--fg);';if(i===monoIdx2)cls='background:var(--green);color:var(--bg);';else if(i<monoIdx2)cls='background:var(--bg2);color:var(--fg4);';c.innerHTML+='<div style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;'+cls+'position:relative;">'+v+'<span style="position:absolute;bottom:-18px;font-size:10px;color:var(--fg4);">['+i+']</span></div>';});
+var s=document.getElementById('monoStack');s.innerHTML='';monoStk2.slice().reverse().forEach(function(idx){s.innerHTML+='<div class="stack-block" style="background:var(--yellow);color:var(--bg);width:80px;padding:8px;font-size:13px;">idx:'+idx+' ('+monoArr2[idx]+')</div>';});
+var r=document.getElementById('monoResult');r.innerHTML='';monoRes.forEach(function(v,i){r.innerHTML+='<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;margin:1px;background:'+(v===-1?'var(--bg2)':'rgba(184,187,38,0.2)')+';color:'+(v===-1?'var(--fg4)':'var(--green)')+';">'+v+'</span>';});}
+function monoReset(){clearInterval(monoTimer2);monoRes=new Array(monoArr2.length).fill(-1);monoStk2=[];monoIdx2=-1;monoDone6=false;monoRender();document.getElementById('monoMsg').textContent='Click "Next Step" to watch';}
+function monoStep(){if(monoDone6)return;monoIdx2++;if(monoIdx2>=monoArr2.length){monoDone6=true;document.getElementById('monoMsg').innerHTML='<span style="color:var(--green);font-weight:700;">Done! Next greater for each: ['+monoRes.join(', ')+']</span>';monoRender();return;}
+var curr=monoArr2[monoIdx2],popped=[];while(monoStk2.length&&monoArr2[monoStk2[monoStk2.length-1]]<curr){var idx=monoStk2.pop();monoRes[idx]=curr;popped.push(idx);}monoStk2.push(monoIdx2);
+if(popped.length){document.getElementById('monoMsg').textContent=curr+' > stack top → pop indices ['+popped.join(',')+'], their next greater = '+curr+'. Push idx '+monoIdx2;}else{document.getElementById('monoMsg').textContent=curr+' not greater than stack top → just push idx '+monoIdx2;}monoRender();}
+function monoAuto(){monoReset();monoTimer2=setInterval(function(){if(monoDone6){clearInterval(monoTimer2);return;}monoStep();},800);}
+monoReset();
+
+// ═══ Quiz ═══
+(function(){var q=[
+{code:'What does LIFO stand for?',ans:'Last In, First Out',why:'The last item pushed is the first to be popped. Like a stack of plates.'},
+{code:'Time complexity of push and pop?',ans:'O(1) for both',why:'We only ever touch the top element. No shifting needed.'},
+{code:'What data structure does DFS use?',ans:'Stack (call stack or explicit)',why:'DFS goes deep first, backtracks — that\'s LIFO behavior. Recursion uses the call stack; iterative uses an explicit stack.'},
+{code:'How does valid parentheses work with a stack?',ans:'Push opening brackets, pop and match on closing',why:'LIFO ensures the most recent opening bracket matches the next closing bracket.'},
+{code:'What is a monotonic stack?',ans:'A stack that maintains sorted (increasing/decreasing) order',why:'Before pushing, pop elements that violate the order. Used for "next greater/smaller element" problems.'},
+{code:'How does Min Stack achieve O(1) getMin()?',ans:'Store [value, currentMin] pairs',why:'Each entry knows the min at that point. When you pop, the min info pops with it.'},
+{code:'What is Reverse Polish Notation?',ans:'Postfix notation — operators come after operands',why:'"2 3 +" means 2+3. Numbers push to stack, operators pop two and push result.'},
+{code:'How do you implement a queue using stacks?',ans:'Two stacks: in-stack and out-stack',why:'Push to in-stack. When dequeuing, if out-stack empty, pour in-stack into out-stack (reverses order = FIFO).'},
+{code:'What causes a Stack Overflow error?',ans:'Too many recursive calls / infinite recursion',why:'Each function call pushes a frame. Too many frames exceeds the call stack limit.'},
+{code:'Daily Temperatures uses which pattern?',ans:'Monotonic stack',why:'For each day, find how many days until warmer. Pop stack entries when current temp is higher.'},
+];document.getElementById('quizArea').innerHTML=q.map(function(x,i){return '<div style="background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:14px;"><div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;">QUESTION '+(i+1)+' / '+q.length+'</div><div style="font-size:15px;font-weight:600;color:var(--fg);margin-bottom:12px;">'+x.code+'</div><button class="btn btn-sm" onclick="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">Show Answer</button><div style="display:none;margin-top:8px;animation:slideIn .3s;"><div style="font-size:18px;font-weight:800;color:var(--green);">'+x.ans+'</div><div style="font-size:13px;color:var(--fg3);margin-top:4px;">'+x.why+'</div></div></div>';}).join('');})();
+</script>
 </body>
 </html>
